@@ -49,3 +49,17 @@ void onTick(CRules@ this)
 		mapSyncer.Sync();
 	}
 }
+
+void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
+{
+	if (cmd == this.getCommandID("client sync voxel"))
+	{
+		u16 playerID = params.read_u16();
+		CPlayer@ player = getPlayerByNetworkId(playerID);
+		Vec3f position(params);
+		Voxel voxel(params);
+		map.SetVoxel(position, voxel);
+		position.Print();
+		print("Received voxel from " + player.getUsername());
+	}
+}

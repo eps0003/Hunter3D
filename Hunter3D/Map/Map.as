@@ -29,7 +29,7 @@ class Map
 		}
 	}
 
-	void SetVoxel(Vec3f position, Voxel voxel)
+	bool SetVoxel(Vec3f position, Voxel voxel)
 	{
 		Vec3f chunkPos = getChunkPos(position);
 		Vec3f voxelPos = getVoxelPos(position);
@@ -37,8 +37,10 @@ class Map
 		Chunk@ chunk = getChunk(chunkPos);
 		if (chunk !is null)
 		{
-			chunk.SetVoxel(voxelPos, voxel);
+			return chunk.SetVoxel(voxelPos, voxel);
 		}
+
+		return false;
 	}
 
 	Voxel@ getVoxel(Vec3f position)
@@ -98,13 +100,23 @@ class Map
 		}
 	}
 
-	private Chunk@ getChunk(Vec3f chunkPos)
+	Chunk@ getChunk(Vec3f chunkPos)
 	{
 		if (isValidChunk(chunkPos))
 		{
 			return chunks[chunkPos.x][chunkPos.y][chunkPos.z];
 		}
 		return null;
+	}
+
+	Vec3f getChunkPos(Vec3f worldPos)
+	{
+		return (worldPos / CHUNK_SIZE).floor();
+	}
+
+	private Vec3f getVoxelPos(Vec3f worldPos)
+	{
+		return worldPos % CHUNK_SIZE;
 	}
 
 	private bool isValidChunk(Vec3f chunkPos)
@@ -114,16 +126,6 @@ class Map
 			chunkPos.y >= 0 && chunkPos.y < chunkDim.y &&
 			chunkPos.z >= 0 && chunkPos.z < chunkDim.z
 		);
-	}
-
-	private Vec3f getChunkPos(Vec3f worldPos)
-	{
-		return (worldPos / CHUNK_SIZE).floor();
-	}
-
-	private Vec3f getVoxelPos(Vec3f worldPos)
-	{
-		return worldPos % CHUNK_SIZE;
 	}
 
 	private void InitChunks()

@@ -64,9 +64,16 @@ class Actor : PhysicsObject
 		if (controls.isKeyJustPressed(KEY_LBUTTON) && mouse.isInControl())
 		{
 			Vec3f pos = position + Vec3f(0, -1, 2);
-			Voxel voxel(1);
-			map.SetVoxel(pos, voxel);
-			map.GenerateMesh();
+			Voxel voxel(pos, 1);
+			if (map.SetVoxel(pos, voxel))
+			{
+				Vec3f chunkPos = map.getChunkPos(pos);
+				Chunk@ chunk = map.getChunk(chunkPos);
+				chunk.GenerateMesh();
+
+				voxel.client_Sync();
+			}
+
 		}
 	}
 

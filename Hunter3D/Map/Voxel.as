@@ -20,7 +20,7 @@ class Voxel
 
 	Voxel(Vec3f position, u8 type = 0)
 	{
-		this.position = position;
+		this.position = position.floor();
 		this.type = type;
 		this.handPlaced = false;
 		ResetHealth();
@@ -245,5 +245,15 @@ class Voxel
 		bs.write_u8(type);
 		bs.write_u8(health);
 		bs.write_bool(handPlaced);
+	}
+
+	void client_Sync()
+	{
+		CRules@ rules = getRules();
+		CBitStream bs;
+		bs.write_u16(getLocalPlayer().getNetworkID());
+		position.Serialize(bs);
+		Serialize(bs);
+		rules.SendCommand(rules.getCommandID("client sync voxel"), bs, false);
 	}
 }

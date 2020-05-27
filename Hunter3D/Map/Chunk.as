@@ -13,13 +13,15 @@ class Chunk
 		InitChunk();
 	}
 
-	void SetVoxel(Vec3f voxelPos, Voxel voxel)
+	bool SetVoxel(Vec3f voxelPos, Voxel voxel)
 	{
 		Voxel@ currentVoxel = getVoxel(voxelPos);
 		if (currentVoxel != null)
 		{
 			currentVoxel = voxel;
+			return true;
 		}
+		return false;
 	}
 
 	Voxel@ getVoxel(Vec3f voxelPos)
