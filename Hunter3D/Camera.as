@@ -1,20 +1,53 @@
-class Camera
+Camera@ getCamera3D()
 {
-	Object@ parent;
+	CRules@ rules = getRules();
+
+	Camera@ camera;
+	if (rules.get("camera", @camera))
+	{
+		return camera;
+	}
+
+	@camera = Camera(null);
+	rules.set("camera", camera);
+	return camera;
+}
+
+class Camera : IHasParent
+{
+	private Object@ parent;
 	float fov;
 
 	Camera(Object@ parent)
 	{
-		@this.parent = parent;
+		SetParent(parent);
 		LoadPreferences();
 	}
 
 	void Render()
 	{
-		float[] model = getModelMatrix(parent.position);
-		float[] view = getViewMatrix(parent.rotation);
-		float[] proj = getProjectionMatrix();
-		Render::SetTransform(model, view, proj);
+		if (hasParent())
+		{
+			float[] model = getModelMatrix(parent.position);
+			float[] view = getViewMatrix(parent.rotation);
+			float[] proj = getProjectionMatrix();
+			Render::SetTransform(model, view, proj);
+		}
+	}
+
+	void SetParent(Object@ parent)
+	{
+		@this.parent = parent;
+	}
+
+	Object@ getParent()
+	{
+		return parent;
+	}
+
+	bool hasParent()
+	{
+		return parent !is null;
 	}
 
 	private float[] getModelMatrix(Vec3f position)

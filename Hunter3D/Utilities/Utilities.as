@@ -16,6 +16,17 @@ ConfigFile openPreferences()
 	return cfg;
 }
 
+ConfigFile@ openConfig(string filePath)
+{
+	ConfigFile@ cfg = ConfigFile();
+	if (cfg.loadFile(filePath))
+	{
+		return cfg;
+	}
+	print("Config file not found: " + filePath);
+	return null;
+}
+
 s8 num(bool boolean)
 {
 	return boolean ? 1 : 0;

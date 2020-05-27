@@ -72,7 +72,7 @@ class Chunk
 			Voxel@ voxel = getVoxel(voxelPos);
 			if (voxel !is null)
 			{
-				Vec3f worldPos = map.getWorldPos(chunkPos, voxelPos);
+				Vec3f worldPos = getMap3D().getWorldPos(chunkPos, voxelPos);
 				voxel.GenerateMesh(this, worldPos, vertices);
 			}
 		}

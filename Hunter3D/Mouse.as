@@ -1,3 +1,20 @@
+#include "Camera.as"
+
+Mouse@ getMouse3D()
+{
+	CRules@ rules = getRules();
+
+	Mouse@ mouse;
+	if (rules.get("mouse", @mouse))
+	{
+		return mouse;
+	}
+
+	@mouse = Mouse();
+	rules.set("mouse", mouse);
+	return mouse;
+}
+
 class Mouse
 {
 	Vec2f velocity;
@@ -27,7 +44,7 @@ class Mouse
 
 	bool isVisible()
 	{
-		return Menu::isMenuOpen();
+		return getCamera3D() is null || Menu::isMenuOpen();
 	}
 
 	private void Visibility()

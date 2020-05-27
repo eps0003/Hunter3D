@@ -1,20 +1,14 @@
-#include "Utilities.as"
-#include "Object.as"
 #include "Vec3f.as"
-#include "Mouse.as"
 #include "Map.as"
+#include "Mouse.as"
 #include "Camera.as"
+#include "Actor.as"
 #include "TestMapGenerator.as"
+#include "ActorManager.as"
 
 #define CLIENT_ONLY
 
 float interFrameTime;
-bool ready;
-
-Mouse@ mouse;
-Map@ map;
-Actor@ actor;
-Camera@ camera;
 
 void onInit(CRules@ this)
 {
@@ -26,20 +20,23 @@ void onInit(CRules@ this)
 void onRestart(CRules@ this)
 {
 	Texture::createFromFile("pixel", "pixel.png");
-
-	ready = false;
 }
 
 void onTick(CRules@ this)
 {
 	interFrameTime = 0;
 
-	if (ready)
+	getMouse3D().Update();
+
+	if (getCamera3D().hasParent())
 	{
-		mouse.Update();
-		actor.PreUpdate();
-		actor.Update();
-		actor.PostUpdate();
+		Actor@ myActor = getActorManager().getActor(getLocalPlayer());
+		if (myActor !is null)
+		{
+			myActor.PreUpdate();
+			myActor.Update();
+			myActor.PostUpdate();
+		}
 	}
 }
 
@@ -47,10 +44,12 @@ void onRender(CRules@ this)
 {
 	interFrameTime += getRenderApproximateCorrectionFactor();
 
-	if (actor !is null)
+	Actor@ myActor = getActorManager().getActor(getLocalPlayer());
+	if (myActor !is null)
 	{
-		GUI::DrawText(actor.position.toString(), Vec2f(10, 50), color_black);
-		GUI::DrawText(actor.rotation.toString(), Vec2f(10, 70), color_black);
+		GUI::DrawText(myActor.position.toString(), Vec2f(10, 50), color_black);
+		GUI::DrawText(myActor.rotation.toString(), Vec2f(10, 70), color_black);
+		GUI::DrawText(myActor.velocity.toString(), Vec2f(10, 90), color_black);
 	}
 }
 
@@ -65,12 +64,14 @@ void Render(int id)
 	Render::SetBackfaceCull(true);
 	Render::ClearZ();
 
-	if (ready)
+	getMouse3D().Render();
+
+	Camera@ camera = getCamera3D();
+	if (camera.hasParent())
 	{
-		mouse.Render();
 		camera.Render();
-		map.Render();
-		actor.Render();
+		getMap3D().Render();
+		getActorManager().Render();
 	}
 }
 
@@ -80,28 +81,69 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 	{
 		print("Received map");
 
-		@map = Map(params);
+		CPlayer@ me = getLocalPlayer();
+
+		Map map(params);
+		Vec3f mapCenter = map.getMapDimensions() / 2;
+
+		this.set("map", map);
+
 		map.GenerateMesh();
-
-		@mouse = Mouse();
-
-		Vec3f mapDim = map.getMapDimensions();
-		@actor = Actor(getLocalPlayer(), mapDim / 2);
-
-		@camera = Camera(actor);
-
-		ready = true;
 	}
 	else if (cmd == this.getCommandID("server sync voxel"))
 	{
+		u16 playerID = params.read_u16();
+		CPlayer@ player = getPlayerByNetworkId(playerID);
 		Vec3f worldPos(params);
 		Voxel voxel(params);
-		map.SetVoxel(worldPos, voxel);
 
-		print("Received voxel from server at " + worldPos.toString());
+		if (player.isMyPlayer())
+		{
+			if (voxel.handPlaced)
+			{
+				if (voxel.isVisible())
+				{
+					//voxel successfully destroyed. poof particles
+				}
+				else
+				{
+					//voxel successfully placed. poof particles
+				}
+			}
+		}
+		else
+		{
+			Map@ map = getMap3D();
+			map.SetVoxel(worldPos, voxel);
 
-		Vec3f chunkPos = map.getChunkPos(worldPos);
-		Chunk@ chunk = map.getChunk(chunkPos);
-		chunk.GenerateMesh(chunkPos);
+			print("Received voxel from server at " + worldPos.toString());
+
+			Vec3f chunkPos = map.getChunkPos(worldPos);
+			Chunk@ chunk = map.getChunk(chunkPos);
+			chunk.GenerateMesh(chunkPos);
+
+			//poof particles
+		}
+	}
+	else if (cmd == this.getCommandID("server sync actors"))
+	{
+		ActorManager@ actorManager = getActorManager();
+
+		int count = params.read_u32();
+
+		for (uint i = 0; i < count; i++)
+		{
+			Actor actor(params);
+			if (!actor.player.isMyPlayer() || !actorManager.hasActor(actor.player))
+			{
+				actorManager.UpdateActor(actor);
+
+				if (actor.player.isMyPlayer())
+				{
+					getCamera3D().SetParent(actorManager.getActor(actor.player));
+					print("Spawned client at " + actor.position.toString());
+				}
+			}
+		}
 	}
 }

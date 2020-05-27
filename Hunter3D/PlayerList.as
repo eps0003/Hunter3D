@@ -4,7 +4,7 @@ class PlayerList
 
 	void AddPlayer(CPlayer@ player)
 	{
-		if (!hasPlayer(player))
+		if (player !is null && !hasPlayer(player))
 		{
 			players.push_back(player);
 		}
@@ -15,7 +15,7 @@ class PlayerList
 		for (uint i = 0; i < players.length; i++)
 		{
 			CPlayer@ player = players[i];
-			if (!hasPlayer(player))
+			if (player !is null && !hasPlayer(player))
 			{
 				players.push_back(player);
 			}
@@ -27,11 +27,33 @@ class PlayerList
 		for (uint i = 0; i < players.length; i++)
 		{
 			CPlayer@ p = players[i];
-			if (p is player)
+			if (p is null || p is player)
 			{
-				players.removeAt(i);
+				RemoveIndex(i);
 			}
 		}
+	}
+
+	void RemoveIndex(uint index)
+	{
+		if (index < getPlayerCount())
+		{
+			players.removeAt(index);
+		}
+	}
+
+	CPlayer@ getPlayer(uint index)
+	{
+		if (index < getPlayerCount())
+		{
+			return players[index];
+		}
+		return null;
+	}
+
+	uint getPlayerCount()
+	{
+		return players.length;
 	}
 
 	void ClearPlayers()
@@ -44,14 +66,17 @@ class PlayerList
 		return !players.empty();
 	}
 
-	private bool hasPlayer(CPlayer@ player)
+	bool hasPlayer(CPlayer@ player)
 	{
-		for (uint i = 0; i < players.length; i++)
+		if (player !is null)
 		{
-			CPlayer@ p = players[i];
-			if (p is player)
+			for (uint i = 0; i < players.length; i++)
 			{
-				return true;
+				CPlayer@ p = players[i];
+				if (p is player)
+				{
+					return true;
+				}
 			}
 		}
 		return false;

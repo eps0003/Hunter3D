@@ -1,6 +1,14 @@
+#include "Vec3f.as"
 #include "Chunk.as"
 
 const u8 CHUNK_SIZE = 8;
+
+Map@ getMap3D()
+{
+	Map@ map;
+	getRules().get("map", @map);
+	return map;
+}
 
 class Map
 {

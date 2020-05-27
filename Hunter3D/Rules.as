@@ -1,45 +1,23 @@
+#include "RespawnManager.as"
+
 #define SERVER_ONLY;
-
-void onInit(CRules@ this)
-{
-	print("initialized");
-}
-
-void onRestart(CRules@ this)
-{
-	print("restarted");
-}
 
 void onTick(CRules@ this)
 {
-
+	getRespawnManager().Update();
 }
 
 void onNewPlayerJoin(CRules@ this, CPlayer@ player)
 {
-	string username = player.getUsername();
-	print(username + " joined");
+	getRespawnManager().AddToQueue(player);
 }
 
 void onPlayerLeave(CRules@ this, CPlayer@ player)
 {
-	string username = player.getUsername();
-	print(username + " left");
-}
-
-void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
-{
-
-}
-
-void onPlayerRequestTeamChange(CRules@ this, CPlayer@ player, u8 newTeam)
-{
-	string username = player.getUsername();
-	print(username + " requested team change");
+	getRespawnManager().RemoveFromQueue(player);
 }
 
 void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ attacker, u8 customData)
 {
-	string username = victim.getUsername();
-	print(username + " died");
+	getRespawnManager().AddToQueue(victim);
 }

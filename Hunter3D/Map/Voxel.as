@@ -48,11 +48,6 @@ class Voxel
 
 	void opAssign(const Voxel &in voxel)
 	{
-		if (this != voxel && handPlaced)
-		{
-			//voxel placed. poof particles go here
-		}
-
 		type = voxel.type;
 		health = voxel.health;
 		handPlaced = voxel.handPlaced;
@@ -249,15 +244,17 @@ class Voxel
 	{
 		CRules@ rules = getRules();
 		CBitStream bs;
+		bs.write_u16(getLocalPlayer().getNetworkID());
 		worldPos.Serialize(bs);
 		Serialize(bs);
 		rules.SendCommand(rules.getCommandID("client sync voxel"), bs, false);
 	}
 
-	void server_Sync(Vec3f worldPos)
+	void server_Sync(Vec3f worldPos, CPlayer@ player)
 	{
 		CRules@ rules = getRules();
 		CBitStream bs;
+		bs.write_u16(player.getNetworkID());
 		worldPos.Serialize(bs);
 		Serialize(bs);
 		rules.SendCommand(rules.getCommandID("server sync voxel"), bs, true);

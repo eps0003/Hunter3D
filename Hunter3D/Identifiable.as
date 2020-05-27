@@ -1,16 +1,37 @@
-uint64 currentID = 0;
+uint currentID = 0;
 
-uint64 getUniqueID()
+uint getUniqueID()
 {
 	return currentID++;
 }
 
 class Identifiable
 {
-	int id;
+	uint id;
 
 	Identifiable()
 	{
-		this.id = getUniqueID();
+		id = getUniqueID();
+	}
+
+	Identifiable(CBitStream@ bs)
+	{
+		id = bs.read_u32();
+	}
+
+	//SERVER ONLY
+	Identifiable(uint id)
+	{
+		this.id = id;
+	}
+
+	bool isSameAs(Object@ object)
+	{
+		return id == object.id;
+	}
+
+	void Serialize(CBitStream@ bs)
+	{
+		bs.write_u32(id);
 	}
 }

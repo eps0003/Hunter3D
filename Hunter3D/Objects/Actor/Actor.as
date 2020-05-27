@@ -1,3 +1,6 @@
+#include "PhysicsObject.as"
+#include "Mouse.as"
+
 class Actor : PhysicsObject
 {
 	CPlayer@ player;
@@ -8,8 +11,18 @@ class Actor : PhysicsObject
 		LoadConfig();
 
 		@this.player = player;
-		// @hitbox = AABB(this, Vec3f(0.6f, 1.6f, 0.6f));
-		@hitbox = AABB(this, Vec3f(-0.3f, -1.4f, -0.3f), Vec3f(0.3f, 0.2f, 0.3f));
+	}
+
+	Actor(CBitStream@ bs)
+	{
+		super(bs);
+		LoadConfig();
+
+		u16 playerID = bs.read_u16();
+		@player = getPlayerByNetworkId(playerID);
+
+		// @hitbox = AABB(Vec3f(0.6f, 1.6f, 0.6f));
+		@hitbox = AABB(Vec3f(-0.3f, -1.4f, -0.3f), Vec3f(0.3f, 0.2f, 0.3f));
 	}
 
 	void Update()
@@ -21,9 +34,20 @@ class Actor : PhysicsObject
 		PlaceVoxel();
 	}
 
+	void Render()
+	{
+		hitbox.Render(position);
+	}
+
+	void Serialize(CBitStream@ bs)
+	{
+		PhysicsObject::Serialize(bs);
+		bs.write_u16(player.getNetworkID());
+	}
+
 	private void Move()
 	{
-		CControls@ controls = getControls();
+		CControls@ controls = player.getControls();
 
 		Vec2f dir(
 			num(controls.isKeyPressed(KEY_KEY_D)) - num(controls.isKeyPressed(KEY_KEY_A)),
@@ -40,16 +64,22 @@ class Actor : PhysicsObject
 
 		if (controls.isKeyJustPressed(KEY_SPACE))
 		{
-			velocity.y = 0.3f;
+			float jumpSpd;
+			vars.get("jump_speed", jumpSpd);
+
+			velocity.y = jumpSpd;
 		}
 
-		velocity.x = dir.x / 4.0f;
-		velocity.z = dir.y / 4.0f;
+		float moveSpd;
+		vars.get("move_speed", moveSpd);
+
+		velocity.x = dir.x * moveSpd;
+		velocity.z = dir.y * moveSpd;
 	}
 
 	private void Rotate()
 	{
-		Vec2f dir = mouse.velocity;
+		Vec2f dir = getMouse3D().velocity;
 		rotation.x += dir.y;
 		rotation.y += dir.x;
 
@@ -61,10 +91,12 @@ class Actor : PhysicsObject
 	private void PlaceVoxel()
 	{
 		CControls@ controls = player.getControls();
+		Mouse@ mouse = getMouse3D();
 		if (controls.isKeyJustPressed(KEY_LBUTTON) && mouse.isInControl())
 		{
 			Vec3f worldPos = position + Vec3f(0, -1, 2);
 			Voxel voxel(1, true);
+			Map@ map = getMap3D();
 			if (map.SetVoxel(worldPos, voxel))
 			{
 				Vec3f chunkPos = map.getChunkPos(worldPos);
@@ -79,7 +111,8 @@ class Actor : PhysicsObject
 
 	private void LoadConfig()
 	{
-		string name = getCurrentScriptName();
-		print(name);
+		ConfigFile@ cfg = openConfig("Actor.cfg");
+		vars.set("move_speed", cfg.read_f32("move_speed"));
+		vars.set("jump_speed", cfg.read_f32("jump_speed"));
 	}
 }

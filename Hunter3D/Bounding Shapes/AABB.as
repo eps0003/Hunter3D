@@ -1,26 +1,23 @@
+#include "IBounds.as"
+#include "IHasParent.as"
+
 class AABB : IBounds
 {
-	Object@ parent;
-
 	Vec3f dim;
 	Vec3f min;
 	Vec3f max;
 
 	//origin is centered at bottom
-	AABB(Object@ parent, Vec3f dim_)
+	AABB(Vec3f dim_)
 	{
-		@this.parent = parent;
-
 		dim = dim_;
 		min = Vec3f(-dim.x / 2.0f, 0, -dim.z / 2.0f);
 		max = Vec3f(dim.x / 2.0f, dim.y, dim.z / 2.0f);
 	}
 
 	//relative to parent position
-	AABB(Object@ parent, Vec3f min_, Vec3f max_)
+	AABB(Vec3f min_, Vec3f max_)
 	{
-		@this.parent = parent;
-
 		min = min_;
 		max = max_;
 
@@ -29,13 +26,7 @@ class AABB : IBounds
 		dim.z = Maths::Abs(max.z - min.z);
 	}
 
-	//intersects any solid tile at parent position
-	bool intersects()
-	{
-		return intersectsAt(parent.position);
-	}
-
-	//intersects any solid tile at specified position
+	//intersects any solid voxel at specified position
 	bool intersectsAt(Vec3f worldPos)
 	{
 		for (int x = worldPos.x + min.x; x < worldPos.x + max.x; x++)
@@ -43,7 +34,7 @@ class AABB : IBounds
 		for (int z = worldPos.z + min.z; z < worldPos.z + max.z; z++)
 		{
 			Vec3f pos(x, y, z);
-			Voxel@ voxel = map.getVoxel(pos);
+			Voxel@ voxel = getMap3D().getVoxel(pos);
 
 			if (voxel !is null && voxel.isSolid())
 			{
@@ -53,14 +44,13 @@ class AABB : IBounds
 		return false;
 	}
 
-	//intersects any solid tile at the specified position that isnt currently intersecting
-	bool intersectsNewAt(Vec3f worldPos)
+	//intersects any solid voxel at the specified position that isnt currently intersecting
+	bool intersectsNewAt(Vec3f currentPos, Vec3f worldPos)
 	{
 		for (int x = worldPos.x + min.x; x < worldPos.x + max.x; x++)
 		for (int y = worldPos.y + min.y; y < worldPos.y + max.y; y++)
 		for (int z = worldPos.z + min.z; z < worldPos.z + max.z; z++)
 		{
-			Vec3f currentPos = parent.position;
 			bool alreadyIntersecting = (
 				x >= Maths::Floor(currentPos.x + min.x) && x < Maths::Ceil(currentPos.x + max.x) &&
 				y >= Maths::Floor(currentPos.y + min.y) && y < Maths::Ceil(currentPos.y + max.y) &&
@@ -74,9 +64,9 @@ class AABB : IBounds
 			}
 
 			Vec3f pos(x, y, z);
-			Voxel@ voxel = map.getVoxel(pos);
+			Voxel@ voxel = getMap3D().getVoxel(pos);
 
-			if (voxel.isSolid())
+			if (voxel !is null && voxel.isSolid())
 			{
 				return true;
 			}
@@ -84,12 +74,6 @@ class AABB : IBounds
 
 		return false;
 	}
-
-	// //intersects point at parent position
-	// bool intersects(Vec3f pointPos)
-	// {
-	// 	return intersects(parent.position, pointPos);
-	// }
 
 	// //intersects point at specified position
 	// bool intersectsAt(Vec3f worldPos, Vec3f pointPos)
@@ -103,12 +87,6 @@ class AABB : IBounds
 	// 		pointPos.z < worldPos.z + max.z
 	// 	);
 	// }
-
-	//intersects specific voxel at parent position
-	bool intersects(Vec3f voxelWorldPos)
-	{
-		return intersectsAt(parent.position, voxelWorldPos);
-	}
 
 	//intersects specific voxel at specific position
 	bool intersectsAt(Vec3f worldPos, Vec3f voxelWorldPos)
@@ -125,16 +103,10 @@ class AABB : IBounds
 		return false;
 	}
 
-	//intersects map edge at parent position
-	bool intersectsMapEdge()
-	{
-		return intersectsMapEdgeAt(parent.position);
-	}
-
 	//intersects map edge at specific position
 	bool intersectsMapEdgeAt(Vec3f worldPos)
 	{
-		Vec3f dim = map.getMapDimensions();
+		Vec3f dim = getMap3D().getMapDimensions();
 		return (
 			worldPos.x + min.x < 0 ||
 			worldPos.x + max.x > dim.x ||
@@ -152,5 +124,66 @@ class AABB : IBounds
 			min.y + random.Next() * dim.y,
 			min.z + random.Next() * dim.z
 		);
+	}
+
+	void Render(Vec3f worldPos, SColor col = SColor(100, 100, 255, 100))
+	{
+		if (!cast<Actor>(getCamera3D().getParent()).player.isMyPlayer())
+		{
+			getCamera3D().getParent().position.Print();
+		}
+		Vec3f offset = worldPos - getCamera3D().getParent().position;
+
+		float[] matrix;
+		Matrix::MakeIdentity(matrix);
+		Matrix::SetTranslation(matrix, offset.x, offset.y, offset.z);
+		Render::SetModelTransform(matrix);
+
+		Vertex[] vertices;
+
+		//left
+		vertices.push_back(Vertex(min.x, max.y, max.z, 0, 0, col));
+		vertices.push_back(Vertex(min.x, max.y, min.z, 1, 0, col));
+		vertices.push_back(Vertex(min.x, min.y, min.z, 1, 1, col));
+		vertices.push_back(Vertex(min.x, min.y, max.z, 0, 1, col));
+
+		//right
+		vertices.push_back(Vertex(max.x, max.y, min.z, 0, 0, col));
+		vertices.push_back(Vertex(max.x, max.y, max.z, 1, 0, col));
+		vertices.push_back(Vertex(max.x, min.y, max.z, 1, 1, col));
+		vertices.push_back(Vertex(max.x, min.y, min.z, 0, 1, col));
+
+		//front
+		vertices.push_back(Vertex(min.x, max.y, min.z, 0, 0, col));
+		vertices.push_back(Vertex(max.x, max.y, min.z, 1, 0, col));
+		vertices.push_back(Vertex(max.x, min.y, min.z, 1, 1, col));
+		vertices.push_back(Vertex(min.x, min.y, min.z, 0, 1, col));
+
+		//back
+		vertices.push_back(Vertex(max.x, max.y, max.z, 0, 0, col));
+		vertices.push_back(Vertex(min.x, max.y, max.z, 1, 0, col));
+		vertices.push_back(Vertex(min.x, min.y, max.z, 1, 1, col));
+		vertices.push_back(Vertex(max.x, min.y, max.z, 0, 1, col));
+
+		// if (!isOnGround())
+		{
+			//down
+			vertices.push_back(Vertex(max.x, min.y, max.z, 0, 0, col));
+			vertices.push_back(Vertex(min.x, min.y, max.z, 1, 0, col));
+			vertices.push_back(Vertex(min.x, min.y, min.z, 1, 1, col));
+			vertices.push_back(Vertex(max.x, min.y, min.z, 0, 1, col));
+		}
+
+		//up
+		vertices.push_back(Vertex(min.x, max.y, max.z, 0, 0, col));
+		vertices.push_back(Vertex(max.x, max.y, max.z, 1, 0, col));
+		vertices.push_back(Vertex(max.x, max.y, min.z, 1, 1, col));
+		vertices.push_back(Vertex(min.x, max.y, min.z, 0, 1, col));
+
+		Render::SetBackfaceCull(false);
+		Render::SetAlphaBlend(true);
+		Render::RawQuads("pixel", vertices);
+		Render::SetAlphaBlend(false);
+		Render::SetBackfaceCull(true);
 	}
 }

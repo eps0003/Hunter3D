@@ -1,5 +1,5 @@
-#include "IBounds.as"
-#include "Actor.as"
+#include "Object.as"
+#include "AABB.as"
 
 const float GRAVITY = 0.03f;
 
@@ -14,6 +14,11 @@ class PhysicsObject : Object
 	PhysicsObject(Vec3f position, Vec3f rotation = Vec3f(0, 0, 0), Vec3f velocity = Vec3f(0, 0, 0))
 	{
 		super(position, rotation, velocity);
+	}
+
+	PhysicsObject(CBitStream@ bs)
+	{
+		super(bs);
 	}
 
 	void PreUpdate()
@@ -57,11 +62,16 @@ class PhysicsObject : Object
 		return false;
 	}
 
+	void Serialize(CBitStream@ bs)
+	{
+		Object::Serialize(bs);
+	}
+
 	private void CollisionResponse()
 	{
 		//x collision
 		Vec3f xPosition(position.x + velocity.x, position.y, position.z);
-		if (hitbox.intersectsAt(xPosition) || hitbox.intersectsMapEdgeAt(xPosition))
+		if (hitbox.intersectsNewAt(position, xPosition) || hitbox.intersectsMapEdgeAt(xPosition))
 		{
 			if (velocity.x > 0)
 			{
@@ -81,7 +91,7 @@ class PhysicsObject : Object
 
 		//z collision
 		Vec3f zPosition(position.x, position.y, position.z + velocity.z);
-		if (hitbox.intersectsAt(zPosition) || hitbox.intersectsMapEdgeAt(zPosition))
+		if (hitbox.intersectsNewAt(position, zPosition) || hitbox.intersectsMapEdgeAt(zPosition))
 		{
 			if (velocity.z > 0)
 			{
@@ -101,7 +111,7 @@ class PhysicsObject : Object
 
 		//y collision
 		Vec3f yPosition(position.x, position.y + velocity.y, position.z);
-		if (hitbox.intersectsAt(yPosition) || hitbox.intersectsMapEdgeAt(yPosition))
+		if (hitbox.intersectsNewAt(position, yPosition) || hitbox.intersectsMapEdgeAt(yPosition))
 		{
 			if (velocity.y > 0)
 			{
