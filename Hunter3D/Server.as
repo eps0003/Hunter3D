@@ -41,4 +41,9 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 			//revert voxel
 		}
 	}
+	else if (cmd == this.getCommandID("client sync actor"))
+	{
+		Actor actor(params);
+		getActorManager().UpdateActor(actor);
+	}
 }

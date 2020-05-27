@@ -110,4 +110,13 @@ class ActorManager
 		CRules@ rules = getRules();
 		rules.SendCommand(rules.getCommandID("server sync actors"), bs, true);
 	}
+
+	void client_Sync(Actor@ actor)
+	{
+		CBitStream bs;
+		actor.Serialize(bs);
+
+		CRules@ rules = getRules();
+		rules.SendCommand(rules.getCommandID("client sync actor"), bs, false);
+	}
 }

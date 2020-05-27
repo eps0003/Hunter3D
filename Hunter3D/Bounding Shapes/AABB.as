@@ -128,10 +128,6 @@ class AABB : IBounds
 
 	void Render(Vec3f worldPos, SColor col = SColor(100, 100, 255, 100))
 	{
-		if (!cast<Actor>(getCamera3D().getParent()).player.isMyPlayer())
-		{
-			getCamera3D().getParent().position.Print();
-		}
 		Vec3f offset = worldPos - getCamera3D().getParent().position;
 
 		float[] matrix;

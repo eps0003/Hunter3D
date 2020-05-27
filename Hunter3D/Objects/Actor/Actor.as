@@ -1,5 +1,6 @@
 #include "PhysicsObject.as"
 #include "Mouse.as"
+#include "ActorManager.as"
 
 class Actor : PhysicsObject
 {
@@ -32,6 +33,13 @@ class Actor : PhysicsObject
 		Move();
 		Rotate();
 		PlaceVoxel();
+	}
+
+	void PostUpdate()
+	{
+		PhysicsObject::PostUpdate();
+
+		getActorManager().client_Sync(this);
 	}
 
 	void Render()
