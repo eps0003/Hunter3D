@@ -2,15 +2,20 @@
 #include "Object.as"
 #include "Vec3f.as"
 #include "Mouse.as"
+#include "Map.as"
 #include "Camera.as"
-#include "Actor.as"
 #include "Cube.as"
+#include "TestMapGenerator.as"
 
 #define CLIENT_ONLY
 
+const float GRAVITY = 0.03f;
+
 float interFrameTime;
+bool ready;
 
 Mouse@ mouse;
+Map@ map;
 Actor@ actor;
 Camera@ camera;
 Cube@ cube;
@@ -24,15 +29,36 @@ void onInit(CRules@ this)
 
 void onRestart(CRules@ this)
 {
-	@mouse = Mouse();
-	@actor = Actor(getLocalPlayer());
-	@camera = Camera(actor);
-	@cube = Cube(Vec3f(0, 0, 2), Vec3f(1, 1, 1), color_black);
+	Texture::createFromFile("pixel", "pixel.png");
+
+	ready = false;
 }
 
 void onTick(CRules@ this)
 {
 	interFrameTime = 0;
+
+	if (!ready)
+	{
+		if (getLocalPlayer() !is null)
+		{
+			ready = true;
+
+			@map = TestMapGenerator().GenerateMap(Vec3f(24, 8, 24));
+			map.GenerateMesh();
+
+			@mouse = Mouse();
+
+			Vec3f mapDim = map.getMapDimensions();
+			@actor = Actor(getLocalPlayer(), mapDim / 2);
+
+			@camera = Camera(actor);
+		}
+		else
+		{
+			return;
+		}
+	}
 
 	mouse.Update();
 	actor.PreUpdate();
@@ -62,7 +88,11 @@ void Render(int id)
 	Render::SetBackfaceCull(true);
 	Render::ClearZ();
 
-	camera.Render();
-	actor.Render();
-	cube.Render();
+	if (ready)
+	{
+		mouse.Render();
+		camera.Render();
+		map.Render();
+		actor.Render();
+	}
 }

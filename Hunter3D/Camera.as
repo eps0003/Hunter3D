@@ -1,18 +1,18 @@
 class Camera
 {
-	Actor@ actor;
+	Object@ parent;
 	float fov;
 
-	Camera(Actor@ actor)
+	Camera(Object@ parent)
 	{
-		@this.actor = actor;
+		@this.parent = parent;
 		LoadPreferences();
 	}
 
 	void Render()
 	{
-		float[] model = getModelMatrix(actor.position);
-		float[] view = getViewMatrix(actor.rotation);
+		float[] model = getModelMatrix(parent.position);
+		float[] view = getViewMatrix(parent.rotation);
 		float[] proj = getProjectionMatrix();
 		Render::SetTransform(model, view, proj);
 	}

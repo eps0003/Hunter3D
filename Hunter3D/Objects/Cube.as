@@ -53,6 +53,6 @@ class Cube : Object
 			Vertex(a.x, a.y, a.z, 1, 1, color)
 		};
 
-		Render::RawQuads("pixel.png", vertices);
+		Render::RawQuads("pixel", vertices);
 	}
 }

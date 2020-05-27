@@ -1,6 +1,6 @@
-int currentID = 0;
+uint64 currentID = 0;
 
-int getID()
+uint64 getUniqueID()
 {
 	return currentID++;
 }
@@ -11,6 +11,6 @@ class Identifiable
 
 	Identifiable()
 	{
-		this.id = getID();
+		this.id = getUniqueID();
 	}
 }

@@ -1,4 +1,5 @@
 #include "Identifiable.as"
+#include "PhysicsObject.as"
 
 class Object : Identifiable
 {
@@ -14,9 +15,18 @@ class Object : Identifiable
 	Vec3f oldVelocity;
 	Vec3f interVelocity;
 
+	Object(Vec3f position, Vec3f rotation = Vec3f(0, 0, 0), Vec3f velocity = Vec3f(0, 0, 0))
+	{
+		this.position = position;
+		this.rotation = rotation;
+		this.velocity = velocity;
+	}
+
 	void PreUpdate()
 	{
-
+		oldPosition = position;
+		oldRotation = rotation;
+		oldVelocity = velocity;
 	}
 
 	void Update()
@@ -26,9 +36,7 @@ class Object : Identifiable
 
 	void PostUpdate()
 	{
-		oldPosition = position;
-		oldRotation = rotation;
-		oldVelocity = velocity;
+
 	}
 
 	void Render()

@@ -3,7 +3,7 @@ class Mouse
 	Vec2f velocity;
 	float sensitivity;
 
-	private bool wasInControl;
+	private bool wasInControl = false;
 
 	Mouse()
 	{
@@ -12,8 +12,12 @@ class Mouse
 
 	void Update()
 	{
-		Visibility();
 		CalculateVelocity();
+	}
+
+	void Render()
+	{
+		Visibility();
 	}
 
 	bool isInControl()
