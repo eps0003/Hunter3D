@@ -105,19 +105,19 @@ class AABB : IBounds
 	// }
 
 	//intersects specific voxel at parent position
-	bool intersects(Voxel@ voxel)
+	bool intersects(Vec3f voxelWorldPos)
 	{
-		return intersectsAt(parent.position, voxel);
+		return intersectsAt(parent.position, voxelWorldPos);
 	}
 
 	//intersects specific voxel at specific position
-	bool intersectsAt(Vec3f worldPos, Voxel@ voxel)
+	bool intersectsAt(Vec3f worldPos, Vec3f voxelWorldPos)
 	{
 		for (int x = worldPos.x + min.x; x < worldPos.x + max.x; x++)
 		for (int y = worldPos.y + min.y; y < worldPos.y + max.y; y++)
 		for (int z = worldPos.z + min.z; z < worldPos.z + max.z; z++)
 		{
-			if (Vec3f(x, y, z) == voxel.position)
+			if (Vec3f(x, y, z) == voxelWorldPos)
 			{
 				return true;
 			}

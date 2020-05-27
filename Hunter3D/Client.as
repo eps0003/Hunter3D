@@ -92,4 +92,16 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 
 		ready = true;
 	}
+	else if (cmd == this.getCommandID("server sync voxel"))
+	{
+		Vec3f worldPos(params);
+		Voxel voxel(params);
+		map.SetVoxel(worldPos, voxel);
+
+		print("Received voxel from server at " + worldPos.toString());
+
+		Vec3f chunkPos = map.getChunkPos(worldPos);
+		Chunk@ chunk = map.getChunk(chunkPos);
+		chunk.GenerateMesh(chunkPos);
+	}
 }

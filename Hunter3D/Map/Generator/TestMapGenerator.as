@@ -18,7 +18,7 @@ class TestMapGenerator : IMapGenerator
 				type = XORRandom(255) + 1;
 			}
 
-			Voxel voxel(position, type);
+			Voxel voxel(type);
 			map.SetVoxel(position, voxel);
 		}
 

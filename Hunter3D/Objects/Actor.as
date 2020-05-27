@@ -63,15 +63,15 @@ class Actor : PhysicsObject
 		CControls@ controls = player.getControls();
 		if (controls.isKeyJustPressed(KEY_LBUTTON) && mouse.isInControl())
 		{
-			Vec3f pos = position + Vec3f(0, -1, 2);
-			Voxel voxel(pos, 1);
-			if (map.SetVoxel(pos, voxel))
+			Vec3f worldPos = position + Vec3f(0, -1, 2);
+			Voxel voxel(1, true);
+			if (map.SetVoxel(worldPos, voxel))
 			{
-				Vec3f chunkPos = map.getChunkPos(pos);
+				Vec3f chunkPos = map.getChunkPos(worldPos);
 				Chunk@ chunk = map.getChunk(chunkPos);
-				chunk.GenerateMesh();
+				chunk.GenerateMesh(chunkPos);
 
-				voxel.client_Sync();
+				voxel.client_Sync(worldPos);
 			}
 
 		}

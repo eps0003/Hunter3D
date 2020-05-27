@@ -23,16 +23,16 @@ class Map
 		for (uint y = 0; y < mapDim.y; y++)
 		for (uint z = 0; z < mapDim.z; z++)
 		{
-			Vec3f position(x, y, z);
+			Vec3f worldPos(x, y, z);
 			Voxel voxel(bs);
-			SetVoxel(position, voxel);
+			SetVoxel(worldPos, voxel);
 		}
 	}
 
-	bool SetVoxel(Vec3f position, Voxel voxel)
+	bool SetVoxel(Vec3f worldPos, Voxel voxel)
 	{
-		Vec3f chunkPos = getChunkPos(position);
-		Vec3f voxelPos = getVoxelPos(position);
+		Vec3f chunkPos = getChunkPos(worldPos);
+		Vec3f voxelPos = getVoxelPos(worldPos);
 
 		Chunk@ chunk = getChunk(chunkPos);
 		if (chunk !is null)
@@ -43,10 +43,10 @@ class Map
 		return false;
 	}
 
-	Voxel@ getVoxel(Vec3f position)
+	Voxel@ getVoxel(Vec3f worldPos)
 	{
-		Vec3f chunkPos = getChunkPos(position);
-		Vec3f voxelPos = getVoxelPos(position);
+		Vec3f chunkPos = getChunkPos(worldPos);
+		Vec3f voxelPos = getVoxelPos(worldPos);
 
 		Chunk@ chunk = getChunk(chunkPos);
 		if (chunk !is null)
@@ -68,9 +68,9 @@ class Map
 		for (uint y = 0; y < chunkDim.y; y++)
 		for (uint z = 0; z < chunkDim.z; z++)
 		{
-			Vec3f position(x, y, z);
-			Chunk@ chunk = getChunk(position);
-			chunk.GenerateMesh();
+			Vec3f chunkPos(x, y, z);
+			Chunk@ chunk = getChunk(chunkPos);
+			chunk.GenerateMesh(chunkPos);
 		}
 	}
 
@@ -80,8 +80,8 @@ class Map
 		for (uint y = 0; y < chunkDim.y; y++)
 		for (uint z = 0; z < chunkDim.z; z++)
 		{
-			Vec3f position(x, y, z);
-			Chunk@ chunk = getChunk(position);
+			Vec3f chunkPos(x, y, z);
+			Chunk@ chunk = getChunk(chunkPos);
 			Render::RawQuads("pixel", chunk.vertices);
 		}
 	}
@@ -94,8 +94,8 @@ class Map
 		for (uint y = 0; y < mapDim.y; y++)
 		for (uint z = 0; z < mapDim.z; z++)
 		{
-			Vec3f position(x, y, z);
-			Voxel@ voxel = getVoxel(position);
+			Vec3f worldPos(x, y, z);
+			Voxel@ voxel = getVoxel(worldPos);
 			voxel.Serialize(bs);
 		}
 	}
@@ -109,12 +109,17 @@ class Map
 		return null;
 	}
 
+	Vec3f getWorldPos(Vec3f chunkPos, Vec3f voxelPos)
+	{
+		return chunkPos * CHUNK_SIZE + voxelPos;
+	}
+
 	Vec3f getChunkPos(Vec3f worldPos)
 	{
 		return (worldPos / CHUNK_SIZE).floor();
 	}
 
-	private Vec3f getVoxelPos(Vec3f worldPos)
+	Vec3f getVoxelPos(Vec3f worldPos)
 	{
 		return worldPos % CHUNK_SIZE;
 	}
@@ -144,7 +149,7 @@ class Map
 			if (z == 0) chunks[x][y].set_length(chunkDim.z);
 
 			Vec3f chunkPos(x, y, z);
-			Chunk chunk(chunkPos);
+			Chunk chunk;
 
 			@chunks[chunkPos.x][chunkPos.y][chunkPos.z] = chunk;
 		}
@@ -154,8 +159,9 @@ class Map
 		for (uint y = 0; y < mapDim.y; y++)
 		for (uint z = 0; z < mapDim.z; z++)
 		{
-			Voxel@ voxel = getVoxel(Vec3f(x, y, z));
-			voxel.FindNeighbors(this);
+			Vec3f worldPos(x, y, z);
+			Voxel@ voxel = getVoxel(worldPos);
+			voxel.FindNeighbors(this, worldPos);
 		}
 	}
 }

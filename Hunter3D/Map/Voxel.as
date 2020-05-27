@@ -10,7 +10,6 @@ enum VoxelSide
 
 class Voxel
 {
-	Vec3f position;
 	u8 type;
 	u8 health;
 	bool handPlaced;
@@ -18,18 +17,17 @@ class Voxel
 	Voxel@[] neighbors;
 	private uint vertexIndex;
 
-	Voxel(Vec3f position, u8 type = 0)
+	Voxel()
 	{
-		this.position = position.floor();
-		this.type = type;
+		this.type = 0;
 		this.handPlaced = false;
 		ResetHealth();
 	}
 
-	Voxel(u8 type = 0)
+	Voxel(u8 type, bool handPlaced = false)
 	{
 		this.type = type;
-		this.handPlaced = true;
+		this.handPlaced = handPlaced;
 		ResetHealth();
 	}
 
@@ -112,7 +110,7 @@ class Voxel
 		return voxel is null || voxel.isTransparent();
 	}
 
-	void GenerateMesh(Chunk@ chunk, Vertex[]@ vertices)
+	void GenerateMesh(Chunk@ chunk, Vec3f worldPos, Vertex[]@ vertices)
 	{
 		if (!isVisible()) return;
 
@@ -124,7 +122,7 @@ class Voxel
 		bool allFaces = isTransparent();
 
 		float o = 0.001f; //so faint lines dont appear between planes
-		Vec3f p = position - Vec3f(o, o, o);
+		Vec3f p = worldPos - Vec3f(o, o, o);
 		float w = 1 + o * 2;
 
 		vertexIndex = chunk.vertices.length;
@@ -228,16 +226,16 @@ class Voxel
 		}
 	}
 
-	void FindNeighbors(Map@ map)
+	void FindNeighbors(Map@ map, Vec3f worldPos)
 	{
 		neighbors.set_length(6);
 
-		@neighbors[VoxelSide::Left]  = map.getVoxel(Vec3f(position.x - 1, position.y    , position.z    ));
-		@neighbors[VoxelSide::Right] = map.getVoxel(Vec3f(position.x + 1, position.y    , position.z    ));
-		@neighbors[VoxelSide::Down]  = map.getVoxel(Vec3f(position.x    , position.y - 1, position.z    ));
-		@neighbors[VoxelSide::Up]    = map.getVoxel(Vec3f(position.x    , position.y + 1, position.z    ));
-		@neighbors[VoxelSide::Front] = map.getVoxel(Vec3f(position.x    , position.y    , position.z - 1));
-		@neighbors[VoxelSide::Back]  = map.getVoxel(Vec3f(position.x    , position.y    , position.z + 1));
+		@neighbors[VoxelSide::Left]  = map.getVoxel(Vec3f(worldPos.x - 1, worldPos.y    , worldPos.z    ));
+		@neighbors[VoxelSide::Right] = map.getVoxel(Vec3f(worldPos.x + 1, worldPos.y    , worldPos.z    ));
+		@neighbors[VoxelSide::Down]  = map.getVoxel(Vec3f(worldPos.x    , worldPos.y - 1, worldPos.z    ));
+		@neighbors[VoxelSide::Up]    = map.getVoxel(Vec3f(worldPos.x    , worldPos.y + 1, worldPos.z    ));
+		@neighbors[VoxelSide::Front] = map.getVoxel(Vec3f(worldPos.x    , worldPos.y    , worldPos.z - 1));
+		@neighbors[VoxelSide::Back]  = map.getVoxel(Vec3f(worldPos.x    , worldPos.y    , worldPos.z + 1));
 	}
 
 	void Serialize(CBitStream@ bs)
@@ -247,13 +245,21 @@ class Voxel
 		bs.write_bool(handPlaced);
 	}
 
-	void client_Sync()
+	void client_Sync(Vec3f worldPos)
 	{
 		CRules@ rules = getRules();
 		CBitStream bs;
-		bs.write_u16(getLocalPlayer().getNetworkID());
-		position.Serialize(bs);
+		worldPos.Serialize(bs);
 		Serialize(bs);
 		rules.SendCommand(rules.getCommandID("client sync voxel"), bs, false);
+	}
+
+	void server_Sync(Vec3f worldPos)
+	{
+		CRules@ rules = getRules();
+		CBitStream bs;
+		worldPos.Serialize(bs);
+		Serialize(bs);
+		rules.SendCommand(rules.getCommandID("server sync voxel"), bs, true);
 	}
 }

@@ -54,12 +54,19 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 {
 	if (cmd == this.getCommandID("client sync voxel"))
 	{
-		u16 playerID = params.read_u16();
-		CPlayer@ player = getPlayerByNetworkId(playerID);
-		Vec3f position(params);
+		Vec3f worldPos(params);
 		Voxel voxel(params);
-		map.SetVoxel(position, voxel);
-		position.Print();
-		print("Received voxel from " + player.getUsername());
+
+		print("Received voxel from client at " + worldPos.toString());
+
+		if (!voxel.handPlaced || !voxel.isSolid() || true) // || not intersecting with object
+		{
+			map.SetVoxel(worldPos, voxel);
+			voxel.server_Sync(worldPos);
+		}
+		else
+		{
+			//revert voxel
+		}
 	}
 }

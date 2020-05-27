@@ -3,13 +3,11 @@
 class Chunk
 {
 	private Voxel@[][][] voxels;
-	private Vec3f position;
 
 	Vertex[] vertices;
 
-	Chunk(Vec3f position)
+	Chunk()
 	{
-		this.position = position;
 		InitChunk();
 	}
 
@@ -54,25 +52,28 @@ class Chunk
 			if (z == 0) voxels[x][y].set_length(CHUNK_SIZE);
 
 			Vec3f voxelPos(x, y, z);
-			Voxel voxel(position * CHUNK_SIZE + voxelPos);
+			Voxel voxel();
 
 			@voxels[voxelPos.x][voxelPos.y][voxelPos.z] = voxel;
 		}
 	}
 
-	void GenerateMesh()
+	void GenerateMesh(Vec3f chunkPos)
 	{
+		print("Generate mesh " + chunkPos.toString());
+
 		vertices.clear();
 
 		for (uint x = 0; x < CHUNK_SIZE; x++)
 		for (uint y = 0; y < CHUNK_SIZE; y++)
 		for (uint z = 0; z < CHUNK_SIZE; z++)
 		{
-			Vec3f position(x, y, z);
-			Voxel@ voxel = getVoxel(position);
+			Vec3f voxelPos(x, y, z);
+			Voxel@ voxel = getVoxel(voxelPos);
 			if (voxel !is null)
 			{
-				voxel.GenerateMesh(this, vertices);
+				Vec3f worldPos = map.getWorldPos(chunkPos, voxelPos);
+				voxel.GenerateMesh(this, worldPos, vertices);
 			}
 		}
 	}
