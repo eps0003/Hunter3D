@@ -4,12 +4,9 @@
 #include "Mouse.as"
 #include "Map.as"
 #include "Camera.as"
-#include "Cube.as"
 #include "TestMapGenerator.as"
 
 #define CLIENT_ONLY
-
-const float GRAVITY = 0.03f;
 
 float interFrameTime;
 bool ready;
@@ -18,7 +15,6 @@ Mouse@ mouse;
 Map@ map;
 Actor@ actor;
 Camera@ camera;
-Cube@ cube;
 
 void onInit(CRules@ this)
 {
@@ -38,32 +34,13 @@ void onTick(CRules@ this)
 {
 	interFrameTime = 0;
 
-	if (!ready)
+	if (ready)
 	{
-		if (getLocalPlayer() !is null)
-		{
-			ready = true;
-
-			@map = TestMapGenerator().GenerateMap(Vec3f(24, 8, 24));
-			map.GenerateMesh();
-
-			@mouse = Mouse();
-
-			Vec3f mapDim = map.getMapDimensions();
-			@actor = Actor(getLocalPlayer(), mapDim / 2);
-
-			@camera = Camera(actor);
-		}
-		else
-		{
-			return;
-		}
+		mouse.Update();
+		actor.PreUpdate();
+		actor.Update();
+		actor.PostUpdate();
 	}
-
-	mouse.Update();
-	actor.PreUpdate();
-	actor.Update();
-	actor.PostUpdate();
 }
 
 void onRender(CRules@ this)
@@ -94,5 +71,25 @@ void Render(int id)
 		camera.Render();
 		map.Render();
 		actor.Render();
+	}
+}
+
+void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
+{
+	if (cmd == this.getCommandID("server map data"))
+	{
+		print("Received map");
+
+		@map = Map(params);
+		map.GenerateMesh();
+
+		@mouse = Mouse();
+
+		Vec3f mapDim = map.getMapDimensions();
+		@actor = Actor(getLocalPlayer(), mapDim / 2);
+
+		@camera = Camera(actor);
+
+		ready = true;
 	}
 }

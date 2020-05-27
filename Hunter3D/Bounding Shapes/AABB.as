@@ -53,7 +53,7 @@ class AABB : IBounds
 		return false;
 	}
 
-	//intersects any solid tile at the specified position that isn't currently intersecting
+	//intersects any solid tile at the specified position that isnt currently intersecting
 	bool intersectsNewAt(Vec3f worldPos)
 	{
 		for (int x = worldPos.x + min.x; x < worldPos.x + max.x; x++)

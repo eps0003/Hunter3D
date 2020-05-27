@@ -14,6 +14,21 @@ class Map
 		InitChunks();
 	}
 
+	Map(CBitStream@ bs)
+	{
+		this.mapDim = Vec3f(bs);
+		InitChunks();
+
+		for (uint x = 0; x < mapDim.x; x++)
+		for (uint y = 0; y < mapDim.y; y++)
+		for (uint z = 0; z < mapDim.z; z++)
+		{
+			Vec3f position(x, y, z);
+			Voxel voxel(bs);
+			SetVoxel(position, voxel);
+		}
+	}
+
 	void SetVoxel(Vec3f position, Voxel voxel)
 	{
 		Vec3f chunkPos = getChunkPos(position);
@@ -66,6 +81,20 @@ class Map
 			Vec3f position(x, y, z);
 			Chunk@ chunk = getChunk(position);
 			Render::RawQuads("pixel", chunk.vertices);
+		}
+	}
+
+	void Serialize(CBitStream@ bs)
+	{
+		mapDim.Serialize(bs);
+
+		for (uint x = 0; x < mapDim.x; x++)
+		for (uint y = 0; y < mapDim.y; y++)
+		for (uint z = 0; z < mapDim.z; z++)
+		{
+			Vec3f position(x, y, z);
+			Voxel@ voxel = getVoxel(position);
+			voxel.Serialize(bs);
 		}
 	}
 

@@ -21,6 +21,13 @@ class Vec3f
 		z = vec.z * mag;
 	}
 
+	Vec3f(CBitStream@ bs)
+	{
+		x = bs.read_f32();
+		y = bs.read_f32();
+		z = bs.read_f32();
+	}
+
 	Vec3f(float[] arr)
 	{
 		if (arr.length == 3)
@@ -307,21 +314,10 @@ class Vec3f
 		);
 	}
 
-	void Serialize(CBitStream@ params)
+	void Serialize(CBitStream@ bs)
 	{
-		params.write_f32(x);
-		params.write_f32(y);
-		params.write_f32(z);
-	}
-}
-
-namespace Vec3f
-{
-	Vec3f Deserialize(CBitStream@ params)
-	{
-		float x = params.read_f32();
-		float y = params.read_f32();
-		float z = params.read_f32();
-		return Vec3f(x, y, z);
+		bs.write_f32(x);
+		bs.write_f32(y);
+		bs.write_f32(z);
 	}
 }

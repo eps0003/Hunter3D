@@ -33,6 +33,13 @@ class Voxel
 		ResetHealth();
 	}
 
+	Voxel(CBitStream@ bs)
+	{
+		type = bs.read_u8();
+		health = bs.read_u8();
+		handPlaced = bs.read_bool();
+	}
+
 	bool opEquals(const Voxel &in voxel)
 	{
 		return (
@@ -231,5 +238,12 @@ class Voxel
 		@neighbors[VoxelSide::Up]    = map.getVoxel(Vec3f(position.x    , position.y + 1, position.z    ));
 		@neighbors[VoxelSide::Front] = map.getVoxel(Vec3f(position.x    , position.y    , position.z - 1));
 		@neighbors[VoxelSide::Back]  = map.getVoxel(Vec3f(position.x    , position.y    , position.z + 1));
+	}
+
+	void Serialize(CBitStream@ bs)
+	{
+		bs.write_u8(type);
+		bs.write_u8(health);
+		bs.write_bool(handPlaced);
 	}
 }

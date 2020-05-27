@@ -1,6 +1,8 @@
 #include "IBounds.as"
 #include "Actor.as"
 
+const float GRAVITY = 0.03f;
+
 class PhysicsObject : Object
 {
 	AABB@ hitbox;
