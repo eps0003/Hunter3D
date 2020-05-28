@@ -85,7 +85,7 @@ void Render(int id)
 
 void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 {
-	if (cmd == this.getCommandID("server map data"))
+	if (cmd == this.getCommandID("s_map_data"))
 	{
 		print("Received map");
 
@@ -98,7 +98,7 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 
 		map.GenerateMesh();
 	}
-	else if (cmd == this.getCommandID("server sync voxel"))
+	else if (cmd == this.getCommandID("s_sync_voxel"))
 	{
 		u16 playerID = params.read_u16();
 		CPlayer@ player = getPlayerByNetworkId(playerID);
@@ -133,7 +133,7 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 			//poof particles
 		}
 	}
-	else if (cmd == this.getCommandID("server sync actors"))
+	else if (cmd == this.getCommandID("s_sync_actors"))
 	{
 		ActorManager@ actorManager = getActorManager();
 

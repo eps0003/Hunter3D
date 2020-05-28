@@ -247,7 +247,7 @@ class Voxel
 		bs.write_u16(getLocalPlayer().getNetworkID());
 		worldPos.Serialize(bs);
 		Serialize(bs);
-		rules.SendCommand(rules.getCommandID("client sync voxel"), bs, false);
+		rules.SendCommand(rules.getCommandID("c_sync_voxel"), bs, false);
 	}
 
 	void server_Sync(Vec3f worldPos, CPlayer@ player)
@@ -257,6 +257,6 @@ class Voxel
 		bs.write_u16(player.getNetworkID());
 		worldPos.Serialize(bs);
 		Serialize(bs);
-		rules.SendCommand(rules.getCommandID("server sync voxel"), bs, true);
+		rules.SendCommand(rules.getCommandID("s_sync_voxel"), bs, true);
 	}
 }

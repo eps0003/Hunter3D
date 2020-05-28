@@ -20,7 +20,7 @@ class MapSyncer : PlayerList
 			{
 				CPlayer@ player = players[i];
 				print("> " + player.getUsername());
-				rules.SendCommand(rules.getCommandID("server map data"), bs, player);
+				rules.SendCommand(rules.getCommandID("s_map_data"), bs, player);
 			}
 
 			ClearPlayers();

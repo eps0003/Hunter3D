@@ -24,7 +24,7 @@ void onTick(CRules@ this)
 
 void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 {
-	if (cmd == this.getCommandID("client sync voxel"))
+	if (cmd == this.getCommandID("c_sync_voxel"))
 	{
 		u16 playerID = params.read_u16();
 		CPlayer@ player = getPlayerByNetworkId(playerID);
@@ -41,7 +41,7 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 			//revert voxel
 		}
 	}
-	else if (cmd == this.getCommandID("client sync actor"))
+	else if (cmd == this.getCommandID("c_sync_actor"))
 	{
 		Actor actor(params);
 		getActorManager().UpdateActor(actor);
