@@ -1,9 +1,7 @@
 #include "IBounds.as"
-#include "IHasParent.as"
 
 class Cylinder : IBounds, IHasParent
 {
-	private Object@ parent;
 	Vec3f dim;
 	Vec3f min;
 	Vec3f max;
@@ -15,21 +13,6 @@ class Cylinder : IBounds, IHasParent
 	{
 		SetParent(parent);
 		this.radius = radius;
-	}
-
-	void SetParent(Object@ parent)
-	{
-		@this.parent = parent;
-	}
-
-	Object@ getParent()
-	{
-		return parent;
-	}
-
-	bool hasParent()
-	{
-		return parent !is null;
 	}
 
 	bool intersects(Vec3f worldPos)

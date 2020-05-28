@@ -1,3 +1,5 @@
+#include "IHasParent.as"
+
 Camera@ getCamera3D()
 {
 	CRules@ rules = getRules();

@@ -1,5 +1,4 @@
 #include "IBounds.as"
-#include "IHasParent.as"
 
 class AABB : IBounds
 {
