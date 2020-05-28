@@ -44,7 +44,9 @@ class Actor : PhysicsObject
 
 	void Render()
 	{
-		hitbox.Render(position);
+		PhysicsObject::Render();
+
+		hitbox.Render(interPosition);
 	}
 
 	void Serialize(CBitStream@ bs)

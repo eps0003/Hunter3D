@@ -47,9 +47,13 @@ void onRender(CRules@ this)
 	Actor@ myActor = getActorManager().getActor(getLocalPlayer());
 	if (myActor !is null)
 	{
-		GUI::DrawText(myActor.position.toString(), Vec2f(10, 50), color_black);
-		GUI::DrawText(myActor.rotation.toString(), Vec2f(10, 70), color_black);
-		GUI::DrawText(myActor.velocity.toString(), Vec2f(10, 90), color_black);
+		GUI::DrawText("position: " + myActor.position.toString(), Vec2f(10, 50), color_black);
+		GUI::DrawText("rotation: " + myActor.rotation.toString(), Vec2f(10, 70), color_black);
+		GUI::DrawText("velocity: " + myActor.velocity.toString(), Vec2f(10, 90), color_black);
+
+		GUI::DrawText("interPosition: " + myActor.interPosition.toString(), Vec2f(10, 120), color_black);
+		GUI::DrawText("interRotation: " + myActor.interRotation.toString(), Vec2f(10, 140), color_black);
+		GUI::DrawText("interVelocity: " + myActor.interVelocity.toString(), Vec2f(10, 160), color_black);
 	}
 }
 
@@ -69,6 +73,8 @@ void Render(int id)
 	Camera@ camera = getCamera3D();
 	if (camera.hasParent())
 	{
+		getActorManager().Interpolate();
+
 		camera.Render();
 		getMap3D().Render();
 		getActorManager().Render();

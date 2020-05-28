@@ -18,16 +18,14 @@ ActorManager@ getActorManager()
 
 class ActorManager
 {
-	void Update()
+	void Interpolate()
 	{
 		Actor@[] actors = getActors();
 
 		for (uint i = 0; i < actors.length; i++)
 		{
 			Actor@ actor = actors[i];
-			actor.PreUpdate();
-			actor.Update();
-			actor.PostUpdate();
+			actor.Interpolate();
 		}
 	}
 

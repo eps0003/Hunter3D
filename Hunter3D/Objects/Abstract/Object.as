@@ -56,7 +56,7 @@ class Object : Identifiable
 
 	void Render()
 	{
-		Interpolate();
+
 	}
 
 	void Serialize(CBitStream@ bs)
@@ -73,7 +73,7 @@ class Object : Identifiable
 		oldVelocity.Serialize(bs);
 	}
 
-	private void Interpolate()
+	void Interpolate()
 	{
 		interPosition = oldPosition.lerp(oldPosition + velocity, getInterFrameTime());
 		interPosition = interPosition.clamp(oldPosition, position);

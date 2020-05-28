@@ -128,7 +128,7 @@ class AABB : IBounds
 
 	void Render(Vec3f worldPos, SColor col = SColor(100, 100, 255, 100))
 	{
-		Vec3f offset = worldPos - getCamera3D().getParent().position;
+		Vec3f offset = worldPos - getCamera3D().getParent().interPosition;
 
 		float[] matrix;
 		Matrix::MakeIdentity(matrix);
@@ -176,10 +176,10 @@ class AABB : IBounds
 		vertices.push_back(Vertex(max.x, max.y, min.z, 1, 1, col));
 		vertices.push_back(Vertex(min.x, max.y, min.z, 0, 1, col));
 
-		Render::SetBackfaceCull(false);
+		// Render::SetBackfaceCull(false);
 		Render::SetAlphaBlend(true);
 		Render::RawQuads("pixel", vertices);
 		Render::SetAlphaBlend(false);
-		Render::SetBackfaceCull(true);
+		// Render::SetBackfaceCull(true);
 	}
 }

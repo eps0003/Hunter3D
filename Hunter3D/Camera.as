@@ -28,8 +28,8 @@ class Camera : IHasParent
 	{
 		if (hasParent())
 		{
-			float[] model = getModelMatrix(parent.position);
-			float[] view = getViewMatrix(parent.rotation);
+			float[] model = getModelMatrix(parent.interPosition);
+			float[] view = getViewMatrix(parent.interRotation);
 			float[] proj = getProjectionMatrix();
 			Render::SetTransform(model, view, proj);
 		}
