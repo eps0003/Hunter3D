@@ -30,6 +30,7 @@ class Mouse
 	void Update()
 	{
 		CalculateVelocity();
+		wasInControl = isInControl();
 	}
 
 	void Render()
@@ -74,7 +75,6 @@ class Mouse
 			if (!wasInControl)
 			{
 				controls.setMousePosition(center);
-				wasInControl = true;
 				return;
 			}
 
@@ -89,8 +89,6 @@ class Mouse
 				controls.setMousePosition(center);
 			}
 		}
-
-		wasInControl = isInControl();
 	}
 
 	private void LoadPreferences()

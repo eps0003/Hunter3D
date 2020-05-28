@@ -59,6 +59,16 @@ class Object : Identifiable
 
 	}
 
+	void Interpolate()
+	{
+		interPosition = oldPosition.lerp(oldPosition + velocity, getInterFrameTime());
+		interPosition = interPosition.clamp(oldPosition, position);
+
+		interVelocity = oldVelocity.lerp(velocity, getInterFrameTime());
+
+		interRotation = oldRotation.lerpAngle(rotation, getInterFrameTime());
+	}
+
 	void Serialize(CBitStream@ bs)
 	{
 		Identifiable::Serialize(bs);
@@ -71,15 +81,5 @@ class Object : Identifiable
 
 		velocity.Serialize(bs);
 		oldVelocity.Serialize(bs);
-	}
-
-	void Interpolate()
-	{
-		interPosition = oldPosition.lerp(oldPosition + velocity, getInterFrameTime());
-		interPosition = interPosition.clamp(oldPosition, position);
-
-		interVelocity = oldVelocity.lerp(velocity, getInterFrameTime());
-
-		interRotation = oldRotation.lerpAngle(rotation, getInterFrameTime());
 	}
 }

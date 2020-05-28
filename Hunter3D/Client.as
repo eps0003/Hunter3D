@@ -54,6 +54,8 @@ void onRender(CRules@ this)
 		GUI::DrawText("interPosition: " + myActor.interPosition.toString(), Vec2f(10, 120), color_black);
 		GUI::DrawText("interRotation: " + myActor.interRotation.toString(), Vec2f(10, 140), color_black);
 		GUI::DrawText("interVelocity: " + myActor.interVelocity.toString(), Vec2f(10, 160), color_black);
+
+		GUI::DrawText("mouseVelocity: " + getMouse3D().velocity.toString(), Vec2f(10, 190), color_black);
 	}
 }
 

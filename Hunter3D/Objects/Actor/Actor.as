@@ -49,6 +49,17 @@ class Actor : PhysicsObject
 		hitbox.Render(interPosition);
 	}
 
+	void Interpolate()
+	{
+		PhysicsObject::Interpolate();
+
+		//force 30fps rotation
+		if (player.isMyPlayer())
+		{
+			interRotation = rotation;
+		}
+	}
+
 	void Serialize(CBitStream@ bs)
 	{
 		PhysicsObject::Serialize(bs);

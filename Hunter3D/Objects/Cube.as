@@ -5,7 +5,7 @@ class Cube : Object
 
 	Cube(Vec3f position, Vec3f size, SColor color = color_white)
 	{
-		this.position = position;
+		super(position);
 		this.size = size;
 		this.color = color;
 	}
