@@ -1,6 +1,7 @@
 #include "IModel.as"
 #include "ModelSegment.as"
 #include "ImageUV.as"
+#include "Camera.as"
 
 namespace ActorModel
 {
@@ -35,16 +36,14 @@ class ActorModel : IModel
 		LoadSegments();
 	}
 
-	bool LoadModel()
+	void LoadModel()
 	{
 		if (!isLoaded())
 		{
 			CreateSegments();
 			getRules().set("actor_model", segments);
 			print("Loaded actor model");
-			return false;
 		}
-		return true;
 	}
 
 	bool isLoaded()

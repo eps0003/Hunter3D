@@ -5,9 +5,11 @@
 #include "Actor.as"
 #include "TestMapGenerator.as"
 #include "ActorManager.as"
-#include "ActorModel.as"
+#include "ModLoader.as"
 
 #define CLIENT_ONLY
+
+ModLoader@ modLoader = getModLoader();
 
 void onInit(CRules@ this)
 {
@@ -19,8 +21,6 @@ void onInit(CRules@ this)
 void onRestart(CRules@ this)
 {
 	Texture::createFromFile("pixel", "pixel.png");
-
-	ActorModel().LoadModel();
 }
 
 void onTick(CRules@ this)
@@ -29,6 +29,8 @@ void onTick(CRules@ this)
 	this.set_f32("inter_game_time", getGameTime());
 
 	getMouse3D().Update();
+
+	if (!modLoader.isLoaded()) return;
 
 	if (getCamera3D().hasParent())
 	{
@@ -48,6 +50,10 @@ void onRender(CRules@ this)
 	this.add_f32("inter_frame_time", correction);
 	this.add_f32("inter_game_time", correction);
 
+	getMouse3D().Render();
+
+	if (!modLoader.isLoaded()) return;
+
 	Actor@ myActor = getActorManager().getActor(getLocalPlayer());
 	if (myActor !is null)
 	{
@@ -66,6 +72,8 @@ void onRender(CRules@ this)
 
 void Render(int id)
 {
+	if (!modLoader.isLoaded()) return;
+
 	//background colour
 	Vec2f screenDim = getDriver().getScreenDimensions();
 	GUI::DrawRectangle(Vec2f_zero, screenDim, SColor(255, 165, 189, 200));
@@ -74,8 +82,6 @@ void Render(int id)
 	Render::SetZBuffer(true, true);
 	Render::SetBackfaceCull(true);
 	Render::ClearZ();
-
-	getMouse3D().Render();
 
 	Camera@ camera = getCamera3D();
 	if (camera.hasParent())

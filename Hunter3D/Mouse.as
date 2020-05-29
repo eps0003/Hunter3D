@@ -1,4 +1,5 @@
 #include "Camera.as"
+#include "ModLoader.as"
 
 Mouse@ getMouse3D()
 {
@@ -40,7 +41,7 @@ class Mouse
 
 	bool isInControl()
 	{
-		return isWindowFocused() && !isVisible();
+		return isWindowFocused() && !isVisible() && getModLoader().isLoaded();
 	}
 
 	bool isVisible()

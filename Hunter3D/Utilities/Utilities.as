@@ -1,3 +1,5 @@
+#include "Vec3f.as"
+
 const string CONFIG_NAME = "Hunter3D.cfg";
 
 ConfigFile openPreferences()
