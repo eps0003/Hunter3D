@@ -52,7 +52,7 @@ class Actor : PhysicsObject, IHasModel
 	{
 		PhysicsObject::Render();
 
-		hitbox.Render(interPosition);
+		// hitbox.Render(interPosition);
 
 		if (hasModel() && !player.isMyPlayer())
 		{
@@ -100,17 +100,25 @@ class Actor : PhysicsObject, IHasModel
 
 		if (controls.isKeyJustPressed(KEY_SPACE))
 		{
-			float jumpSpd;
-			vars.get("jump_speed", jumpSpd);
+			float jumpForce;
+			vars.get("jump_force", jumpForce);
 
-			velocity.y = jumpSpd;
+			velocity.y = jumpForce;
 		}
 
-		float moveSpd;
-		vars.get("move_speed", moveSpd);
+		float acceleration;
+		vars.get("acceleration", acceleration);
 
-		velocity.x = dir.x * moveSpd;
-		velocity.z = dir.y * moveSpd;
+		float friction;
+		vars.get("friction", friction);
+
+		velocity.x += dir.x * acceleration - friction * velocity.x;
+		velocity.z += dir.y * acceleration - friction * velocity.z;
+
+		//set velocity to zero if low enough
+		if (Maths::Abs(velocity.x) < 0.001f) velocity.x = 0;
+		if (Maths::Abs(velocity.y) < 0.001f) velocity.y = 0;
+		if (Maths::Abs(velocity.z) < 0.001f) velocity.z = 0;
 	}
 
 	private void Rotate()
@@ -148,7 +156,8 @@ class Actor : PhysicsObject, IHasModel
 	private void LoadConfig()
 	{
 		ConfigFile@ cfg = openConfig("Actor.cfg");
-		vars.set("move_speed", cfg.read_f32("move_speed"));
-		vars.set("jump_speed", cfg.read_f32("jump_speed"));
+		vars.set("acceleration", cfg.read_f32("acceleration"));
+		vars.set("friction", cfg.read_f32("friction"));
+		vars.set("jump_force", cfg.read_f32("jump_force"));
 	}
 }

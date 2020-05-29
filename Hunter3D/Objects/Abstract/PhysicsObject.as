@@ -48,6 +48,7 @@ class PhysicsObject : Object
 		Object::Update();
 
 		velocity.y -= GRAVITY;
+		velocity.y = Maths::Clamp(velocity.y, -1, 1);
 	}
 
 	void PostUpdate()
