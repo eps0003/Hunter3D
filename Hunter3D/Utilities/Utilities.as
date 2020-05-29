@@ -34,12 +34,12 @@ s8 num(bool boolean)
 
 float getInterGameTime()
 {
-	return getRules().get_f32("interGameTime");
+	return getRules().get_f32("inter_game_time");
 }
 
 float getInterFrameTime()
 {
-	return getRules().get_f32("interFrameTime");
+	return getRules().get_f32("inter_frame_time");
 }
 
 bool isModLoaded()

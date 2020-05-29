@@ -1,10 +1,14 @@
 #include "PhysicsObject.as"
 #include "Mouse.as"
 #include "ActorManager.as"
+#include "ActorModel.as"
+#include "IHasModel.as"
 
-class Actor : PhysicsObject
+class Actor : PhysicsObject, IHasModel
 {
 	CPlayer@ player;
+
+	private IModel@ model;
 
 	Actor(CPlayer@ player, Vec3f position)
 	{
@@ -22,8 +26,10 @@ class Actor : PhysicsObject
 		u16 playerID = bs.read_u16();
 		@player = getPlayerByNetworkId(playerID);
 
-		// @hitbox = AABB(Vec3f(0.6f, 1.6f, 0.6f));
-		@hitbox = AABB(Vec3f(-0.3f, -1.4f, -0.3f), Vec3f(0.3f, 0.2f, 0.3f));
+		// @hitbox = AABB(Vec3f(0.6f, 1.6f, 0.6f));0.7; 1.7; 0.7;
+		@hitbox = AABB(Vec3f(-0.35f, -1.7 * 7/8, -0.3f), Vec3f(0.35f, 1.7 * 1/8, 0.35f));
+
+		SetModel(ActorModel());
 	}
 
 	void Update()
@@ -47,23 +53,32 @@ class Actor : PhysicsObject
 		PhysicsObject::Render();
 
 		hitbox.Render(interPosition);
+
+		if (hasModel() && !player.isMyPlayer())
+		{
+			model.Render(this);
+		}
 	}
 
 	void Interpolate()
 	{
 		PhysicsObject::Interpolate();
-
-		//force 30fps rotation
-		if (player.isMyPlayer())
-		{
-			interRotation = rotation;
-		}
 	}
 
 	void Serialize(CBitStream@ bs)
 	{
 		PhysicsObject::Serialize(bs);
 		bs.write_u16(player.getNetworkID());
+	}
+
+	bool hasModel()
+	{
+		return model !is null;
+	}
+
+	void SetModel(IModel@ model)
+	{
+		@this.model = model;
 	}
 
 	private void Move()

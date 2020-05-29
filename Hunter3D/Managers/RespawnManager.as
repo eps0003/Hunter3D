@@ -8,13 +8,13 @@ RespawnManager@ getRespawnManager()
 	CRules@ rules = getRules();
 
 	RespawnManager@ respawnManager;
-	if (rules.get("respawn manager", @respawnManager))
+	if (rules.get("respawn_manager", @respawnManager))
 	{
 		return respawnManager;
 	}
 
 	@respawnManager = RespawnManager();
-	rules.set("respawn manager", respawnManager);
+	rules.set("respawn_manager", respawnManager);
 	return respawnManager;
 }
 
@@ -55,7 +55,7 @@ class RespawnManager
 			{
 				getActorManager().RemoveActor(player);
 				queue.AddPlayer(player);
-				player.set_u32("respawn time", getGameTime() + respawnTime);
+				player.set_u32("respawn_time", getGameTime() + respawnTime);
 				print("Added " + player.getUsername() + " to the respawn queue");
 			}
 			else
@@ -111,7 +111,7 @@ class RespawnManager
 	private bool canRespawn(CPlayer@ player)
 	{
 		return player !is null && (
-			player.get_u32("respawn time") < getGameTime() ||
+			player.get_u32("respawn_time") < getGameTime() ||
 			canInstantRespawn(player)
 		);
 	}

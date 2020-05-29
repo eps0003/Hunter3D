@@ -5,10 +5,9 @@
 #include "Actor.as"
 #include "TestMapGenerator.as"
 #include "ActorManager.as"
+#include "ActorModel.as"
 
 #define CLIENT_ONLY
-
-float interFrameTime;
 
 void onInit(CRules@ this)
 {
@@ -20,11 +19,14 @@ void onInit(CRules@ this)
 void onRestart(CRules@ this)
 {
 	Texture::createFromFile("pixel", "pixel.png");
+
+	ActorModel().LoadModel();
 }
 
 void onTick(CRules@ this)
 {
-	interFrameTime = 0;
+	this.set_f32("inter_frame_time", 0);
+	this.set_f32("inter_game_time", getGameTime());
 
 	getMouse3D().Update();
 
@@ -42,7 +44,9 @@ void onTick(CRules@ this)
 
 void onRender(CRules@ this)
 {
-	interFrameTime += getRenderApproximateCorrectionFactor();
+	float correction = getRenderApproximateCorrectionFactor();
+	this.add_f32("inter_frame_time", correction);
+	this.add_f32("inter_game_time", correction);
 
 	Actor@ myActor = getActorManager().getActor(getLocalPlayer());
 	if (myActor !is null)
