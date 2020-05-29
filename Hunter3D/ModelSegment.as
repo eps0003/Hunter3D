@@ -57,45 +57,61 @@ class ModelSegment
 		Vec3f b = max;
 		SColor color = color_white;
 
-		Vertex[] v = {
-			//back
-			Vertex(a.x, b.y, a.z, backUV.min.x, backUV.min.y, color),
-			Vertex(b.x, b.y, a.z, backUV.max.x, backUV.min.y, color),
-			Vertex(b.x, a.y, a.z, backUV.max.x, backUV.max.y, color),
-			Vertex(a.x, a.y, a.z, backUV.min.x, backUV.max.y, color),
+		vertices.clear();
 
-			//front
-			Vertex(b.x, a.y, b.z, frontUV.min.x, frontUV.max.y, color),
-			Vertex(b.x, b.y, b.z, frontUV.min.x, frontUV.min.y, color),
-			Vertex(a.x, b.y, b.z, frontUV.max.x, frontUV.min.y, color),
-			Vertex(a.x, a.y, b.z, frontUV.max.x, frontUV.max.y, color),
+		//back
+		if (backUV.isVisible())
+		{
+			vertices.push_back(Vertex(min.x, max.y, min.z, backUV.min.x, backUV.min.y, color));
+			vertices.push_back(Vertex(max.x, max.y, min.z, backUV.max.x, backUV.min.y, color));
+			vertices.push_back(Vertex(max.x, min.y, min.z, backUV.max.x, backUV.max.y, color));
+			vertices.push_back(Vertex(min.x, min.y, min.z, backUV.min.x, backUV.max.y, color));
+		}
 
-			//up
-			Vertex(a.x, b.y, b.z, upUV.min.x, upUV.min.y, color),
-			Vertex(b.x, b.y, b.z, upUV.max.x, upUV.min.y, color),
-			Vertex(b.x, b.y, a.z, upUV.max.x, upUV.max.y, color),
-			Vertex(a.x, b.y, a.z, upUV.min.x, upUV.max.y, color),
+		//front
+		if (frontUV.isVisible())
+		{
+			vertices.push_back(Vertex(max.x, min.y, max.z, frontUV.min.x, frontUV.max.y, color));
+			vertices.push_back(Vertex(max.x, max.y, max.z, frontUV.min.x, frontUV.min.y, color));
+			vertices.push_back(Vertex(min.x, max.y, max.z, frontUV.max.x, frontUV.min.y, color));
+			vertices.push_back(Vertex(min.x, min.y, max.z, frontUV.max.x, frontUV.max.y, color));
+		}
 
-			//down
-			Vertex(b.x, a.y, a.z, downUV.min.x, downUV.max.y, color),
-			Vertex(b.x, a.y, b.z, downUV.min.x, downUV.min.y, color),
-			Vertex(a.x, a.y, b.z, downUV.max.x, downUV.min.y, color),
-			Vertex(a.x, a.y, a.z, downUV.max.x, downUV.max.y, color),
+		//up
+		if (upUV.isVisible())
+		{
+			vertices.push_back(Vertex(max.x, max.y, min.z, upUV.min.x, upUV.min.y, color));
+			vertices.push_back(Vertex(min.x, max.y, min.z, upUV.max.x, upUV.min.y, color));
+			vertices.push_back(Vertex(min.x, max.y, max.z, upUV.max.x, upUV.max.y, color));
+			vertices.push_back(Vertex(max.x, max.y, max.z, upUV.min.x, upUV.max.y, color));
+		}
 
-			//right
-			Vertex(b.x, b.y, a.z, rightUV.min.x, rightUV.min.y, color),
-			Vertex(b.x, b.y, b.z, rightUV.max.x, rightUV.min.y, color),
-			Vertex(b.x, a.y, b.z, rightUV.max.x, rightUV.max.y, color),
-			Vertex(b.x, a.y, a.z, rightUV.min.x, rightUV.max.y, color),
+		//down
+		if (downUV.isVisible())
+		{
+			vertices.push_back(Vertex(min.x, min.y, max.z, downUV.min.x, downUV.max.y, color));
+			vertices.push_back(Vertex(min.x, min.y, min.z, downUV.min.x, downUV.min.y, color));
+			vertices.push_back(Vertex(max.x, min.y, min.z, downUV.max.x, downUV.min.y, color));
+			vertices.push_back(Vertex(max.x, min.y, max.z, downUV.max.x, downUV.max.y, color));
+		}
 
-			//left
-			Vertex(a.x, a.y, b.z, leftUV.min.x, leftUV.max.y, color),
-			Vertex(a.x, b.y, b.z, leftUV.min.x, leftUV.min.y, color),
-			Vertex(a.x, b.y, a.z, leftUV.max.x, leftUV.min.y, color),
-			Vertex(a.x, a.y, a.z, leftUV.max.x, leftUV.max.y, color)
-		};
+		//right
+		if (rightUV.isVisible())
+		{
+			vertices.push_back(Vertex(max.x, max.y, min.z, rightUV.min.x, rightUV.min.y, color));
+			vertices.push_back(Vertex(max.x, max.y, max.z, rightUV.max.x, rightUV.min.y, color));
+			vertices.push_back(Vertex(max.x, min.y, max.z, rightUV.max.x, rightUV.max.y, color));
+			vertices.push_back(Vertex(max.x, min.y, min.z, rightUV.min.x, rightUV.max.y, color));
+		}
 
-		vertices = v;
+		//left
+		if (leftUV.isVisible())
+		{
+			vertices.push_back(Vertex(min.x, min.y, max.z, leftUV.min.x, leftUV.max.y, color));
+			vertices.push_back(Vertex(min.x, max.y, max.z, leftUV.min.x, leftUV.min.y, color));
+			vertices.push_back(Vertex(min.x, max.y, min.z, leftUV.max.x, leftUV.min.y, color));
+			vertices.push_back(Vertex(min.x, min.y, min.z, leftUV.max.x, leftUV.max.y, color));
+		}
 	}
 
 	private void PositionAndRotate(float[]@ matrix)
@@ -106,7 +122,7 @@ class ModelSegment
 
 		float[] rotationMatrix;
 		Matrix::MakeIdentity(rotationMatrix);
-		Matrix::SetRotationDegrees(rotationMatrix, rotation.x, rotation.y, rotation.z);
+		Matrix::SetRotationDegrees(rotationMatrix, -rotation.x, -rotation.y, -rotation.z);
 
 		Matrix::MultiplyImmediate(matrix, offsetMatrix);
 		Matrix::MultiplyImmediate(matrix, rotationMatrix);

@@ -14,4 +14,9 @@ class ImageUV
 		min = Vec2f(x, y);
 		max = min + Vec2f(w, h);
 	}
+
+	bool isVisible()
+	{
+		return min != max;
+	}
 }

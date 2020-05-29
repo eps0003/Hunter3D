@@ -2,10 +2,27 @@
 #include "ModelSegment.as"
 #include "ImageUV.as"
 
+namespace ActorModel
+{
+	enum Segments
+	{
+		Body,
+		Head,
+		UpperLeftArm,
+		LowerLeftArm,
+		UpperRightArm,
+		LowerRightArm,
+		UpperLeftLeg,
+		LowerLeftLeg,
+		UpperRightLeg,
+		LowerRightLeg
+	}
+}
+
 class ActorModel : IModel
 {
 	private ModelSegment@[] segments;
-	string skin = "SteveSkin.png";
+	string skin = "KnightSkin.png";
 
 	ActorModel()
 	{
@@ -50,6 +67,15 @@ class ActorModel : IModel
 		}
 	}
 
+	ModelSegment@ getSegment(uint index)
+	{
+		if (isLoaded() && index < segments.length)
+		{
+			return segments[index];
+		}
+		return null;
+	}
+
 	private void LoadSegments()
 	{
 		if (isLoaded())
@@ -82,68 +108,138 @@ class ActorModel : IModel
 		head.backUV  = ImageUV(6.0f/16.0f, 2.0f/16.0f, 2.0f/16.0f, 2.0f/16.0f);
 		head.GenerateVertices();
 
-		ModelSegment leftArm(Vec3f(dim, dim*3, dim), Vec3f(dim, dim*3, dim/2.0f));
-		leftArm.offset = Vec3f(-dim, dim*2, 0.0f);
-		leftArm.leftUV  = ImageUV( 8.0f/16.0f, 13.0f/16.0f, 1.0f/16.0f, 3.0f/16.0f);
-		leftArm.rightUV = ImageUV(10.0f/16.0f, 13.0f/16.0f, 1.0f/16.0f, 3.0f/16.0f);
-		leftArm.upUV    = ImageUV( 9.0f/16.0f, 12.0f/16.0f, 1.0f/16.0f, 1.0f/16.0f);
-		leftArm.downUV  = ImageUV(10.0f/16.0f, 12.0f/16.0f, 1.0f/16.0f, 1.0f/16.0f);
-		leftArm.frontUV = ImageUV( 9.0f/16.0f, 13.0f/16.0f, 1.0f/16.0f, 3.0f/16.0f);
-		leftArm.backUV  = ImageUV(11.0f/16.0f, 13.0f/16.0f, 1.0f/16.0f, 3.0f/16.0f);
-		leftArm.GenerateVertices();
+		ModelSegment upperLeftArm(Vec3f(dim, dim*1.5f, dim), Vec3f(dim, dim*1.5f, dim/2.0f));
+		upperLeftArm.offset = Vec3f(-dim, dim*2, 0.0f);
+		upperLeftArm.leftUV  = ImageUV( 8.0f/16.0f, 13.0f/16.0f, 1.0f/16.0f, 1.5f/16.0f);
+		upperLeftArm.rightUV = ImageUV(10.0f/16.0f, 13.0f/16.0f, 1.0f/16.0f, 1.5f/16.0f);
+		upperLeftArm.upUV    = ImageUV( 9.0f/16.0f, 12.0f/16.0f, 1.0f/16.0f, 1.0f/16.0f);
+		upperLeftArm.downUV  = ImageUV(0, 0, 0, 0);
+		upperLeftArm.frontUV = ImageUV( 9.0f/16.0f, 13.0f/16.0f, 1.0f/16.0f, 1.5f/16.0f);
+		upperLeftArm.backUV  = ImageUV(11.0f/16.0f, 13.0f/16.0f, 1.0f/16.0f, 1.5f/16.0f);
+		upperLeftArm.GenerateVertices();
 
-		ModelSegment rightArm(Vec3f(dim, dim*3, dim), Vec3f(0.0f, dim*3, dim/2.0f));
-		rightArm.offset = Vec3f(dim, dim*2, 0.0f);
-		rightArm.leftUV  = ImageUV(12.0f/16.0f, 5.0f/16.0f, 1.0f/16.0f, 3.0f/16.0f);
-		rightArm.rightUV = ImageUV(10.0f/16.0f, 5.0f/16.0f, 1.0f/16.0f, 3.0f/16.0f);
-		rightArm.upUV    = ImageUV(11.0f/16.0f, 4.0f/16.0f, 1.0f/16.0f, 1.0f/16.0f);
-		rightArm.downUV  = ImageUV(12.0f/16.0f, 4.0f/16.0f, 1.0f/16.0f, 1.0f/16.0f);
-		rightArm.frontUV = ImageUV(11.0f/16.0f, 5.0f/16.0f, 1.0f/16.0f, 3.0f/16.0f);
-		rightArm.backUV  = ImageUV(13.0f/16.0f, 5.0f/16.0f, 1.0f/16.0f, 3.0f/16.0f);
-		rightArm.GenerateVertices();
+		ModelSegment lowerLeftArm(Vec3f(dim, dim*1.5f, dim), Vec3f(dim/2.0f, dim*1.5f, 0.0f));
+		lowerLeftArm.offset = Vec3f(-dim/2.0f, -dim*1.5f, -dim/2.0f);
+		lowerLeftArm.leftUV  = ImageUV( 8.0f/16.0f, 14.5f/16.0f, 1.0f/16.0f, 1.5f/16.0f);
+		lowerLeftArm.rightUV = ImageUV(10.0f/16.0f, 14.5f/16.0f, 1.0f/16.0f, 1.5f/16.0f);
+		lowerLeftArm.upUV    = ImageUV(0, 0, 0, 0);
+		lowerLeftArm.downUV  = ImageUV(10.0f/16.0f, 12.0f/16.0f, 1.0f/16.0f, 1.0f/16.0f);
+		lowerLeftArm.frontUV = ImageUV( 9.0f/16.0f, 14.5f/16.0f, 1.0f/16.0f, 1.5f/16.0f);
+		lowerLeftArm.backUV  = ImageUV(11.0f/16.0f, 14.5f/16.0f, 1.0f/16.0f, 1.5f/16.0f);
+		lowerLeftArm.GenerateVertices();
 
-		ModelSegment leftLeg(Vec3f(dim, dim*3, dim), Vec3f(dim, dim*3, dim/2.0f));
-		leftLeg.offset = Vec3f(0.0f, -dim, 0.0f);
-		leftLeg.leftUV  = ImageUV(6.0f/16.0f, 13.0f/16.0f, 1.0f/16.0f, 3.0f/16.0f);
-		leftLeg.rightUV = ImageUV(4.0f/16.0f, 13.0f/16.0f, 1.0f/16.0f, 3.0f/16.0f);
-		leftLeg.upUV    = ImageUV(5.0f/16.0f, 12.0f/16.0f, 1.0f/16.0f, 1.0f/16.0f);
-		leftLeg.downUV  = ImageUV(6.0f/16.0f, 12.0f/16.0f, 1.0f/16.0f, 1.0f/16.0f);
-		leftLeg.frontUV = ImageUV(5.0f/16.0f, 13.0f/16.0f, 1.0f/16.0f, 3.0f/16.0f);
-		leftLeg.backUV  = ImageUV(7.0f/16.0f, 13.0f/16.0f, 1.0f/16.0f, 3.0f/16.0f);
-		leftLeg.GenerateVertices();
+		ModelSegment upperRightArm(Vec3f(dim, dim*1.5f, dim), Vec3f(0.0f, dim*1.5f, dim/2.0f));
+		upperRightArm.offset = Vec3f(dim, dim*2, 0.0f);
+		upperRightArm.leftUV  = ImageUV(12.0f/16.0f, 5.0f/16.0f, 1.0f/16.0f, 1.5f/16.0f);
+		upperRightArm.rightUV = ImageUV(10.0f/16.0f, 5.0f/16.0f, 1.0f/16.0f, 1.5f/16.0f);
+		upperRightArm.upUV    = ImageUV(11.0f/16.0f, 4.0f/16.0f, 1.0f/16.0f, 1.0f/16.0f);
+		upperRightArm.downUV  = ImageUV(0, 0, 0, 0);
+		upperRightArm.frontUV = ImageUV(11.0f/16.0f, 5.0f/16.0f, 1.0f/16.0f, 1.5f/16.0f);
+		upperRightArm.backUV  = ImageUV(13.0f/16.0f, 5.0f/16.0f, 1.0f/16.0f, 1.5f/16.0f);
+		upperRightArm.GenerateVertices();
 
-		ModelSegment rightLeg(Vec3f(dim, dim*3, dim), Vec3f(0.0f, dim*3, dim/2.0f));
-		rightLeg.offset = Vec3f(0.0f, -dim, 0.0f);
-		rightLeg.leftUV  = ImageUV(2.0f/16.0f, 5.0f/16.0f, 1.0f/16.0f, 3.0f/16.0f);
-		rightLeg.rightUV = ImageUV(0.0f/16.0f, 5.0f/16.0f, 1.0f/16.0f, 3.0f/16.0f);
-		rightLeg.upUV    = ImageUV(1.0f/16.0f, 4.0f/16.0f, 1.0f/16.0f, 1.0f/16.0f);
-		rightLeg.downUV  = ImageUV(2.0f/16.0f, 4.0f/16.0f, 1.0f/16.0f, 1.0f/16.0f);
-		rightLeg.frontUV = ImageUV(1.0f/16.0f, 5.0f/16.0f, 1.0f/16.0f, 3.0f/16.0f);
-		rightLeg.backUV  = ImageUV(3.0f/16.0f, 5.0f/16.0f, 1.0f/16.0f, 3.0f/16.0f);
-		rightLeg.GenerateVertices();
+		ModelSegment lowerRightArm(Vec3f(dim, dim*1.5f, dim), Vec3f(-dim/2.0f, dim*1.5f, 0.0f));
+		lowerRightArm.offset = Vec3f(-dim/2.0f, -dim*1.5f, -dim/2.0f);
+		lowerRightArm.leftUV  = ImageUV(12.0f/16.0f, 6.5f/16.0f, 1.0f/16.0f, 1.5f/16.0f);
+		lowerRightArm.rightUV = ImageUV(10.0f/16.0f, 6.5f/16.0f, 1.0f/16.0f, 1.5f/16.0f);
+		lowerRightArm.upUV    = ImageUV(0, 0, 0, 0);
+		lowerRightArm.downUV  = ImageUV(12.0f/16.0f, 4.0f/16.0f, 1.0f/16.0f, 1.0f/16.0f);
+		lowerRightArm.frontUV = ImageUV(11.0f/16.0f, 6.5f/16.0f, 1.0f/16.0f, 1.5f/16.0f);
+		lowerRightArm.backUV  = ImageUV(13.0f/16.0f, 6.5f/16.0f, 1.0f/16.0f, 1.5f/16.0f);
+		lowerRightArm.GenerateVertices();
+
+		ModelSegment upperLeftLeg(Vec3f(dim, dim*1.5f, dim), Vec3f(dim, dim*1.5f, dim/2.0f));
+		upperLeftLeg.offset = Vec3f(0.0f, -dim, 0.0f);
+		upperLeftLeg.leftUV  = ImageUV(6.0f/16.0f, 13.0f/16.0f, 1.0f/16.0f, 1.5f/16.0f);
+		upperLeftLeg.rightUV = ImageUV(4.0f/16.0f, 13.0f/16.0f, 1.0f/16.0f, 1.5f/16.0f);
+		upperLeftLeg.upUV    = ImageUV(5.0f/16.0f, 12.0f/16.0f, 1.0f/16.0f, 1.0f/16.0f);
+		upperLeftLeg.downUV  = ImageUV(0, 0, 0, 0);
+		upperLeftLeg.frontUV = ImageUV(5.0f/16.0f, 13.0f/16.0f, 1.0f/16.0f, 1.5f/16.0f);
+		upperLeftLeg.backUV  = ImageUV(7.0f/16.0f, 13.0f/16.0f, 1.0f/16.0f, 1.5f/16.0f);
+		upperLeftLeg.GenerateVertices();
+
+		ModelSegment lowerLeftLeg(Vec3f(dim, dim*1.5f, dim), Vec3f(dim, dim*1.5f, dim));
+		lowerLeftLeg.offset = Vec3f(0.0f, -dim*1.5f, dim/2.0f);
+		lowerLeftLeg.leftUV  = ImageUV(6.0f/16.0f, 14.5f/16.0f, 1.0f/16.0f, 1.5f/16.0f);
+		lowerLeftLeg.rightUV = ImageUV(4.0f/16.0f, 14.5f/16.0f, 1.0f/16.0f, 1.5f/16.0f);
+		lowerLeftLeg.upUV    = ImageUV(0, 0, 0, 0);
+		lowerLeftLeg.downUV  = ImageUV(6.0f/16.0f, 12.0f/16.0f, 1.0f/16.0f, 1.0f/16.0f);
+		lowerLeftLeg.frontUV = ImageUV(5.0f/16.0f, 14.5f/16.0f, 1.0f/16.0f, 1.5f/16.0f);
+		lowerLeftLeg.backUV  = ImageUV(7.0f/16.0f, 14.5f/16.0f, 1.0f/16.0f, 1.5f/16.0f);
+		lowerLeftLeg.GenerateVertices();
+
+		ModelSegment upperRightLeg(Vec3f(dim, dim*1.5f, dim), Vec3f(0.0f, dim*1.5f, dim/2.0f));
+		upperRightLeg.offset = Vec3f(0.0f, -dim, 0.0f);
+		upperRightLeg.leftUV  = ImageUV(2.0f/16.0f, 5.0f/16.0f, 1.0f/16.0f, 1.5f/16.0f);
+		upperRightLeg.rightUV = ImageUV(0.0f/16.0f, 5.0f/16.0f, 1.0f/16.0f, 1.5f/16.0f);
+		upperRightLeg.upUV    = ImageUV(1.0f/16.0f, 4.0f/16.0f, 1.0f/16.0f, 1.0f/16.0f);
+		upperRightLeg.downUV  = ImageUV(0, 0, 0, 0);
+		upperRightLeg.frontUV = ImageUV(1.0f/16.0f, 5.0f/16.0f, 1.0f/16.0f, 1.5f/16.0f);
+		upperRightLeg.backUV  = ImageUV(3.0f/16.0f, 5.0f/16.0f, 1.0f/16.0f, 1.5f/16.0f);
+		upperRightLeg.GenerateVertices();
+
+		ModelSegment lowerRightLeg(Vec3f(dim, dim*1.5f, dim), Vec3f(0.0f, dim*1.5f, dim));
+		lowerRightLeg.offset = Vec3f(0.0f, -dim*1.5f, dim/2.0f);
+		lowerRightLeg.leftUV  = ImageUV(2.0f/16.0f, 6.5f/16.0f, 1.0f/16.0f, 1.5f/16.0f);
+		lowerRightLeg.rightUV = ImageUV(0.0f/16.0f, 6.5f/16.0f, 1.0f/16.0f, 1.5f/16.0f);
+		lowerRightLeg.upUV    = ImageUV(1.0f/16.0f, 4.0f/16.0f, 1.0f/16.0f, 1.0f/16.0f);
+		lowerRightLeg.downUV  = ImageUV(2.0f/16.0f, 4.0f/16.0f, 1.0f/16.0f, 1.0f/16.0f);
+		lowerRightLeg.frontUV = ImageUV(1.0f/16.0f, 6.5f/16.0f, 1.0f/16.0f, 1.5f/16.0f);
+		lowerRightLeg.backUV  = ImageUV(3.0f/16.0f, 6.5f/16.0f, 1.0f/16.0f, 1.5f/16.0f);
+		lowerRightLeg.GenerateVertices();
 
 		//assemble
 		body.AddChild(head);
-		body.AddChild(leftArm);
-		body.AddChild(rightArm);
-		body.AddChild(leftLeg);
-		body.AddChild(rightLeg);
+		body.AddChild(upperLeftArm);
+		upperLeftArm.AddChild(lowerLeftArm);
+		body.AddChild(upperRightArm);
+		upperRightArm.AddChild(lowerRightArm);
+		body.AddChild(upperLeftLeg);
+		upperLeftLeg.AddChild(lowerLeftLeg);
+		body.AddChild(upperRightLeg);
+		upperRightLeg.AddChild(lowerRightLeg);
 
 		//apply
 		segments.push_back(body);
 		segments.push_back(head);
-		segments.push_back(leftArm);
-		segments.push_back(rightArm);
-		segments.push_back(leftLeg);
-		segments.push_back(rightLeg);
+		segments.push_back(upperLeftArm);
+		segments.push_back(lowerLeftArm);
+		segments.push_back(upperRightArm);
+		segments.push_back(lowerRightArm);
+		segments.push_back(upperLeftLeg);
+		segments.push_back(lowerLeftLeg);
+		segments.push_back(upperRightLeg);
+		segments.push_back(lowerRightLeg);
 	}
 
 	private void UpdateSegments(Object@ parent)
 	{
-		segments[0].offset = parent.interPosition - getCamera3D().getParent().interPosition;
-		segments[2].rotation.x = Maths::Sin(getInterGameTime() / 10.0f) * 40;
-		segments[3].rotation.x = -segments[2].rotation.x;
-		segments[4].rotation.x = segments[3].rotation.x;
-		segments[5].rotation.x = segments[2].rotation.x;
+		float vel = Vec2f(parent.interVelocity.x, parent.interVelocity.z).Length() * 5;
+
+		float t = getInterGameTime();
+		float sin = Maths::Sin(t / 2.5f) * vel;
+		float cos = Maths::Cos(t / 2.5f) * vel;
+		float limbSin = sin * 50;
+		float limbCos = cos * 50;
+
+		float cos2 = (Maths::Sin(t / (2.5f / 2.0f)) + 1) * vel; //sin
+
+		getSegment(ActorModel::Body).offset = parent.interPosition - getCamera3D().getParent().interPosition;
+		getSegment(ActorModel::Body).offset.y = (-1.7 * 4/8) + Maths::Abs(cos * 0.1f);
+		getSegment(ActorModel::Body).rotation = Vec3f(cos2 * 3 - 4 * vel, parent.interRotation.y, 0.0f);
+
+		getSegment(ActorModel::Head).rotation.x = parent.interRotation.x;
+
+		getSegment(ActorModel::UpperLeftArm).rotation.x = -limbCos;
+		getSegment(ActorModel::LowerLeftArm).rotation.x = Maths::Max(0, -limbCos);
+
+		getSegment(ActorModel::UpperRightArm).rotation.x = limbCos;
+		getSegment(ActorModel::LowerRightArm).rotation.x = Maths::Max(0, limbCos);
+
+		getSegment(ActorModel::UpperLeftLeg).rotation.x = limbCos;
+		getSegment(ActorModel::LowerLeftLeg).rotation.x = Maths::Min(0, limbSin);
+
+		getSegment(ActorModel::UpperRightLeg).rotation.x = -limbCos;
+		getSegment(ActorModel::LowerRightLeg).rotation.x = Maths::Min(0, -limbSin);
 	}
 }
