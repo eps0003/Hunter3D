@@ -38,12 +38,10 @@ void onInit(CRules@ this)
 	onRestart(this);
 }
 
-MapSyncer@ mapSyncer;
+MapSyncer@ mapSyncer = MapSyncer();
 
 void onRestart(CRules@ this)
 {
-	@mapSyncer = MapSyncer();
-
 	for (uint i = 0; i < getPlayersCount(); i++)
 	{
 		CPlayer@ player = getPlayer(i);

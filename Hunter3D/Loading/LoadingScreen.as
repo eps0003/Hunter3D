@@ -5,13 +5,13 @@
 
 const float FADE_DURATION = 60.0f;
 
-ModLoader@ modLoader = getModLoader();
 float loadOpacity = 255;
 uint loadTime = 0;
 float oldProgress;
 
 void onTick(CRules@ this)
 {
+	ModLoader@ modLoader = getModLoader();
 	modLoader.LoadMod();
 	oldProgress = modLoader.getProgress();
 }
@@ -25,6 +25,7 @@ void onRender(CRules@ this)
 		SColor color(loadOpacity, 165, 189, 200);
 		GUI::DrawRectangle(Vec2f_zero, screenDim, color);
 
+		ModLoader@ modLoader = getModLoader();
 		if (!modLoader.isLoaded())
 		{
 			//loading bar

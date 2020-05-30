@@ -20,7 +20,7 @@ class ModLoader
 	private float progress = 0;
 	private string status = "Loading mod...";
 
-	IModel@[] models = {
+	private IModel@[] models = {
 		ActorModel()
 	};
 	private int totalModels = models.length;
@@ -40,7 +40,7 @@ class ModLoader
 
 	bool isLoaded()
 	{
-		return getGameTime() > 300;
+		return models.empty();
 	}
 
 	string getStatusMessage()

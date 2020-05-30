@@ -9,8 +9,6 @@
 
 #define CLIENT_ONLY
 
-ModLoader@ modLoader = getModLoader();
-
 void onInit(CRules@ this)
 {
 	Render::addScript(Render::layer_prehud, "Client.as", "Render", 0);
@@ -30,7 +28,7 @@ void onTick(CRules@ this)
 
 	getMouse3D().Update();
 
-	if (!modLoader.isLoaded()) return;
+	if (!getModLoader().isLoaded()) return;
 
 	if (getCamera3D().hasParent())
 	{
@@ -52,7 +50,7 @@ void onRender(CRules@ this)
 
 	getMouse3D().Render();
 
-	if (!modLoader.isLoaded()) return;
+	if (!getModLoader().isLoaded()) return;
 
 	Actor@ myActor = getActorManager().getActor(getLocalPlayer());
 	if (myActor !is null)
@@ -72,7 +70,7 @@ void onRender(CRules@ this)
 
 void Render(int id)
 {
-	if (!modLoader.isLoaded()) return;
+	if (!getModLoader().isLoaded()) return;
 
 	//background colour
 	Vec2f screenDim = getDriver().getScreenDimensions();
