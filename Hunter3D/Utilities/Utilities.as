@@ -2,6 +2,19 @@
 
 const string CONFIG_NAME = "Hunter3D.cfg";
 
+enum Direction
+{
+	Left,
+	Right,
+	Down,
+	Up,
+	Front,
+	Back
+}
+
+string[] directionNames = { "left", "right", "down", "up", "front", "back" };
+string[] directionLetters = { "l", "r", "d", "u", "f", "b" };
+
 ConfigFile openPreferences()
 {
 	ConfigFile cfg = ConfigFile();

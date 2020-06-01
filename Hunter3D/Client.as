@@ -6,8 +6,11 @@
 #include "TestMapGenerator.as"
 #include "ActorManager.as"
 #include "ModLoader.as"
+#include "ModelBuilder.as"
 
 #define CLIENT_ONLY
+
+ModelBuilder@ modelBuilder;
 
 void onInit(CRules@ this)
 {
@@ -19,6 +22,13 @@ void onInit(CRules@ this)
 void onRestart(CRules@ this)
 {
 	Texture::createFromFile("pixel", "pixel.png");
+	@modelBuilder = ModelBuilder();
+}
+
+bool onClientProcessChat(CRules@ this, const string &in textIn, string &out textOut, CPlayer@ player)
+{
+	modelBuilder.CommandHandler(textIn);
+	return true;
 }
 
 void onTick(CRules@ this)
@@ -89,6 +99,7 @@ void Render(int id)
 		camera.Render();
 		getMap3D().Render();
 		getActorManager().Render();
+		modelBuilder.Render();
 	}
 }
 

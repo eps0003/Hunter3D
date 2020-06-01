@@ -30,6 +30,21 @@ class Vec3f
 		z = bs.read_f32();
 	}
 
+	Vec3f(string serialized)
+	{
+		string[] values = serialized.split(" ");
+		if (values.length == 3)
+		{
+			x = parseFloat(values[0]);
+			y = parseFloat(values[1]);
+			z = parseFloat(values[2]);
+		}
+		else
+		{
+			print("Unable to parse serialized Vec3f string: " + serialized);
+		}
+	}
+
 	Vec3f(float[] arr)
 	{
 		if (arr.length == 3)
@@ -155,7 +170,7 @@ class Vec3f
 		z /= vec.z;
 	}
 
-	float opIndex(uint index)
+	float opIndex(int index)
 	{
 		switch (index)
 		{
@@ -321,5 +336,16 @@ class Vec3f
 		bs.write_f32(x);
 		bs.write_f32(y);
 		bs.write_f32(z);
+	}
+
+	string serializeString()
+	{
+		return x + " " + y + " " + z;
+	}
+
+	float[] toArray()
+	{
+		float[] arr = { x, y, z };
+		return arr;
 	}
 }

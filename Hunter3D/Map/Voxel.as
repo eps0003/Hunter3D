@@ -1,12 +1,4 @@
-enum VoxelSide
-{
-	Left,
-	Right,
-	Down,
-	Up,
-	Front,
-	Back
-}
+#include "Utilities.as"
 
 class Voxel
 {
@@ -124,7 +116,7 @@ class Voxel
 
 		//add plane to array if neighbour is empty
 
-		if (allFaces || isVoxelTransparent(neighbors[VoxelSide::Left]))
+		if (allFaces || isVoxelTransparent(neighbors[Direction::Left]))
 		{
 			vertices.push_back(Vertex(p.x    , p.y + w, p.z + w, x1, y1, col));
 			vertices.push_back(Vertex(p.x    , p.y + w, p.z    , x2, y1, col));
@@ -140,7 +132,7 @@ class Voxel
 			}
 		}
 
-		if (allFaces || isVoxelTransparent(neighbors[VoxelSide::Right]))
+		if (allFaces || isVoxelTransparent(neighbors[Direction::Right]))
 		{
 			vertices.push_back(Vertex(p.x + w, p.y + w, p.z    , x1, y1, col));
 			vertices.push_back(Vertex(p.x + w, p.y + w, p.z + w, x2, y1, col));
@@ -156,7 +148,7 @@ class Voxel
 			}
 		}
 
-		if (allFaces || isVoxelTransparent(neighbors[VoxelSide::Down]))
+		if (allFaces || isVoxelTransparent(neighbors[Direction::Down]))
 		{
 			vertices.push_back(Vertex(p.x + w, p.y    , p.z + w, x1, y1, col));
 			vertices.push_back(Vertex(p.x    , p.y    , p.z + w, x2, y1, col));
@@ -172,7 +164,7 @@ class Voxel
 			}
 		}
 
-		if (allFaces || isVoxelTransparent(neighbors[VoxelSide::Up]))
+		if (allFaces || isVoxelTransparent(neighbors[Direction::Up]))
 		{
 			vertices.push_back(Vertex(p.x    , p.y + w, p.z + w, x1, y1, col));
 			vertices.push_back(Vertex(p.x + w, p.y + w, p.z + w, x2, y1, col));
@@ -188,7 +180,7 @@ class Voxel
 			}
 		}
 
-		if (allFaces || isVoxelTransparent(neighbors[VoxelSide::Front]))
+		if (allFaces || isVoxelTransparent(neighbors[Direction::Front]))
 		{
 			vertices.push_back(Vertex(p.x    , p.y + w, p.z    , x1, y1, col));
 			vertices.push_back(Vertex(p.x + w, p.y + w, p.z    , x2, y1, col));
@@ -204,7 +196,7 @@ class Voxel
 			}
 		}
 
-		if (allFaces || isVoxelTransparent(neighbors[VoxelSide::Back]))
+		if (allFaces || isVoxelTransparent(neighbors[Direction::Back]))
 		{
 			vertices.push_back(Vertex(p.x + w, p.y + w, p.z + w, x1, y1, col));
 			vertices.push_back(Vertex(p.x    , p.y + w, p.z + w, x2, y1, col));
@@ -225,12 +217,12 @@ class Voxel
 	{
 		neighbors.set_length(6);
 
-		@neighbors[VoxelSide::Left]  = map.getVoxel(Vec3f(worldPos.x - 1, worldPos.y    , worldPos.z    ));
-		@neighbors[VoxelSide::Right] = map.getVoxel(Vec3f(worldPos.x + 1, worldPos.y    , worldPos.z    ));
-		@neighbors[VoxelSide::Down]  = map.getVoxel(Vec3f(worldPos.x    , worldPos.y - 1, worldPos.z    ));
-		@neighbors[VoxelSide::Up]    = map.getVoxel(Vec3f(worldPos.x    , worldPos.y + 1, worldPos.z    ));
-		@neighbors[VoxelSide::Front] = map.getVoxel(Vec3f(worldPos.x    , worldPos.y    , worldPos.z - 1));
-		@neighbors[VoxelSide::Back]  = map.getVoxel(Vec3f(worldPos.x    , worldPos.y    , worldPos.z + 1));
+		@neighbors[Direction::Left]  = map.getVoxel(Vec3f(worldPos.x - 1, worldPos.y    , worldPos.z    ));
+		@neighbors[Direction::Right] = map.getVoxel(Vec3f(worldPos.x + 1, worldPos.y    , worldPos.z    ));
+		@neighbors[Direction::Down]  = map.getVoxel(Vec3f(worldPos.x    , worldPos.y - 1, worldPos.z    ));
+		@neighbors[Direction::Up]    = map.getVoxel(Vec3f(worldPos.x    , worldPos.y + 1, worldPos.z    ));
+		@neighbors[Direction::Front] = map.getVoxel(Vec3f(worldPos.x    , worldPos.y    , worldPos.z - 1));
+		@neighbors[Direction::Back]  = map.getVoxel(Vec3f(worldPos.x    , worldPos.y    , worldPos.z + 1));
 	}
 
 	void Serialize(CBitStream@ bs)

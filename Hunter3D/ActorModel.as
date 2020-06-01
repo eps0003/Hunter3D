@@ -88,103 +88,103 @@ class ActorModel : IModel
 		float dim = 0.15f;
 
 		//create
-		ModelSegment body(Vec3f(dim*2, dim*3, dim), Vec3f(dim, dim, dim/2.0f));
-		body.leftUV  = ImageUV(7.0f/16.0f, 5.0f/16.0f, 1.0f/16.0f, 3.0f/16.0f);
-		body.rightUV = ImageUV(4.0f/16.0f, 5.0f/16.0f, 1.0f/16.0f, 3.0f/16.0f);
-		body.upUV    = ImageUV(5.0f/16.0f, 4.0f/16.0f, 2.0f/16.0f, 1.0f/16.0f);
-		body.downUV  = ImageUV(7.0f/16.0f, 4.0f/16.0f, 2.0f/16.0f, 1.0f/16.0f);
-		body.frontUV = ImageUV(5.0f/16.0f, 5.0f/16.0f, 2.0f/16.0f, 3.0f/16.0f);
-		body.backUV  = ImageUV(8.0f/16.0f, 5.0f/16.0f, 2.0f/16.0f, 3.0f/16.0f);
+		ModelSegment body("body", Vec3f(dim*2, dim*3, dim), Vec3f(dim, dim, dim/2.0f));
+		body.SetUV(Direction::Left,  ImageUV(7.0f/16.0f, 5.0f/16.0f, 1.0f/16.0f, 3.0f/16.0f));
+		body.SetUV(Direction::Right, ImageUV(4.0f/16.0f, 5.0f/16.0f, 1.0f/16.0f, 3.0f/16.0f));
+		body.SetUV(Direction::Up,    ImageUV(5.0f/16.0f, 4.0f/16.0f, 2.0f/16.0f, 1.0f/16.0f));
+		body.SetUV(Direction::Down,  ImageUV(7.0f/16.0f, 4.0f/16.0f, 2.0f/16.0f, 1.0f/16.0f));
+		body.SetUV(Direction::Front, ImageUV(5.0f/16.0f, 5.0f/16.0f, 2.0f/16.0f, 3.0f/16.0f));
+		body.SetUV(Direction::Back,  ImageUV(8.0f/16.0f, 5.0f/16.0f, 2.0f/16.0f, 3.0f/16.0f));
 		body.GenerateVertices();
 
-		ModelSegment head(Vec3f(dim*2, dim*2, dim*2), Vec3f(dim, 0.0f, dim));
+		ModelSegment head("head", Vec3f(dim*2, dim*2, dim*2), Vec3f(dim, 0.0f, dim));
 		head.offset = Vec3f(0.0f, dim*2, 0.0f);
-		head.leftUV  = ImageUV(4.0f/16.0f, 2.0f/16.0f, 2.0f/16.0f, 2.0f/16.0f);
-		head.rightUV = ImageUV(0.0f/16.0f, 2.0f/16.0f, 2.0f/16.0f, 2.0f/16.0f);
-		head.upUV    = ImageUV(2.0f/16.0f, 0.0f/16.0f, 2.0f/16.0f, 2.0f/16.0f);
-		head.downUV  = ImageUV(4.0f/16.0f, 0.0f/16.0f, 2.0f/16.0f, 2.0f/16.0f);
-		head.frontUV = ImageUV(2.0f/16.0f, 2.0f/16.0f, 2.0f/16.0f, 2.0f/16.0f);
-		head.backUV  = ImageUV(6.0f/16.0f, 2.0f/16.0f, 2.0f/16.0f, 2.0f/16.0f);
+		head.SetUV(Direction::Left,  ImageUV(4.0f/16.0f, 2.0f/16.0f, 2.0f/16.0f, 2.0f/16.0f));
+		head.SetUV(Direction::Right, ImageUV(0.0f/16.0f, 2.0f/16.0f, 2.0f/16.0f, 2.0f/16.0f));
+		head.SetUV(Direction::Up,    ImageUV(2.0f/16.0f, 0.0f/16.0f, 2.0f/16.0f, 2.0f/16.0f));
+		head.SetUV(Direction::Down,  ImageUV(4.0f/16.0f, 0.0f/16.0f, 2.0f/16.0f, 2.0f/16.0f));
+		head.SetUV(Direction::Front, ImageUV(2.0f/16.0f, 2.0f/16.0f, 2.0f/16.0f, 2.0f/16.0f));
+		head.SetUV(Direction::Back,  ImageUV(6.0f/16.0f, 2.0f/16.0f, 2.0f/16.0f, 2.0f/16.0f));
 		head.GenerateVertices();
 
-		ModelSegment upperLeftArm(Vec3f(dim, dim*1.5f, dim), Vec3f(dim, dim*1.5f, dim/2.0f));
+		ModelSegment upperLeftArm("upper_left_arm", Vec3f(dim, dim*1.5f, dim), Vec3f(dim, dim*1.5f, dim/2.0f));
 		upperLeftArm.offset = Vec3f(-dim, dim*2, 0.0f);
-		upperLeftArm.leftUV  = ImageUV( 8.0f/16.0f, 13.0f/16.0f, 1.0f/16.0f, 1.5f/16.0f);
-		upperLeftArm.rightUV = ImageUV(10.0f/16.0f, 13.0f/16.0f, 1.0f/16.0f, 1.5f/16.0f);
-		upperLeftArm.upUV    = ImageUV( 9.0f/16.0f, 12.0f/16.0f, 1.0f/16.0f, 1.0f/16.0f);
-		upperLeftArm.downUV  = ImageUV(0, 0, 0, 0);
-		upperLeftArm.frontUV = ImageUV( 9.0f/16.0f, 13.0f/16.0f, 1.0f/16.0f, 1.5f/16.0f);
-		upperLeftArm.backUV  = ImageUV(11.0f/16.0f, 13.0f/16.0f, 1.0f/16.0f, 1.5f/16.0f);
+		upperLeftArm.SetUV(Direction::Left,  ImageUV( 8.0f/16.0f, 13.0f/16.0f, 1.0f/16.0f, 1.5f/16.0f));
+		upperLeftArm.SetUV(Direction::Right, ImageUV(10.0f/16.0f, 13.0f/16.0f, 1.0f/16.0f, 1.5f/16.0f));
+		upperLeftArm.SetUV(Direction::Up,    ImageUV( 9.0f/16.0f, 12.0f/16.0f, 1.0f/16.0f, 1.0f/16.0f));
+		upperLeftArm.SetUV(Direction::Down,  ImageUV(0, 0, 0, 0));
+		upperLeftArm.SetUV(Direction::Front, ImageUV( 9.0f/16.0f, 13.0f/16.0f, 1.0f/16.0f, 1.5f/16.0f));
+		upperLeftArm.SetUV(Direction::Back,  ImageUV(11.0f/16.0f, 13.0f/16.0f, 1.0f/16.0f, 1.5f/16.0f));
 		upperLeftArm.GenerateVertices();
 
-		ModelSegment lowerLeftArm(Vec3f(dim, dim*1.5f, dim), Vec3f(dim/2.0f, dim*1.5f, 0.0f));
+		ModelSegment lowerLeftArm("lower_left_arm", Vec3f(dim, dim*1.5f, dim), Vec3f(dim/2.0f, dim*1.5f, 0.0f));
 		lowerLeftArm.offset = Vec3f(-dim/2.0f, -dim*1.5f, -dim/2.0f);
-		lowerLeftArm.leftUV  = ImageUV( 8.0f/16.0f, 14.5f/16.0f, 1.0f/16.0f, 1.5f/16.0f);
-		lowerLeftArm.rightUV = ImageUV(10.0f/16.0f, 14.5f/16.0f, 1.0f/16.0f, 1.5f/16.0f);
-		lowerLeftArm.upUV    = ImageUV(0, 0, 0, 0);
-		lowerLeftArm.downUV  = ImageUV(10.0f/16.0f, 12.0f/16.0f, 1.0f/16.0f, 1.0f/16.0f);
-		lowerLeftArm.frontUV = ImageUV( 9.0f/16.0f, 14.5f/16.0f, 1.0f/16.0f, 1.5f/16.0f);
-		lowerLeftArm.backUV  = ImageUV(11.0f/16.0f, 14.5f/16.0f, 1.0f/16.0f, 1.5f/16.0f);
+		lowerLeftArm.SetUV(Direction::Left,  ImageUV( 8.0f/16.0f, 14.5f/16.0f, 1.0f/16.0f, 1.5f/16.0f));
+		lowerLeftArm.SetUV(Direction::Right, ImageUV(10.0f/16.0f, 14.5f/16.0f, 1.0f/16.0f, 1.5f/16.0f));
+		lowerLeftArm.SetUV(Direction::Up,    ImageUV(0, 0, 0, 0));
+		lowerLeftArm.SetUV(Direction::Down,  ImageUV(10.0f/16.0f, 12.0f/16.0f, 1.0f/16.0f, 1.0f/16.0f));
+		lowerLeftArm.SetUV(Direction::Front, ImageUV( 9.0f/16.0f, 14.5f/16.0f, 1.0f/16.0f, 1.5f/16.0f));
+		lowerLeftArm.SetUV(Direction::Back,  ImageUV(11.0f/16.0f, 14.5f/16.0f, 1.0f/16.0f, 1.5f/16.0f));
 		lowerLeftArm.GenerateVertices();
 
-		ModelSegment upperRightArm(Vec3f(dim, dim*1.5f, dim), Vec3f(0.0f, dim*1.5f, dim/2.0f));
+		ModelSegment upperRightArm("upper_right_arm", Vec3f(dim, dim*1.5f, dim), Vec3f(0.0f, dim*1.5f, dim/2.0f));
 		upperRightArm.offset = Vec3f(dim, dim*2, 0.0f);
-		upperRightArm.leftUV  = ImageUV(12.0f/16.0f, 5.0f/16.0f, 1.0f/16.0f, 1.5f/16.0f);
-		upperRightArm.rightUV = ImageUV(10.0f/16.0f, 5.0f/16.0f, 1.0f/16.0f, 1.5f/16.0f);
-		upperRightArm.upUV    = ImageUV(11.0f/16.0f, 4.0f/16.0f, 1.0f/16.0f, 1.0f/16.0f);
-		upperRightArm.downUV  = ImageUV(0, 0, 0, 0);
-		upperRightArm.frontUV = ImageUV(11.0f/16.0f, 5.0f/16.0f, 1.0f/16.0f, 1.5f/16.0f);
-		upperRightArm.backUV  = ImageUV(13.0f/16.0f, 5.0f/16.0f, 1.0f/16.0f, 1.5f/16.0f);
+		upperRightArm.SetUV(Direction::Left,  ImageUV(12.0f/16.0f, 5.0f/16.0f, 1.0f/16.0f, 1.5f/16.0f));
+		upperRightArm.SetUV(Direction::Right, ImageUV(10.0f/16.0f, 5.0f/16.0f, 1.0f/16.0f, 1.5f/16.0f));
+		upperRightArm.SetUV(Direction::Up,    ImageUV(11.0f/16.0f, 4.0f/16.0f, 1.0f/16.0f, 1.0f/16.0f));
+		upperRightArm.SetUV(Direction::Down,  ImageUV(0, 0, 0, 0));
+		upperRightArm.SetUV(Direction::Front, ImageUV(11.0f/16.0f, 5.0f/16.0f, 1.0f/16.0f, 1.5f/16.0f));
+		upperRightArm.SetUV(Direction::Back,  ImageUV(13.0f/16.0f, 5.0f/16.0f, 1.0f/16.0f, 1.5f/16.0f));
 		upperRightArm.GenerateVertices();
 
-		ModelSegment lowerRightArm(Vec3f(dim, dim*1.5f, dim), Vec3f(-dim/2.0f, dim*1.5f, 0.0f));
+		ModelSegment lowerRightArm("lower_right_arm", Vec3f(dim, dim*1.5f, dim), Vec3f(-dim/2.0f, dim*1.5f, 0.0f));
 		lowerRightArm.offset = Vec3f(-dim/2.0f, -dim*1.5f, -dim/2.0f);
-		lowerRightArm.leftUV  = ImageUV(12.0f/16.0f, 6.5f/16.0f, 1.0f/16.0f, 1.5f/16.0f);
-		lowerRightArm.rightUV = ImageUV(10.0f/16.0f, 6.5f/16.0f, 1.0f/16.0f, 1.5f/16.0f);
-		lowerRightArm.upUV    = ImageUV(0, 0, 0, 0);
-		lowerRightArm.downUV  = ImageUV(12.0f/16.0f, 4.0f/16.0f, 1.0f/16.0f, 1.0f/16.0f);
-		lowerRightArm.frontUV = ImageUV(11.0f/16.0f, 6.5f/16.0f, 1.0f/16.0f, 1.5f/16.0f);
-		lowerRightArm.backUV  = ImageUV(13.0f/16.0f, 6.5f/16.0f, 1.0f/16.0f, 1.5f/16.0f);
+		lowerRightArm.SetUV(Direction::Left,  ImageUV(12.0f/16.0f, 6.5f/16.0f, 1.0f/16.0f, 1.5f/16.0f));
+		lowerRightArm.SetUV(Direction::Right, ImageUV(10.0f/16.0f, 6.5f/16.0f, 1.0f/16.0f, 1.5f/16.0f));
+		lowerRightArm.SetUV(Direction::Up,    ImageUV(0, 0, 0, 0));
+		lowerRightArm.SetUV(Direction::Down,  ImageUV(12.0f/16.0f, 4.0f/16.0f, 1.0f/16.0f, 1.0f/16.0f));
+		lowerRightArm.SetUV(Direction::Front, ImageUV(11.0f/16.0f, 6.5f/16.0f, 1.0f/16.0f, 1.5f/16.0f));
+		lowerRightArm.SetUV(Direction::Back,  ImageUV(13.0f/16.0f, 6.5f/16.0f, 1.0f/16.0f, 1.5f/16.0f));
 		lowerRightArm.GenerateVertices();
 
-		ModelSegment upperLeftLeg(Vec3f(dim, dim*1.5f, dim), Vec3f(dim, dim*1.5f, dim/2.0f));
+		ModelSegment upperLeftLeg("upper_left_leg", Vec3f(dim, dim*1.5f, dim), Vec3f(dim, dim*1.5f, dim/2.0f));
 		upperLeftLeg.offset = Vec3f(0.0f, -dim, 0.0f);
-		upperLeftLeg.leftUV  = ImageUV(6.0f/16.0f, 13.0f/16.0f, 1.0f/16.0f, 1.5f/16.0f);
-		upperLeftLeg.rightUV = ImageUV(4.0f/16.0f, 13.0f/16.0f, 1.0f/16.0f, 1.5f/16.0f);
-		upperLeftLeg.upUV    = ImageUV(5.0f/16.0f, 12.0f/16.0f, 1.0f/16.0f, 1.0f/16.0f);
-		upperLeftLeg.downUV  = ImageUV(0, 0, 0, 0);
-		upperLeftLeg.frontUV = ImageUV(5.0f/16.0f, 13.0f/16.0f, 1.0f/16.0f, 1.5f/16.0f);
-		upperLeftLeg.backUV  = ImageUV(7.0f/16.0f, 13.0f/16.0f, 1.0f/16.0f, 1.5f/16.0f);
+		upperLeftLeg.SetUV(Direction::Left,  ImageUV(6.0f/16.0f, 13.0f/16.0f, 1.0f/16.0f, 1.5f/16.0f));
+		upperLeftLeg.SetUV(Direction::Right, ImageUV(4.0f/16.0f, 13.0f/16.0f, 1.0f/16.0f, 1.5f/16.0f));
+		upperLeftLeg.SetUV(Direction::Up,    ImageUV(5.0f/16.0f, 12.0f/16.0f, 1.0f/16.0f, 1.0f/16.0f));
+		upperLeftLeg.SetUV(Direction::Down,  ImageUV(0, 0, 0, 0));
+		upperLeftLeg.SetUV(Direction::Front, ImageUV(5.0f/16.0f, 13.0f/16.0f, 1.0f/16.0f, 1.5f/16.0f));
+		upperLeftLeg.SetUV(Direction::Back,  ImageUV(7.0f/16.0f, 13.0f/16.0f, 1.0f/16.0f, 1.5f/16.0f));
 		upperLeftLeg.GenerateVertices();
 
-		ModelSegment lowerLeftLeg(Vec3f(dim, dim*1.5f, dim), Vec3f(dim, dim*1.5f, dim));
+		ModelSegment lowerLeftLeg("lower_left_leg", Vec3f(dim, dim*1.5f, dim), Vec3f(dim, dim*1.5f, dim));
 		lowerLeftLeg.offset = Vec3f(0.0f, -dim*1.5f, dim/2.0f);
-		lowerLeftLeg.leftUV  = ImageUV(6.0f/16.0f, 14.5f/16.0f, 1.0f/16.0f, 1.5f/16.0f);
-		lowerLeftLeg.rightUV = ImageUV(4.0f/16.0f, 14.5f/16.0f, 1.0f/16.0f, 1.5f/16.0f);
-		lowerLeftLeg.upUV    = ImageUV(0, 0, 0, 0);
-		lowerLeftLeg.downUV  = ImageUV(6.0f/16.0f, 12.0f/16.0f, 1.0f/16.0f, 1.0f/16.0f);
-		lowerLeftLeg.frontUV = ImageUV(5.0f/16.0f, 14.5f/16.0f, 1.0f/16.0f, 1.5f/16.0f);
-		lowerLeftLeg.backUV  = ImageUV(7.0f/16.0f, 14.5f/16.0f, 1.0f/16.0f, 1.5f/16.0f);
+		lowerLeftLeg.SetUV(Direction::Left,  ImageUV(6.0f/16.0f, 14.5f/16.0f, 1.0f/16.0f, 1.5f/16.0f));
+		lowerLeftLeg.SetUV(Direction::Right, ImageUV(4.0f/16.0f, 14.5f/16.0f, 1.0f/16.0f, 1.5f/16.0f));
+		lowerLeftLeg.SetUV(Direction::Up,    ImageUV(0, 0, 0, 0));
+		lowerLeftLeg.SetUV(Direction::Down,  ImageUV(6.0f/16.0f, 12.0f/16.0f, 1.0f/16.0f, 1.0f/16.0f));
+		lowerLeftLeg.SetUV(Direction::Front, ImageUV(5.0f/16.0f, 14.5f/16.0f, 1.0f/16.0f, 1.5f/16.0f));
+		lowerLeftLeg.SetUV(Direction::Back,  ImageUV(7.0f/16.0f, 14.5f/16.0f, 1.0f/16.0f, 1.5f/16.0f));
 		lowerLeftLeg.GenerateVertices();
 
-		ModelSegment upperRightLeg(Vec3f(dim, dim*1.5f, dim), Vec3f(0.0f, dim*1.5f, dim/2.0f));
+		ModelSegment upperRightLeg("upper_right_leg", Vec3f(dim, dim*1.5f, dim), Vec3f(0.0f, dim*1.5f, dim/2.0f));
 		upperRightLeg.offset = Vec3f(0.0f, -dim, 0.0f);
-		upperRightLeg.leftUV  = ImageUV(2.0f/16.0f, 5.0f/16.0f, 1.0f/16.0f, 1.5f/16.0f);
-		upperRightLeg.rightUV = ImageUV(0.0f/16.0f, 5.0f/16.0f, 1.0f/16.0f, 1.5f/16.0f);
-		upperRightLeg.upUV    = ImageUV(1.0f/16.0f, 4.0f/16.0f, 1.0f/16.0f, 1.0f/16.0f);
-		upperRightLeg.downUV  = ImageUV(0, 0, 0, 0);
-		upperRightLeg.frontUV = ImageUV(1.0f/16.0f, 5.0f/16.0f, 1.0f/16.0f, 1.5f/16.0f);
-		upperRightLeg.backUV  = ImageUV(3.0f/16.0f, 5.0f/16.0f, 1.0f/16.0f, 1.5f/16.0f);
+		upperRightLeg.SetUV(Direction::Left,  ImageUV(2.0f/16.0f, 5.0f/16.0f, 1.0f/16.0f, 1.5f/16.0f));
+		upperRightLeg.SetUV(Direction::Right, ImageUV(0.0f/16.0f, 5.0f/16.0f, 1.0f/16.0f, 1.5f/16.0f));
+		upperRightLeg.SetUV(Direction::Up,    ImageUV(1.0f/16.0f, 4.0f/16.0f, 1.0f/16.0f, 1.0f/16.0f));
+		upperRightLeg.SetUV(Direction::Down,  ImageUV(0, 0, 0, 0));
+		upperRightLeg.SetUV(Direction::Front, ImageUV(1.0f/16.0f, 5.0f/16.0f, 1.0f/16.0f, 1.5f/16.0f));
+		upperRightLeg.SetUV(Direction::Back,  ImageUV(3.0f/16.0f, 5.0f/16.0f, 1.0f/16.0f, 1.5f/16.0f));
 		upperRightLeg.GenerateVertices();
 
-		ModelSegment lowerRightLeg(Vec3f(dim, dim*1.5f, dim), Vec3f(0.0f, dim*1.5f, dim));
+		ModelSegment lowerRightLeg("lower_right_leg", Vec3f(dim, dim*1.5f, dim), Vec3f(0.0f, dim*1.5f, dim));
 		lowerRightLeg.offset = Vec3f(0.0f, -dim*1.5f, dim/2.0f);
-		lowerRightLeg.leftUV  = ImageUV(2.0f/16.0f, 6.5f/16.0f, 1.0f/16.0f, 1.5f/16.0f);
-		lowerRightLeg.rightUV = ImageUV(0.0f/16.0f, 6.5f/16.0f, 1.0f/16.0f, 1.5f/16.0f);
-		lowerRightLeg.upUV    = ImageUV(1.0f/16.0f, 4.0f/16.0f, 1.0f/16.0f, 1.0f/16.0f);
-		lowerRightLeg.downUV  = ImageUV(2.0f/16.0f, 4.0f/16.0f, 1.0f/16.0f, 1.0f/16.0f);
-		lowerRightLeg.frontUV = ImageUV(1.0f/16.0f, 6.5f/16.0f, 1.0f/16.0f, 1.5f/16.0f);
-		lowerRightLeg.backUV  = ImageUV(3.0f/16.0f, 6.5f/16.0f, 1.0f/16.0f, 1.5f/16.0f);
+		lowerRightLeg.SetUV(Direction::Left,  ImageUV(2.0f/16.0f, 6.5f/16.0f, 1.0f/16.0f, 1.5f/16.0f));
+		lowerRightLeg.SetUV(Direction::Right, ImageUV(0.0f/16.0f, 6.5f/16.0f, 1.0f/16.0f, 1.5f/16.0f));
+		lowerRightLeg.SetUV(Direction::Up,    ImageUV(0, 0, 0, 0));
+		lowerRightLeg.SetUV(Direction::Down,  ImageUV(2.0f/16.0f, 4.0f/16.0f, 1.0f/16.0f, 1.0f/16.0f));
+		lowerRightLeg.SetUV(Direction::Front, ImageUV(1.0f/16.0f, 6.5f/16.0f, 1.0f/16.0f, 1.5f/16.0f));
+		lowerRightLeg.SetUV(Direction::Back,  ImageUV(3.0f/16.0f, 6.5f/16.0f, 1.0f/16.0f, 1.5f/16.0f));
 		lowerRightLeg.GenerateVertices();
 
 		//assemble
@@ -223,8 +223,8 @@ class ActorModel : IModel
 
 		float cos2 = (Maths::Sin(t / (2.5f / 2.0f)) + 1) * vel; //sin
 
-		getSegment(ActorModel::Body).offset = parent.interPosition - getCamera3D().getParent().interPosition;
-		getSegment(ActorModel::Body).offset.y = (-1.7 * 4/8) + Maths::Abs(cos * 0.1f);
+		getSegment(ActorModel::Body).offset = parent.interPosition;
+		getSegment(ActorModel::Body).offset.y += (-1.7 * 4/8) + Maths::Abs(cos * 0.1f);
 		getSegment(ActorModel::Body).rotation = Vec3f(cos2 * 3 - 4 * vel, parent.interRotation.y, 0.0f);
 
 		getSegment(ActorModel::Head).rotation.x = parent.interRotation.x;
