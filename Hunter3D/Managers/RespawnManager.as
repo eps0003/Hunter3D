@@ -1,5 +1,6 @@
 #include "PlayerList.as"
 #include "ActorManager.as"
+#include "GamemodeManager.as"
 #include "Vec3f.as"
 #include "Map.as"
 
@@ -25,20 +26,18 @@ class RespawnManager
 
 	void Update()
 	{
-		if (canCountdownRespawnTimer())
+		for (uint i = 0; i < queue.getPlayerCount(); i++)
 		{
-			for (uint i = 0; i < queue.getPlayerCount(); i++)
-			{
-				CPlayer@ player = queue.getPlayer(i);
+			CPlayer@ player = queue.getPlayer(i);
 
-				if (player is null)
-				{
-					queue.RemoveIndex(i--);
-				}
-				else if (canRespawn(player))
-				{
-					Respawn(player);
-				}
+			if (player is null)
+			{
+				queue.RemoveIndex(i--);
+			}
+			else if (canRespawn(player))
+			{
+				Vec3f position = getGamemodeManager().getGamemode().getRespawnPoint(player);
+				Respawn(player, position);
 			}
 		}
 	}
@@ -47,11 +46,7 @@ class RespawnManager
 	{
 		if (player !is null)
 		{
-			if (isRespawning(player))
-			{
-				print(player.getUsername() + " is already in the respawn queue");
-			}
-			else if (canAddToQueue(player))
+			if (!isRespawning(player))
 			{
 				getActorManager().RemoveActor(player);
 				queue.AddPlayer(player);
@@ -60,20 +55,28 @@ class RespawnManager
 			}
 			else
 			{
-				print(player.getUsername() + " is unable to join the respawn queue");
+				print(player.getUsername() + " is already in the respawn queue");
 			}
 		}
 	}
 
-	void Respawn(CPlayer@ player)
+	void AddAllToQueue()
+	{
+		ClearQueue();
+
+		for (uint i = 0; i < getPlayerCount(); i++)
+		{
+			CPlayer@ player = getPlayer(i);
+			AddToQueue(player);
+		}
+	}
+
+	void Respawn(CPlayer@ player, Vec3f position)
 	{
 		if (player !is null)
 		{
 			RemoveFromQueue(player);
-
-			Vec3f position = getRespawnPoint(player);
 			getActorManager().CreateActor(player, position);
-
 			print("Respawned " + player.getUsername() + " at " + position.toString());
 		}
 	}
@@ -93,36 +96,17 @@ class RespawnManager
 		print("The respawn queue has been cleared");
 	}
 
-	Vec3f getRespawnPoint(CPlayer@ player)
-	{
-		return getMap3D().getMapDimensions() / 2;
-	}
-
 	private bool isRespawning(CPlayer@ player)
 	{
 		return queue.hasPlayer(player);
 	}
 
-	private bool canAddToQueue(CPlayer@ player)
-	{
-		return !isRespawning(player);
-	}
-
 	private bool canRespawn(CPlayer@ player)
 	{
-		return player !is null && (
-			player.get_u32("respawn_time") < getGameTime() ||
-			canInstantRespawn(player)
+		return (
+			player !is null &&
+			player.get_u32("respawn_time") < getGameTime() &&
+			getGamemodeManager().getGamemode().canRespawn(player)
 		);
-	}
-
-	private bool canInstantRespawn(CPlayer@ player)
-	{
-		return false;
-	}
-
-	private bool canCountdownRespawnTimer()
-	{
-		return getMap3D() !is null;
 	}
 }

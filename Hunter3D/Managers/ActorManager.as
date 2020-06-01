@@ -6,13 +6,13 @@ ActorManager@ getActorManager()
 	CRules@ rules = getRules();
 
 	ActorManager@ actorManager;
-	if (rules.get("actor manager", @actorManager))
+	if (rules.get("actor_manager", @actorManager))
 	{
 		return actorManager;
 	}
 
 	@actorManager = ActorManager();
-	rules.set("actor manager", actorManager);
+	rules.set("actor_manager", actorManager);
 	return actorManager;
 }
 
@@ -84,6 +84,15 @@ class ActorManager
 		if (player != null)
 		{
 			player.set("actor", null);
+		}
+	}
+
+	void RemoveAllActors()
+	{
+		for (uint i = 0; i < getPlayerCount(); i++)
+		{
+			CPlayer@ player = getPlayer(i);
+			RemoveActor(player);
 		}
 	}
 
