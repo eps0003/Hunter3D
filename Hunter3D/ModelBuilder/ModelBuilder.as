@@ -6,14 +6,69 @@
 class ModelBuilder
 {
 	private dictionary segments;
-	private string baseSegment;
 	private string skin = "pixel";
+	private string selectedSegment;
+	private uint selectedProperty = 0;
+	private uint selectedAxis = 0;
 
-	void Render()
+	void Update()
+	{
+		CControls@ controls = getControls();
+
+		if (controls.isKeyJustPressed(KEY_UP))
+		{
+			if (selectedProperty > 0)
+			{
+				selectedProperty--;
+			}
+			else
+			{
+				selectedProperty = 4;
+			}
+		}
+
+		if (controls.isKeyJustPressed(KEY_DOWN))
+		{
+			if (selectedProperty < 4)
+			{
+				selectedProperty++;
+			}
+			else
+			{
+				selectedProperty = 0;
+			}
+		}
+
+		if (controls.isKeyJustPressed(KEY_LEFT))
+		{
+			if (selectedAxis > 0)
+			{
+				selectedAxis--;
+			}
+			else
+			{
+				selectedAxis = 2;
+			}
+		}
+
+		if (controls.isKeyJustPressed(KEY_RIGHT))
+		{
+			if (selectedAxis < 2)
+			{
+				selectedAxis++;
+			}
+			else
+			{
+				selectedAxis = 0;
+			}
+		}
+	}
+
+	void RenderModel()
 	{
 		if (hasSegments())
 		{
-			ModelSegment@ base = getSegment(baseSegment);
+			ModelSegment@ base = getSegment("base");
 			Vec3f camPos = getCamera3D().getParent().interPosition;
 
 			float[] matrix;
@@ -26,6 +81,80 @@ class ModelBuilder
 		}
 	}
 
+	void RenderGUI()
+	{
+		if (isSegmentSelected())
+		{
+			ModelSegment@ segment = getSelectedSegment();
+			SColor selectedColor(255, 255, 0, 0);
+			SColor color = color_black;
+
+			//name
+			GUI::DrawText("name: " + segment.name, Vec2f(10,  50), color_black);
+
+			//properties
+			GUI::DrawText("dim:",      Vec2f(10,  70), color_black);
+			GUI::DrawText("origin:",   Vec2f(10,  90), color_black);
+			GUI::DrawText("orbit:",    Vec2f(10, 110), color_black);
+			GUI::DrawText("offset:",   Vec2f(10, 130), color_black);
+			GUI::DrawText("rotation:", Vec2f(10, 150), color_black);
+
+			//x-axis
+			color = selectedAxis == 0 ? selectedColor : color_black;
+			GUI::DrawText("" + segment.dim.x,      Vec2f(100,  70), selectedProperty == 0 ? color : color_black);
+			GUI::DrawText("" + segment.origin.x,   Vec2f(100,  90), selectedProperty == 1 ? color : color_black);
+			GUI::DrawText("" + segment.orbit.x,    Vec2f(100, 110), selectedProperty == 2 ? color : color_black);
+			GUI::DrawText("" + segment.offset.x,   Vec2f(100, 130), selectedProperty == 3 ? color : color_black);
+			GUI::DrawText("" + segment.rotation.x, Vec2f(100, 150), selectedProperty == 4 ? color : color_black);
+
+			//y-axis
+			color = selectedAxis == 1 ? selectedColor : color_black;
+			GUI::DrawText("" + segment.dim.y,      Vec2f(160,  70), selectedProperty == 0 ? color : color_black);
+			GUI::DrawText("" + segment.origin.y,   Vec2f(160,  90), selectedProperty == 1 ? color : color_black);
+			GUI::DrawText("" + segment.orbit.y,    Vec2f(160, 110), selectedProperty == 2 ? color : color_black);
+			GUI::DrawText("" + segment.offset.y,   Vec2f(160, 130), selectedProperty == 3 ? color : color_black);
+			GUI::DrawText("" + segment.rotation.y, Vec2f(160, 150), selectedProperty == 4 ? color : color_black);
+
+			//y-axis
+			color = selectedAxis == 2 ? selectedColor : color_black;
+			GUI::DrawText("" + segment.dim.z,      Vec2f(220,  70), selectedProperty == 0 ? color : color_black);
+			GUI::DrawText("" + segment.origin.z,   Vec2f(220,  90), selectedProperty == 1 ? color : color_black);
+			GUI::DrawText("" + segment.orbit.z,    Vec2f(220, 110), selectedProperty == 2 ? color : color_black);
+			GUI::DrawText("" + segment.offset.z,   Vec2f(220, 130), selectedProperty == 3 ? color : color_black);
+			GUI::DrawText("" + segment.rotation.z, Vec2f(220, 150), selectedProperty == 4 ? color : color_black);
+
+			// GUI::DrawText("name: "     + segment.name,                Vec2f(10,  50), color_black);
+			// GUI::DrawText("dim: "      + segment.dim.toString(),      Vec2f(10,  70), selectedProperty == 0 ? selectedColor : color_black);
+			// GUI::DrawText("origin: "   + segment.origin.toString(),   Vec2f(10,  90), selectedProperty == 1 ? selectedColor : color_black);
+			// GUI::DrawText("orbit: "    + segment.orbit.toString(),    Vec2f(10, 110), selectedProperty == 2 ? selectedColor : color_black);
+			// GUI::DrawText("offset: "   + segment.offset.toString(),   Vec2f(10, 130), selectedProperty == 3 ? selectedColor : color_black);
+			// GUI::DrawText("rotation: " + segment.rotation.toString(), Vec2f(10, 150), selectedProperty == 4 ? selectedColor : color_black);
+		}
+	}
+
+	ModelSegment@ getSelectedSegment()
+	{
+		return getSegment(selectedSegment);
+	}
+
+	void SelectSegment(string name)
+	{
+		if (segmentExists(name))
+		{
+			selectedSegment = name;
+			print("Selected segment: " + name);
+		}
+		else
+		{
+			print("Cannot select segment: " + name);
+		}
+	}
+
+	bool isSegmentSelected()
+	{
+		return selectedSegment != "";
+	}
+
 	void CreateSegment(string name)
 	{
 		if (!segmentExists(name))
@@ -34,11 +163,6 @@ class ModelBuilder
 			Vec3f origin(0.5f, 0.5f, 0.5f);
 			ModelSegment segment(name, dim, origin);
 			segment.GenerateVertices();
-
-			if (!hasSegments())
-			{
-				baseSegment = name;
-			}
 
 			segments.set(name, segment);
 			print("Created segment: " + name);
@@ -58,11 +182,6 @@ class ModelBuilder
 			{
 				segments.delete(name);
 				print("Removed segment: " + name);
-
-				if (!hasSegments())
-				{
-					baseSegment = "";
-				}
 			}
 			else
 			{
@@ -102,62 +221,12 @@ class ModelBuilder
 			//prevent parent-child loop
 			child.RemoveChild(parent);
 
-			if (childName == baseSegment)
-			{
-				baseSegment = parentName;
-			}
-
 			parent.AddChild(child);
 			print("Attached '" + childName + "' to '" + parentName + "'");
 		}
 		else
 		{
 			print("Cannot attach '" + childName + "' to '" + parentName + "'");
-		}
-	}
-
-	void SetSegmentOrbit(string name, float x = 0, float y = 0, float z = 0)
-	{
-		ModelSegment@ segment = getSegment(name);
-		if (segment !is null)
-		{
-			segment.orbit = Vec3f(x, y, z);
-			print("Set orbit: " + name);
-			segment.orbit.Print();
-		}
-		else
-		{
-			print("Cannot set orbit: " + name);
-		}
-	}
-
-	void SetSegmentOffset(string name, float x = 0, float y = 0, float z = 0)
-	{
-		ModelSegment@ segment = getSegment(name);
-		if (segment !is null)
-		{
-			segment.offset = Vec3f(x, y, z);
-			print("Set offset: " + name);
-			segment.offset.Print();
-		}
-		else
-		{
-			print("Cannot set offset: " + name);
-		}
-	}
-
-	void SetSegmentRotation(string name, float x = 0, float y = 0, float z = 0)
-	{
-		ModelSegment@ segment = getSegment(name);
-		if (segment !is null)
-		{
-			segment.rotation = Vec3f(x, y, z);
-			print("Set rotation: " + name);
-			segment.rotation.Print();
-		}
-		else
-		{
-			print("Cannot set rotation: " + name);
 		}
 	}
 
@@ -179,6 +248,7 @@ class ModelBuilder
 	void SetSkin(string skin)
 	{
 		this.skin = skin;
+		print("Set skin: " + skin);
 	}
 
 	void SaveModel(string filePath)
@@ -188,8 +258,7 @@ class ModelBuilder
 			ConfigFile cfg = ConfigFile();
 
 			//serialize model
-			cfg.add_string("base_segment", baseSegment);
-			getSegment(baseSegment).Serialize(cfg);
+			getSegment("base").Serialize(cfg);
 
 			cfg.saveFile(filePath);
 			print("Saved model: " + filePath);
@@ -199,13 +268,13 @@ class ModelBuilder
 	void LoadModel(string filePath)
 	{
 		ConfigFile cfg = ConfigFile();
-		if (cfg.loadFile(filePath) && cfg.exists("base_segment"))
+		if (cfg.loadFile(filePath))
 		{
 			ClearSegments();
 
 			//deserialize model
-			baseSegment = cfg.read_string("base_segment");
-			segments.set(baseSegment, ModelSegment(baseSegment, cfg));
+			ModelSegment@ segment = ModelSegment("base", cfg);
+			segments.set("base", segment);
 			print("Loaded model: " + filePath);
 		}
 		else
@@ -222,6 +291,20 @@ class ModelBuilder
 	private bool hasSegments()
 	{
 		return segments.getSize() > 0;
+	}
+
+	private float divide(string str)
+	{
+		string[] vals = str.split("/");
+
+		if (vals.length == 1)
+		{
+			return parseFloat(str);
+		}
+
+		float v1 = parseFloat(vals[0]);
+		float v2 = parseFloat(vals[1]);
+		return v1 / v2;
 	}
 
 	private void setAxis(Vec3f@ vec, string axis, float value)
@@ -246,7 +329,14 @@ class ModelBuilder
 		string cmd = args[0].toLower();
 		args.removeAt(0);
 
-		if (cmd == "create")
+		if (cmd == "select")
+		{
+			if (args.length < 1) return;
+
+			string name = args[0];
+			SelectSegment(name);
+		}
+		else if (cmd == "create")
 		{
 			if (args.length < 1) return;
 
@@ -329,21 +419,43 @@ class ModelBuilder
 				print("Set '" + name + "' rotation." + axis + " to " + val);
 			}
 		}
+		else if (cmd == "dim")
+		{
+			if (args.length < 3) return;
+
+			string name = args[0];
+			string axis = args[1].toLower();
+			float val = parseFloat(args[2]);
+
+			ModelSegment@ segment = getSegment(name);
+			if (segment !is null)
+			{
+				setAxis(@segment.dim, axis, val);
+				segment.GenerateVertices();
+				print("Set '" + name + "' dim." + axis + " to " + val);
+			}
+		}
 		else if (cmd == "uv")
 		{
 			if (args.length < 6) return;
 
 			string name = args[0];
-			int side = directionLetters.find(args[1]);
-			float x = parseFloat(args[2]);
-			float y = parseFloat(args[3]);
-			float w = parseFloat(args[4]);
-			float h = parseFloat(args[5]);
+			int side = directionNames.find(args[1]);
+			float x = divide(args[2]);
+			float y = divide(args[3]);
+			float w = divide(args[4]);
+			float h = divide(args[5]);
 
-			if (side > 0)
+			if (side > -1)
 			{
 				SetSegmentUV(name, side, x, y, w, h);
 			}
+		}
+		else if (cmd == "skin")
+		{
+			if (args.length < 1) return;
+
+			SetSkin(args[0]);
 		}
 		else if (cmd == "save")
 		{

@@ -78,6 +78,8 @@ class Camera : IHasParent
 	private float[] getViewMatrix(Vec3f rotation)
 	{
 		float[] matrix;
+		// Matrix::MakeIdentity(matrix);
+		// Matrix::SetTranslation(matrix, 0, 0.4f, 0);
 
 		float[] tempX;
 		Matrix::MakeIdentity(tempX);
@@ -91,8 +93,13 @@ class Camera : IHasParent
 		Matrix::MakeIdentity(tempZ);
 		Matrix::SetRotationDegrees(tempZ, 0, 0, rotation.z);
 
+		float[] translation;
+		Matrix::MakeIdentity(translation);
+		Matrix::SetTranslation(translation, 0, 0, 2);
+
 		Matrix::Multiply(tempX, tempZ, matrix);
 		Matrix::Multiply(matrix, tempY, matrix);
+		// Matrix::Multiply(translation, matrix, matrix);
 
 		return matrix;
 	}

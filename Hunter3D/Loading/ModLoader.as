@@ -1,4 +1,4 @@
-#include "ActorModel.as"
+#include "Model.as"
 
 ModLoader@ getModLoader()
 {
@@ -20,8 +20,8 @@ class ModLoader
 	private float progress = 0;
 	private string status = "Loading mod...";
 
-	private IModel@[] models = {
-		ActorModel()
+	private string[] models = {
+		"Models/ActorModel.cfg"
 	};
 	private int totalModels = models.length;
 
@@ -31,8 +31,8 @@ class ModLoader
 		{
 			if (!models.empty())
 			{
-				IModel@ model = models[0];
-				model.LoadModel();
+				//preload model
+				// Model(models[0]);
 				models.removeAt(0);
 			}
 		}

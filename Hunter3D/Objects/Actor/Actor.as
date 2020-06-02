@@ -8,7 +8,7 @@ class Actor : PhysicsObject, IHasModel
 {
 	CPlayer@ player;
 
-	private IModel@ model;
+	private Model@ model;
 
 	Actor(CPlayer@ player, Vec3f position)
 	{
@@ -29,7 +29,7 @@ class Actor : PhysicsObject, IHasModel
 		// @hitbox = AABB(Vec3f(0.6f, 1.6f, 0.6f));0.7; 1.7; 0.7;
 		@hitbox = AABB(Vec3f(-0.35f, -1.7 * 7/8, -0.3f), Vec3f(0.35f, 1.7 * 1/8, 0.35f));
 
-		SetModel(ActorModel());
+		// SetModel(ActorModel("KnightSkin.png"));
 	}
 
 	void Update()
@@ -54,7 +54,7 @@ class Actor : PhysicsObject, IHasModel
 
 		// hitbox.Render(interPosition);
 
-		if (hasModel() && !player.isMyPlayer())
+		if (hasModel())// && !player.isMyPlayer())
 		{
 			model.Render(this);
 		}
@@ -76,7 +76,7 @@ class Actor : PhysicsObject, IHasModel
 		return model !is null;
 	}
 
-	void SetModel(IModel@ model)
+	void SetModel(Model@ model)
 	{
 		@this.model = model;
 	}

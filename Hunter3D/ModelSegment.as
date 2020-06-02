@@ -25,11 +25,11 @@ class ModelSegment
 	ModelSegment(string name, ConfigFile@ cfg)
 	{
 		this.name = name;
-		this.dim = Vec3f(cfg.read_string(name + "_dim"));
-		this.origin = Vec3f(cfg.read_string(name + "_origin"));
-		this.orbit = Vec3f(cfg.read_string(name + "_orbit"));
-		this.offset = Vec3f(cfg.read_string(name + "_offset"));
-		this.rotation = Vec3f(cfg.read_string(name + "_rotation"));
+		this.dim = Vec3f(cfg.read_string(name + "_dim", ""));
+		this.origin = Vec3f(cfg.read_string(name + "_origin", ""));
+		this.orbit = Vec3f(cfg.read_string(name + "_orbit", ""));
+		this.offset = Vec3f(cfg.read_string(name + "_offset", ""));
+		this.rotation = Vec3f(cfg.read_string(name + "_rotation", ""));
 
 		string[] childrenNames;
 		if (cfg.readIntoArray_string(childrenNames, name + "_children"))
