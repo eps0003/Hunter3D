@@ -21,8 +21,7 @@ RespawnManager@ getRespawnManager()
 
 class RespawnManager
 {
-	PlayerList queue;
-	int respawnTime = 60;
+	private PlayerList queue;
 
 	void Update()
 	{
@@ -42,7 +41,7 @@ class RespawnManager
 		}
 	}
 
-	void AddToQueue(CPlayer@ player)
+	void AddToQueue(CPlayer@ player, uint respawnTime)
 	{
 		if (player !is null)
 		{
@@ -50,24 +49,19 @@ class RespawnManager
 			{
 				getActorManager().RemoveActor(player);
 				queue.AddPlayer(player);
-				player.set_u32("respawn_time", getGameTime() + respawnTime);
-				print("Added " + player.getUsername() + " to the respawn queue");
 			}
-			else
-			{
-				print(player.getUsername() + " is already in the respawn queue");
-			}
+
+			player.set_u32("respawn_time", getGameTime() + respawnTime);
+			print("Added " + player.getUsername() + " to the respawn queue");
 		}
 	}
 
-	void AddAllToQueue()
+	void AddAllToQueue(uint respawnTime)
 	{
-		ClearQueue();
-
 		for (uint i = 0; i < getPlayerCount(); i++)
 		{
 			CPlayer@ player = getPlayer(i);
-			AddToQueue(player);
+			AddToQueue(player, respawnTime);
 		}
 	}
 
@@ -76,7 +70,8 @@ class RespawnManager
 		if (player !is null)
 		{
 			RemoveFromQueue(player);
-			getActorManager().CreateActor(player, position);
+			Actor@ actor = Actor(player, position);
+			getActorManager().AddActor(actor);
 			print("Respawned " + player.getUsername() + " at " + position.toString());
 		}
 	}
@@ -96,7 +91,7 @@ class RespawnManager
 		print("The respawn queue has been cleared");
 	}
 
-	private bool isRespawning(CPlayer@ player)
+	bool isRespawning(CPlayer@ player)
 	{
 		return queue.hasPlayer(player);
 	}

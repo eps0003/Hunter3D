@@ -1,5 +1,4 @@
 #include "Actor.as"
-#include "PlayerList.as"
 
 ActorManager@ getActorManager()
 {
@@ -18,10 +17,10 @@ ActorManager@ getActorManager()
 
 class ActorManager
 {
+	private Actor@[] actors;
+
 	void Interpolate()
 	{
-		Actor@[] actors = getActors();
-
 		for (uint i = 0; i < actors.length; i++)
 		{
 			Actor@ actor = actors[i];
@@ -31,8 +30,6 @@ class ActorManager
 
 	void Render()
 	{
-		Actor@[] actors = getActors();
-
 		for (uint i = 0; i < actors.length; i++)
 		{
 			Actor@ actor = actors[i];
@@ -40,72 +37,144 @@ class ActorManager
 		}
 	}
 
-	void CreateActor(CPlayer@ player, Vec3f position)
+	Actor@ getActor(Actor@ actor)
 	{
-		player.set("actor", Actor(player, position));
+		for (uint i = 0; i < actors.length; i++)
+		{
+			Actor@ a = actors[i];
+			if (a.isSameAs(actor))
+			{
+				return a;
+			}
+		}
+
+		return null;
 	}
 
-	void UpdateActor(Actor@ actor)
+	Actor@ getActorByUsername(string username)
 	{
-		actor.player.set("actor", actor);
+		for (uint i = 0; i < actors.length; i++)
+		{
+			Actor@ actor = actors[i];
+			if (actor.player.getUsername() == username)
+			{
+				return actor;
+			}
+		}
+
+		return null;
+	}
+
+	Actor@ getActorByID(uint id)
+	{
+		for (uint i = 0; i < actors.length; i++)
+		{
+			Actor@ actor = actors[i];
+			if (actor.id == id)
+			{
+				return actor;
+			}
+		}
+
+		return null;
 	}
 
 	Actor@ getActor(CPlayer@ player)
 	{
-		if (player !is null)
+		for (uint i = 0; i < actors.length; i++)
 		{
-			Actor@ actor;
-			player.get("actor", @actor);
-			return actor;
+			Actor@ actor = actors[i];
+			if (actor.player is player)
+			{
+				return actor;
+			}
 		}
+
 		return null;
 	}
 
 	Actor@[] getActors()
 	{
-		Actor@[] actors;
+		return actors;
+	}
 
-		for (uint i = 0; i < getPlayerCount(); i++)
+	void AddActor(Actor@ actor)
+	{
+		if (isServer())
 		{
-			CPlayer@ player = getPlayer(i);
-			Actor@ actor = getActor(player);
-
-			if (actor !is null)
-			{
-				actors.push_back(actor);
-			}
+			actor.AssignUniqueID();
 		}
 
-		return actors;
+		actors.push_back(actor);
+	}
+
+	void AddActor(CPlayer@ player, Vec3f position)
+	{
+		Actor actor(player, position);
+		AddActor(actor);
+	}
+
+	void RemoveActor(Actor@ actor)
+	{
+		for (uint i = 0; i < actors.length; i++)
+		{
+			Actor@ a = actors[i];
+			if (a.isSameAs(actor))
+			{
+				actors.removeAt(i);
+
+				if (isServer())
+				{
+					CRules@ rules = getRules();
+					CBitStream bs;
+					a.Serialize(bs);
+					rules.SendCommand(rules.getCommandID("s_remove_actor"), bs, true);
+				}
+
+				return;
+			}
+		}
 	}
 
 	void RemoveActor(CPlayer@ player)
 	{
-		if (player != null)
+		for (uint i = 0; i < actors.length; i++)
 		{
-			player.set("actor", null);
+			Actor@ actor = actors[i];
+			if (actor.player is player)
+			{
+				actors.removeAt(i);
+
+				if (isServer())
+				{
+					CRules@ rules = getRules();
+					CBitStream bs;
+					actor.Serialize(bs);
+					rules.SendCommand(rules.getCommandID("s_remove_actor"), bs, true);
+				}
+
+				return;
+			}
 		}
 	}
 
-	void RemoveAllActors()
+	void ClearActors()
 	{
-		for (uint i = 0; i < getPlayerCount(); i++)
-		{
-			CPlayer@ player = getPlayer(i);
-			RemoveActor(player);
-		}
+		actors.clear();
 	}
 
-	bool hasActor(CPlayer@ player)
+	uint getActorCount()
+	{
+		return actors.length;
+	}
+
+	bool playerHasActor(CPlayer@ player)
 	{
 		return getActor(player) !is null;
 	}
 
-	void server_Sync()
+	void SerializeActors(CBitStream@ bs)
 	{
-		Actor@[] actors = getActors();
-
-		CBitStream bs;
 		bs.write_u32(actors.length);
 
 		for (uint i = 0; i < actors.length; i++)
@@ -113,17 +182,35 @@ class ActorManager
 			Actor@ actor = actors[i];
 			actor.Serialize(bs);
 		}
-
-		CRules@ rules = getRules();
-		rules.SendCommand(rules.getCommandID("s_sync_actors"), bs, true);
 	}
 
-	void client_Sync(Actor@ actor)
+	void DeserializeActors(CBitStream@ bs)
 	{
-		CBitStream bs;
-		actor.Serialize(bs);
+		uint count = bs.read_u32();
 
-		CRules@ rules = getRules();
-		rules.SendCommand(rules.getCommandID("c_sync_actor"), bs, false);
+		for (uint i = 0; i < count; i++)
+		{
+			Actor actor(bs);
+			Actor@ existingActor = getActor(actor);
+
+			if (existingActor !is null)
+			{
+				//update actors that arent mine
+				if (!actor.player.isMyPlayer())
+				{
+					existingActor = actor;
+				}
+			}
+			else
+			{
+				//spawn actor
+				AddActor(actor);
+
+				if (actor.player.isMyPlayer())
+				{
+					getCamera3D().SetParent(actor);
+				}
+			}
+		}
 	}
 }

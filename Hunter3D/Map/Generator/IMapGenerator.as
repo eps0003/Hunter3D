@@ -1,4 +1,4 @@
 interface IMapGenerator
 {
-	Map GenerateMap(Vec3f size);
+	void GenerateMap(Vec3f size);
 }

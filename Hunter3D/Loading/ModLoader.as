@@ -23,29 +23,26 @@ class ModLoader
 	private string[] models = {
 		"Models/ActorModel.cfg"
 	};
-	private int totalModels = models.length;
+	private int modelsLoaded = 0;
 
 	void LoadMod()
 	{
 		if (!isLoaded())
 		{
-			if (!models.empty())
-			{
-				//preload model
-				// Model(models[0]);
-				models.removeAt(0);
-			}
+			//preload model
+			// Model(models[0]);
+			modelsLoaded++;
 		}
 	}
 
 	bool isLoaded()
 	{
-		return models.empty();
+		return isModelsLoaded();
 	}
 
 	string getStatusMessage()
 	{
-		if (!models.empty())
+		if (!isModelsLoaded())
 		{
 			return "Loading models...";
 		}
@@ -55,11 +52,16 @@ class ModLoader
 
 	float getProgress()
 	{
-		if (!models.empty())
+		if (!isModelsLoaded())
 		{
-			return 1 - (float(models.length) / float(totalModels));
+			return float(modelsLoaded) / float(models.length);
 		}
 
 		return 1;
+	}
+
+	private bool isModelsLoaded()
+	{
+		return modelsLoaded >= models.length;
 	}
 }

@@ -50,6 +50,13 @@ void onTick(CRules@ this)
 			myActor.PostUpdate();
 
 			modelBuilder.Update();
+
+			if (getControls().isKeyJustPressed(KEY_KEY_L))
+			{
+				CBitStream bs;
+				myActor.Serialize(bs);
+				this.SendCommand(this.getCommandID("c_remove_actor"), bs, false);
+			}
 		}
 	}
 }
@@ -101,6 +108,7 @@ void Render(int id)
 
 		camera.Render();
 		getMap3D().Render();
+
 		getActorManager().Render();
 		modelBuilder.RenderModel();
 	}
@@ -156,25 +164,13 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 			//poof particles
 		}
 	}
-	else if (cmd == this.getCommandID("s_sync_actors"))
+	else if (cmd == this.getCommandID("s_sync_objects"))
 	{
-		ActorManager@ actorManager = getActorManager();
-
-		int count = params.read_u32();
-
-		for (uint i = 0; i < count; i++)
-		{
-			Actor actor(params);
-			if (!actor.player.isMyPlayer() || !actorManager.hasActor(actor.player))
-			{
-				actorManager.UpdateActor(actor);
-
-				if (actor.player.isMyPlayer())
-				{
-					getCamera3D().SetParent(actorManager.getActor(actor.player));
-					print("Spawned client at " + actor.position.toString());
-				}
-			}
-		}
+		getActorManager().DeserializeActors(params);
+	}
+	else if (cmd == this.getCommandID("s_remove_actor"))
+	{
+		Actor actor(params);
+		getActorManager().RemoveActor(actor);
 	}
 }

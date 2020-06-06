@@ -29,7 +29,7 @@ class Actor : PhysicsObject, IHasModel
 		// @hitbox = AABB(Vec3f(0.6f, 1.6f, 0.6f));0.7; 1.7; 0.7;
 		@hitbox = AABB(Vec3f(-0.35f, -1.7 * 7/8, -0.3f), Vec3f(0.35f, 1.7 * 1/8, 0.35f));
 
-		// SetModel(ActorModel("KnightSkin.png"));
+		SetModel(ActorModel("KnightSkin.png"));
 	}
 
 	void Update()
@@ -45,18 +45,25 @@ class Actor : PhysicsObject, IHasModel
 	{
 		PhysicsObject::PostUpdate();
 
-		getActorManager().client_Sync(this);
+		//sync to server
+		CBitStream bs;
+		Serialize(bs);
+		CRules@ rules = getRules();
+		rules.SendCommand(rules.getCommandID("c_sync_actor"), bs, false);
 	}
 
 	void Render()
 	{
 		PhysicsObject::Render();
 
-		// hitbox.Render(interPosition);
-
-		if (hasModel())// && !player.isMyPlayer())
+		if (!player.isMyPlayer())
 		{
-			model.Render(this);
+			hitbox.Render(interPosition);
+
+			if (hasModel())
+			{
+				model.Render(this);
+			}
 		}
 	}
 
@@ -79,6 +86,16 @@ class Actor : PhysicsObject, IHasModel
 	void SetModel(Model@ model)
 	{
 		@this.model = model;
+	}
+
+	Model@ getModel()
+	{
+		return model;
+	}
+
+	bool isSameAs(Actor@ actor)
+	{
+		return PhysicsObject::isSameAs(actor) && player is actor.player;
 	}
 
 	private void Move()

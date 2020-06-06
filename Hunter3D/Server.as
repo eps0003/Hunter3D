@@ -1,25 +1,14 @@
 #include "Vec3f.as"
 #include "Map.as"
-#include "Actor.as"
 #include "ActorManager.as"
-#include "TestMapGenerator.as"
 
 #define SERVER_ONLY
 
-void onInit(CRules@ this)
-{
-	onRestart(this);
-}
-
-void onRestart(CRules@ this)
-{
-	Map map = TestMapGenerator().GenerateMap(Vec3f(24, 8, 24));
-	this.set("map", map);
-}
-
 void onTick(CRules@ this)
 {
-	getActorManager().server_Sync();
+	CBitStream bs;
+	getActorManager().SerializeActors(bs);
+	this.SendCommand(this.getCommandID("s_sync_objects"), bs, true);
 }
 
 void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
@@ -44,6 +33,11 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 	else if (cmd == this.getCommandID("c_sync_actor"))
 	{
 		Actor actor(params);
-		getActorManager().UpdateActor(actor);
+		Actor@ existingActor = getActorManager().getActor(actor);
+
+		if (existingActor !is null)
+		{
+			existingActor = actor;
+		}
 	}
 }

@@ -2,7 +2,7 @@
 
 class TestMapGenerator : IMapGenerator
 {
-	Map GenerateMap(Vec3f size)
+	void GenerateMap(Vec3f size)
 	{
 		Map map(size);
 
@@ -22,6 +22,6 @@ class TestMapGenerator : IMapGenerator
 			map.SetVoxel(position, voxel);
 		}
 
-		return map;
+		getRules().set("map", map);
 	}
 }

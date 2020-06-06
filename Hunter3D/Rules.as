@@ -1,35 +1,39 @@
 #include "GamemodeManager.as"
-#include "RespawnManager.as"
 
 #define SERVER_ONLY;
 
 void onInit(CRules@ this)
 {
+	getGamemodeManager().getGamemode().onInit(this);
 	onRestart(this);
 }
 
 void onRestart(CRules@ this)
 {
-	getGamemodeManager().getGamemode().Init();
+	getGamemodeManager().getGamemode().onRestart(this);
 }
 
 void onTick(CRules@ this)
 {
-	getRespawnManager().Update();
-	getGamemodeManager().getGamemode().Update();
+	getGamemodeManager().getGamemode().onTick(this);
 }
 
 void onNewPlayerJoin(CRules@ this, CPlayer@ player)
 {
-	getGamemodeManager().getGamemode().PlayerJoin(player);
+	getGamemodeManager().getGamemode().onNewPlayerJoin(this, player);
 }
 
 void onPlayerLeave(CRules@ this, CPlayer@ player)
 {
-	getGamemodeManager().getGamemode().PlayerLeave(player);
+	getGamemodeManager().getGamemode().onPlayerLeave(this, player);
 }
 
 void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ attacker, u8 customData)
 {
-	getGamemodeManager().getGamemode().PlayerDie(victim, attacker, customData);
+	getGamemodeManager().getGamemode().onPlayerDie(this, victim, attacker, customData);
+}
+
+void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
+{
+	getGamemodeManager().getGamemode().onCommand(this, cmd, params);
 }

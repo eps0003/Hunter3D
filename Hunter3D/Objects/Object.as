@@ -28,14 +28,21 @@ class Object : Identifiable
 		super(bs);
 
 		position = Vec3f(bs);
-		oldPosition = Vec3f(bs);
-
 		rotation = Vec3f(bs);
-		oldRotation = Vec3f(bs);
-
 		velocity = Vec3f(bs);
-		oldVelocity = Vec3f(bs);
 	}
+
+	void opAssign(const Object &in object)
+	{
+		oldPosition = position;
+		oldRotation = rotation;
+		oldVelocity = velocity;
+
+		position = object.position;
+		rotation = object.rotation;
+		velocity = object.velocity;
+	}
+
 
 	void PreUpdate()
 	{
@@ -74,12 +81,7 @@ class Object : Identifiable
 		Identifiable::Serialize(bs);
 
 		position.Serialize(bs);
-		oldPosition.Serialize(bs);
-
 		rotation.Serialize(bs);
-		oldRotation.Serialize(bs);
-
 		velocity.Serialize(bs);
-		oldVelocity.Serialize(bs);
 	}
 }

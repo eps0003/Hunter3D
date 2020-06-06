@@ -1,3 +1,5 @@
+#include "Object.as"
+
 interface IHasParent
 {
 	void SetParent(Object@ parent);

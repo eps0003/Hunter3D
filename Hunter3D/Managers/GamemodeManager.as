@@ -1,4 +1,4 @@
-#include "IGamemode.as"
+#include "Gamemode.as"
 #include "CTF.as"
 
 GamemodeManager@ getGamemodeManager()
@@ -18,14 +18,14 @@ GamemodeManager@ getGamemodeManager()
 
 class GamemodeManager
 {
-	private IGamemode@ gamemode = CTF();
+	private Gamemode@ gamemode = CTF();
 
-	IGamemode@ getGamemode()
+	Gamemode@ getGamemode()
 	{
 		return gamemode;
 	}
 
-	void SetGamemode(IGamemode@ gamemode)
+	void SetGamemode(Gamemode@ gamemode)
 	{
 		@this.gamemode = gamemode;
 		LoadNextMap();

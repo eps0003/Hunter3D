@@ -1,4 +1,5 @@
 #include "Model.as"
+#include "Camera.as"
 
 class ActorModel : Model
 {
@@ -139,6 +140,8 @@ class ActorModel : Model
 
 	private void UpdateSegments(Object@ parent)
 	{
+		getSegment("base").offset = parent.interPosition - getCamera3D().getParent().interPosition;
+
 		// float vel = Vec2f(parent.interVelocity.x, parent.interVelocity.z).Length() * 5;
 
 		// float t = getInterGameTime();

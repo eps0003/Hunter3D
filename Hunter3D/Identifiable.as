@@ -1,18 +1,10 @@
 uint currentID = 0;
 
-uint getUniqueID()
-{
-	return currentID++;
-}
-
 class Identifiable
 {
-	uint id;
+	uint id = 0;
 
-	Identifiable()
-	{
-		id = getUniqueID();
-	}
+	Identifiable() {}
 
 	Identifiable(CBitStream@ bs)
 	{
@@ -23,6 +15,14 @@ class Identifiable
 	Identifiable(uint id)
 	{
 		this.id = id;
+	}
+
+	void AssignUniqueID()
+	{
+		if (isServer())
+		{
+			id = ++currentID;
+		}
 	}
 
 	bool isSameAs(Object@ object)
