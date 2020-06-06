@@ -7,8 +7,11 @@
 class Actor : PhysicsObject, IHasModel
 {
 	CPlayer@ player;
-
 	private Model@ model;
+
+	float acceleration;
+	float friction;
+	float jumpForce;
 
 	Actor(CPlayer@ player, Vec3f position)
 	{
@@ -117,17 +120,8 @@ class Actor : PhysicsObject, IHasModel
 
 		if (controls.isKeyJustPressed(KEY_SPACE))
 		{
-			float jumpForce;
-			vars.get("jump_force", jumpForce);
-
 			velocity.y = jumpForce;
 		}
-
-		float acceleration;
-		vars.get("acceleration", acceleration);
-
-		float friction;
-		vars.get("friction", friction);
 
 		velocity.x += dir.x * acceleration - friction * velocity.x;
 		velocity.z += dir.y * acceleration - friction * velocity.z;
@@ -173,8 +167,8 @@ class Actor : PhysicsObject, IHasModel
 	private void LoadConfig()
 	{
 		ConfigFile@ cfg = openConfig("Actor.cfg");
-		vars.set("acceleration", cfg.read_f32("acceleration"));
-		vars.set("friction", cfg.read_f32("friction"));
-		vars.set("jump_force", cfg.read_f32("jump_force"));
+		acceleration = cfg.read_f32("acceleration");
+		friction = cfg.read_f32("friction");
+		jumpForce = cfg.read_f32("jump_force");
 	}
 }

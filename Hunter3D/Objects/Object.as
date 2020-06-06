@@ -14,8 +14,6 @@ class Object : Identifiable
 	Vec3f oldVelocity;
 	Vec3f interVelocity;
 
-	dictionary vars;
-
 	Object(Vec3f position, Vec3f rotation = Vec3f(0, 0, 0), Vec3f velocity = Vec3f(0, 0, 0))
 	{
 		this.position = position;
