@@ -123,6 +123,11 @@ class ActorManager
 			{
 				actors.removeAt(i);
 
+				if (isClient())
+				{
+					getCamera3D().SetParent(null);
+				}
+
 				if (isServer())
 				{
 					CRules@ rules = getRules();

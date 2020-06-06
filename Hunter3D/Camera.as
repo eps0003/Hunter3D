@@ -30,8 +30,8 @@ class Camera : IHasParent
 	{
 		if (hasParent())
 		{
-			float[] model = getModelMatrix(parent.interPosition);
-			float[] view = getViewMatrix(parent.interRotation);
+			float[] model = getModelMatrix();
+			float[] view = getViewMatrix(parent.interPosition, parent.interRotation);
 			float[] proj = getProjectionMatrix();
 			Render::SetTransform(model, view, proj);
 		}
@@ -52,11 +52,10 @@ class Camera : IHasParent
 		return parent !is null;
 	}
 
-	private float[] getModelMatrix(Vec3f position)
+	private float[] getModelMatrix()
 	{
 		float[] matrix;
 		Matrix::MakeIdentity(matrix);
-		Matrix::SetTranslation(matrix, -position.x, -position.y, -position.z);
 		return matrix;
 	}
 
@@ -75,11 +74,13 @@ class Camera : IHasParent
 		return matrix;
 	}
 
-	private float[] getViewMatrix(Vec3f rotation)
+	private float[] getViewMatrix(Vec3f position, Vec3f rotation)
 	{
 		float[] matrix;
-		// Matrix::MakeIdentity(matrix);
-		// Matrix::SetTranslation(matrix, 0, 0.4f, 0);
+
+		float[] translation;
+		Matrix::MakeIdentity(translation);
+		Matrix::SetTranslation(translation, -position.x, -position.y, -position.z);
 
 		float[] tempX;
 		Matrix::MakeIdentity(tempX);
@@ -93,13 +94,14 @@ class Camera : IHasParent
 		Matrix::MakeIdentity(tempZ);
 		Matrix::SetRotationDegrees(tempZ, 0, 0, rotation.z);
 
-		float[] translation;
-		Matrix::MakeIdentity(translation);
-		Matrix::SetTranslation(translation, 0, 0, 2);
+		float[] thirdPerson;
+		Matrix::MakeIdentity(thirdPerson);
+		Matrix::SetTranslation(thirdPerson, 0, 0, 2);
 
 		Matrix::Multiply(tempX, tempZ, matrix);
 		Matrix::Multiply(matrix, tempY, matrix);
-		// Matrix::Multiply(translation, matrix, matrix);
+		Matrix::Multiply(matrix, translation, matrix);
+		// Matrix::Multiply(thirdPerson, matrix, matrix);
 
 		return matrix;
 	}

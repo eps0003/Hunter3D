@@ -23,7 +23,7 @@ class ImageUV
 		}
 		else
 		{
-			print("Unable to parse serialized ImageUV string: " + serialized);
+			error("Unable to parse serialized ImageUV string: " + serialized);
 		}
 	}
 

@@ -1,21 +1,28 @@
-#include "Object.as"
-#include "ModelSegment.as"
+#include "Segment.as"
 #include "ImageUV.as"
+#include "Object.as"
 
-class Model
+class Model : SegmentChildren
 {
-	private string filePath;
+	private string filePath = "";
 	private string skin = "pixel";
 
-	private float[] matrix;
-
-	private dictionary segments;
+	Model() {}
 
 	Model(string filePath)
 	{
 		this.filePath = filePath;
-		Matrix::MakeIdentity(matrix);
-		LoadModelFromConfig(filePath);
+
+		if (isLoaded())
+		{
+			Segment@[] segments;
+			getRules().get(filePath, segments);
+			setChildren(segments);
+		}
+		else
+		{
+			LoadModel(filePath);
+		}
 	}
 
 	void SetSkin(string skin)
@@ -23,90 +30,59 @@ class Model
 		this.skin = skin;
 	}
 
-	void AddSegment(ModelSegment@ segment)
-	{
-		segments.set(segment.name, segment);
-	}
-
-	void RemoveSegment(string name)
-	{
-		if (segments.exists(name))
-		{
-			segments.delete(name);
-		}
-	}
-
-	ModelSegment@ getSegment(string segmentName)
-	{
-		ModelSegment@ segment;
-		segments.get(segmentName, @segment);
-		return segment;
-	}
-
-	void LoadModel()
-	{
-		if (!isLoaded())
-		{
-			CreateSegments();
-			getRules().set(filePath, segments);
-			print("Loaded model: " + filePath);
-		}
-	}
-
-	void LoadSegments()
-	{
-		if (isLoaded())
-		{
-			getRules().get(filePath, segments);
-		}
-	}
-
 	bool isLoaded()
 	{
-		return getRules().exists(filePath);
+		return filePath == "" || getRules().exists(filePath);
 	}
 
 	void Render(Object@ parent)
 	{
 		if (isLoaded())
 		{
-			UpdateSegments(parent);
+			float[] matrix;
+			Matrix::MakeIdentity(matrix);
+
+			Update(parent);
 
 			Render::SetBackfaceCull(false);
-			getSegment("base").Render(skin, matrix);
+
+			Segment@[] segments = getChildren();
+			for (uint i = 0; i < segments.length; i++)
+			{
+				Segment@ segment = segments[i];
+				Matrix::SetTranslation(matrix, parent.interPosition.x, parent.interPosition.y, parent.interPosition.z);
+				segment.Render(skin, matrix);
+			}
+
 			Render::SetBackfaceCull(true);
 		}
 	}
 
-	private void LoadModelFromConfig(string filePath)
+	void LoadModel(string filePath)
 	{
-		if (!isLoaded())
+		ConfigFile cfg = ConfigFile();
+		if (cfg.loadFile(filePath))
 		{
-			ConfigFile cfg = ConfigFile();
-			if (cfg.loadFile(filePath))
-			{
-				segments.deleteAll();
+			ClearChildren();
 
-				//deserialize model
-				segments.set("base", ModelSegment("base", cfg));
-				getRules().set(filePath, segments);
-				print("Loaded model: " + filePath);
-			}
-			else
-			{
-				print("Cannot load model: " + filePath);
-			}
+			//deserialize model
+			Deserialize("model", cfg);
+			getRules().set(filePath, getChildren());
+			print("Loaded model: " + filePath + " (" + getDescendantCount() + " segments)");
+		}
+		else
+		{
+			error("Cannot load model: " + filePath);
 		}
 	}
 
-	//child must override
-	private void CreateSegments()
+	void Serialize(ConfigFile@ cfg)
 	{
-
+		Serialize("model", cfg);
 	}
 
 	//child must override
-	private void UpdateSegments(Object@ parent)
+	private void Update(Object@ parent)
 	{
 
 	}

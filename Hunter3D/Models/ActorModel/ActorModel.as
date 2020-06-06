@@ -5,9 +5,8 @@ class ActorModel : Model
 {
 	ActorModel(string skin)
 	{
-		super("ActorModel.cfg");
+		super("Models/ActorModel.cfg");
 		SetSkin(skin);
-		LoadSegments();
 	}
 
 	private void CreateSegments()
@@ -15,7 +14,7 @@ class ActorModel : Model
 		// float dim = 0.15f;
 
 		// //create
-		// ModelSegment base("base", Vec3f(dim*2, dim*3, dim), Vec3f(dim, dim, dim/2.0f));
+		// Segment base("base", Vec3f(dim*2, dim*3, dim), Vec3f(dim, dim, dim/2.0f));
 		// base.SetUV(Direction::Left,  ImageUV(7.0f/16.0f, 5.0f/16.0f, 1.0f/16.0f, 3.0f/16.0f));
 		// base.SetUV(Direction::Right, ImageUV(4.0f/16.0f, 5.0f/16.0f, 1.0f/16.0f, 3.0f/16.0f));
 		// base.SetUV(Direction::Up,    ImageUV(5.0f/16.0f, 4.0f/16.0f, 2.0f/16.0f, 1.0f/16.0f));
@@ -24,7 +23,7 @@ class ActorModel : Model
 		// base.SetUV(Direction::Back,  ImageUV(8.0f/16.0f, 5.0f/16.0f, 2.0f/16.0f, 3.0f/16.0f));
 		// base.GenerateVertices();
 
-		// ModelSegment head("head", Vec3f(dim*2, dim*2, dim*2), Vec3f(dim, 0.0f, dim));
+		// Segment head("head", Vec3f(dim*2, dim*2, dim*2), Vec3f(dim, 0.0f, dim));
 		// head.offset = Vec3f(0.0f, dim*2, 0.0f);
 		// head.SetUV(Direction::Left,  ImageUV(4.0f/16.0f, 2.0f/16.0f, 2.0f/16.0f, 2.0f/16.0f));
 		// head.SetUV(Direction::Right, ImageUV(0.0f/16.0f, 2.0f/16.0f, 2.0f/16.0f, 2.0f/16.0f));
@@ -34,7 +33,7 @@ class ActorModel : Model
 		// head.SetUV(Direction::Back,  ImageUV(6.0f/16.0f, 2.0f/16.0f, 2.0f/16.0f, 2.0f/16.0f));
 		// head.GenerateVertices();
 
-		// ModelSegment upperLeftArm("upper_left_arm", Vec3f(dim, dim*1.5f, dim), Vec3f(dim, dim*1.5f, dim/2.0f));
+		// Segment upperLeftArm("upper_left_arm", Vec3f(dim, dim*1.5f, dim), Vec3f(dim, dim*1.5f, dim/2.0f));
 		// upperLeftArm.offset = Vec3f(-dim, dim*2, 0.0f);
 		// upperLeftArm.SetUV(Direction::Left,  ImageUV( 8.0f/16.0f, 13.0f/16.0f, 1.0f/16.0f, 1.5f/16.0f));
 		// upperLeftArm.SetUV(Direction::Right, ImageUV(10.0f/16.0f, 13.0f/16.0f, 1.0f/16.0f, 1.5f/16.0f));
@@ -44,7 +43,7 @@ class ActorModel : Model
 		// upperLeftArm.SetUV(Direction::Back,  ImageUV(11.0f/16.0f, 13.0f/16.0f, 1.0f/16.0f, 1.5f/16.0f));
 		// upperLeftArm.GenerateVertices();
 
-		// ModelSegment lowerLeftArm("lower_left_arm", Vec3f(dim, dim*1.5f, dim), Vec3f(dim/2.0f, dim*1.5f, 0.0f));
+		// Segment lowerLeftArm("lower_left_arm", Vec3f(dim, dim*1.5f, dim), Vec3f(dim/2.0f, dim*1.5f, 0.0f));
 		// lowerLeftArm.offset = Vec3f(-dim/2.0f, -dim*1.5f, -dim/2.0f);
 		// lowerLeftArm.SetUV(Direction::Left,  ImageUV( 8.0f/16.0f, 14.5f/16.0f, 1.0f/16.0f, 1.5f/16.0f));
 		// lowerLeftArm.SetUV(Direction::Right, ImageUV(10.0f/16.0f, 14.5f/16.0f, 1.0f/16.0f, 1.5f/16.0f));
@@ -54,7 +53,7 @@ class ActorModel : Model
 		// lowerLeftArm.SetUV(Direction::Back,  ImageUV(11.0f/16.0f, 14.5f/16.0f, 1.0f/16.0f, 1.5f/16.0f));
 		// lowerLeftArm.GenerateVertices();
 
-		// ModelSegment upperRightArm("upper_right_arm", Vec3f(dim, dim*1.5f, dim), Vec3f(0.0f, dim*1.5f, dim/2.0f));
+		// Segment upperRightArm("upper_right_arm", Vec3f(dim, dim*1.5f, dim), Vec3f(0.0f, dim*1.5f, dim/2.0f));
 		// upperRightArm.offset = Vec3f(dim, dim*2, 0.0f);
 		// upperRightArm.SetUV(Direction::Left,  ImageUV(12.0f/16.0f, 5.0f/16.0f, 1.0f/16.0f, 1.5f/16.0f));
 		// upperRightArm.SetUV(Direction::Right, ImageUV(10.0f/16.0f, 5.0f/16.0f, 1.0f/16.0f, 1.5f/16.0f));
@@ -64,7 +63,7 @@ class ActorModel : Model
 		// upperRightArm.SetUV(Direction::Back,  ImageUV(13.0f/16.0f, 5.0f/16.0f, 1.0f/16.0f, 1.5f/16.0f));
 		// upperRightArm.GenerateVertices();
 
-		// ModelSegment lowerRightArm("lower_right_arm", Vec3f(dim, dim*1.5f, dim), Vec3f(-dim/2.0f, dim*1.5f, 0.0f));
+		// Segment lowerRightArm("lower_right_arm", Vec3f(dim, dim*1.5f, dim), Vec3f(-dim/2.0f, dim*1.5f, 0.0f));
 		// lowerRightArm.offset = Vec3f(-dim/2.0f, -dim*1.5f, -dim/2.0f);
 		// lowerRightArm.SetUV(Direction::Left,  ImageUV(12.0f/16.0f, 6.5f/16.0f, 1.0f/16.0f, 1.5f/16.0f));
 		// lowerRightArm.SetUV(Direction::Right, ImageUV(10.0f/16.0f, 6.5f/16.0f, 1.0f/16.0f, 1.5f/16.0f));
@@ -74,7 +73,7 @@ class ActorModel : Model
 		// lowerRightArm.SetUV(Direction::Back,  ImageUV(13.0f/16.0f, 6.5f/16.0f, 1.0f/16.0f, 1.5f/16.0f));
 		// lowerRightArm.GenerateVertices();
 
-		// ModelSegment upperLeftLeg("upper_left_leg", Vec3f(dim, dim*1.5f, dim), Vec3f(dim, dim*1.5f, dim/2.0f));
+		// Segment upperLeftLeg("upper_left_leg", Vec3f(dim, dim*1.5f, dim), Vec3f(dim, dim*1.5f, dim/2.0f));
 		// upperLeftLeg.offset = Vec3f(0.0f, -dim, 0.0f);
 		// upperLeftLeg.SetUV(Direction::Left,  ImageUV(6.0f/16.0f, 13.0f/16.0f, 1.0f/16.0f, 1.5f/16.0f));
 		// upperLeftLeg.SetUV(Direction::Right, ImageUV(4.0f/16.0f, 13.0f/16.0f, 1.0f/16.0f, 1.5f/16.0f));
@@ -84,7 +83,7 @@ class ActorModel : Model
 		// upperLeftLeg.SetUV(Direction::Back,  ImageUV(7.0f/16.0f, 13.0f/16.0f, 1.0f/16.0f, 1.5f/16.0f));
 		// upperLeftLeg.GenerateVertices();
 
-		// ModelSegment lowerLeftLeg("lower_left_leg", Vec3f(dim, dim*1.5f, dim), Vec3f(dim, dim*1.5f, dim));
+		// Segment lowerLeftLeg("lower_left_leg", Vec3f(dim, dim*1.5f, dim), Vec3f(dim, dim*1.5f, dim));
 		// lowerLeftLeg.offset = Vec3f(0.0f, -dim*1.5f, dim/2.0f);
 		// lowerLeftLeg.SetUV(Direction::Left,  ImageUV(6.0f/16.0f, 14.5f/16.0f, 1.0f/16.0f, 1.5f/16.0f));
 		// lowerLeftLeg.SetUV(Direction::Right, ImageUV(4.0f/16.0f, 14.5f/16.0f, 1.0f/16.0f, 1.5f/16.0f));
@@ -94,7 +93,7 @@ class ActorModel : Model
 		// lowerLeftLeg.SetUV(Direction::Back,  ImageUV(7.0f/16.0f, 14.5f/16.0f, 1.0f/16.0f, 1.5f/16.0f));
 		// lowerLeftLeg.GenerateVertices();
 
-		// ModelSegment upperRightLeg("upper_right_leg", Vec3f(dim, dim*1.5f, dim), Vec3f(0.0f, dim*1.5f, dim/2.0f));
+		// Segment upperRightLeg("upper_right_leg", Vec3f(dim, dim*1.5f, dim), Vec3f(0.0f, dim*1.5f, dim/2.0f));
 		// upperRightLeg.offset = Vec3f(0.0f, -dim, 0.0f);
 		// upperRightLeg.SetUV(Direction::Left,  ImageUV(2.0f/16.0f, 5.0f/16.0f, 1.0f/16.0f, 1.5f/16.0f));
 		// upperRightLeg.SetUV(Direction::Right, ImageUV(0.0f/16.0f, 5.0f/16.0f, 1.0f/16.0f, 1.5f/16.0f));
@@ -104,7 +103,7 @@ class ActorModel : Model
 		// upperRightLeg.SetUV(Direction::Back,  ImageUV(3.0f/16.0f, 5.0f/16.0f, 1.0f/16.0f, 1.5f/16.0f));
 		// upperRightLeg.GenerateVertices();
 
-		// ModelSegment lowerRightLeg("lower_right_leg", Vec3f(dim, dim*1.5f, dim), Vec3f(0.0f, dim*1.5f, dim));
+		// Segment lowerRightLeg("lower_right_leg", Vec3f(dim, dim*1.5f, dim), Vec3f(0.0f, dim*1.5f, dim));
 		// lowerRightLeg.offset = Vec3f(0.0f, -dim*1.5f, dim/2.0f);
 		// lowerRightLeg.SetUV(Direction::Left,  ImageUV(2.0f/16.0f, 6.5f/16.0f, 1.0f/16.0f, 1.5f/16.0f));
 		// lowerRightLeg.SetUV(Direction::Right, ImageUV(0.0f/16.0f, 6.5f/16.0f, 1.0f/16.0f, 1.5f/16.0f));
@@ -138,10 +137,8 @@ class ActorModel : Model
 		// AddSegment(lowerRightLeg);
 	}
 
-	private void UpdateSegments(Object@ parent)
+	private void Update(Object@ parent)
 	{
-		getSegment("base").offset = parent.interPosition - getCamera3D().getParent().interPosition;
-
 		// float vel = Vec2f(parent.interVelocity.x, parent.interVelocity.z).Length() * 5;
 
 		// float t = getInterGameTime();

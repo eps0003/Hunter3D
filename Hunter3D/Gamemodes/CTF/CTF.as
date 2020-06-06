@@ -14,6 +14,7 @@ class CTF : Gamemode
 	void onRestart(CRules@ this)
 	{
 		TestMapGenerator().GenerateMap(Vec3f(24, 8, 24));
+		getRespawnManager().AddAllToQueue(respawnTime);
 	}
 
 	void onTick(CRules@ this)

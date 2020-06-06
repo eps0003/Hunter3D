@@ -108,7 +108,6 @@ void Render(int id)
 
 		camera.Render();
 		getMap3D().Render();
-
 		getActorManager().Render();
 		modelBuilder.RenderModel();
 	}

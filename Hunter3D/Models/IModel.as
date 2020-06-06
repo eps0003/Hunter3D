@@ -1,10 +1,10 @@
-#include "ModelSegment.as"
+#include "Segment.as"
 #include "Object.as"
 
 interface IModel
 {
 	void LoadModel();
 	bool isLoaded();
-	ModelSegment@ getSegment(uint index);
+	Segment@ getSegment(uint index);
 	void Render(Object@ parent);
 }
