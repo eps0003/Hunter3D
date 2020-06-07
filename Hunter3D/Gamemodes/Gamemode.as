@@ -4,7 +4,7 @@
 class Gamemode
 {
 	string name;
-	string acronym;
+	string shortName;
 
 	void onInit(CRules@ this) {}
 	void onRestart(CRules@ this) {}
@@ -27,7 +27,7 @@ class Gamemode
 
 	void LoadConfig(ConfigFile@ cfg)
 	{
-		name = cfg.read_string("name");
-		acronym = cfg.read_string("acronym");
+		name = cfg.read_string("name", "Unknown Gamemode");
+		shortName = cfg.read_string("short_name", "???");
 	}
 }

@@ -95,6 +95,6 @@ class Mouse
 	private void LoadPreferences()
 	{
 		ConfigFile cfg = openPreferences();
-		sensitivity = cfg.read_f32("sensitivity");
+		sensitivity = cfg.read_f32("sensitivity", 1.0f);
 	}
 }

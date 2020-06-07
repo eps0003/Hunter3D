@@ -109,6 +109,6 @@ class Camera : IHasParent
 	private void LoadPreferences()
 	{
 		ConfigFile cfg = openPreferences();
-		fov = cfg.read_f32("fov");
+		fov = cfg.read_f32("fov", 70.0f);
 	}
 }

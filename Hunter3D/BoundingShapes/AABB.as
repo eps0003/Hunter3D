@@ -158,14 +158,11 @@ class AABB : IBounds
 		vertices.push_back(Vertex(min.x, min.y, max.z, 1, 1, col));
 		vertices.push_back(Vertex(max.x, min.y, max.z, 0, 1, col));
 
-		// if (!isOnGround())
-		{
-			//down
-			vertices.push_back(Vertex(max.x, min.y, max.z, 0, 0, col));
-			vertices.push_back(Vertex(min.x, min.y, max.z, 1, 0, col));
-			vertices.push_back(Vertex(min.x, min.y, min.z, 1, 1, col));
-			vertices.push_back(Vertex(max.x, min.y, min.z, 0, 1, col));
-		}
+		//down
+		vertices.push_back(Vertex(max.x, min.y, max.z, 0, 0, col));
+		vertices.push_back(Vertex(min.x, min.y, max.z, 1, 0, col));
+		vertices.push_back(Vertex(min.x, min.y, min.z, 1, 1, col));
+		vertices.push_back(Vertex(max.x, min.y, min.z, 0, 1, col));
 
 		//up
 		vertices.push_back(Vertex(min.x, max.y, max.z, 0, 0, col));

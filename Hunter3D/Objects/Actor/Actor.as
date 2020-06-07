@@ -3,20 +3,20 @@
 #include "ActorManager.as"
 #include "ActorModel.as"
 #include "IHasModel.as"
+#include "MovementStrategy.as"
 
 class Actor : PhysicsObject, IHasModel
 {
 	CPlayer@ player;
 	private Model@ model;
+	private MovementStrategy@ movementStrategy = SmoothFly();
 
 	float acceleration;
-	float friction;
 	float jumpForce;
 
 	Actor(CPlayer@ player, Vec3f position)
 	{
 		super(position);
-		LoadConfig();
 
 		@this.player = player;
 	}
@@ -24,7 +24,7 @@ class Actor : PhysicsObject, IHasModel
 	Actor(CBitStream@ bs)
 	{
 		super(bs);
-		LoadConfig();
+		LoadConfig(openConfig("Actor.cfg"));
 
 		u16 playerID = bs.read_u16();
 		@player = getPlayerByNetworkId(playerID);
@@ -35,12 +35,21 @@ class Actor : PhysicsObject, IHasModel
 		SetModel(ActorModel("KnightSkin.png"));
 	}
 
+	void opAssign(const Actor &in actor)
+	{
+
+	}
+
 	void Update()
 	{
 		PhysicsObject::Update();
 
-		Move();
-		Rotate();
+		if (hasMovementStrategy())
+		{
+			movementStrategy.Move(this);
+			movementStrategy.Rotate(this);
+		}
+
 		PlaceVoxel();
 	}
 
@@ -73,6 +82,8 @@ class Actor : PhysicsObject, IHasModel
 	void Interpolate()
 	{
 		PhysicsObject::Interpolate();
+
+		interRotation = oldRotation.lerpAngle(rotation, getInterFrameTime());
 	}
 
 	void Serialize(CBitStream@ bs)
@@ -94,6 +105,16 @@ class Actor : PhysicsObject, IHasModel
 	Model@ getModel()
 	{
 		return model;
+	}
+
+	bool hasMovementStrategy()
+	{
+		return movementStrategy !is null;
+	}
+
+	void SetMovementStrategy(MovementStrategy@ strategy)
+	{
+		@movementStrategy = strategy;
 	}
 
 	bool isSameAs(Actor@ actor)
@@ -125,22 +146,6 @@ class Actor : PhysicsObject, IHasModel
 
 		velocity.x += dir.x * acceleration - friction * velocity.x;
 		velocity.z += dir.y * acceleration - friction * velocity.z;
-
-		//set velocity to zero if low enough
-		if (Maths::Abs(velocity.x) < 0.001f) velocity.x = 0;
-		if (Maths::Abs(velocity.y) < 0.001f) velocity.y = 0;
-		if (Maths::Abs(velocity.z) < 0.001f) velocity.z = 0;
-	}
-
-	private void Rotate()
-	{
-		Vec2f dir = getMouse3D().velocity;
-		rotation.x += dir.y;
-		rotation.y += dir.x;
-
-		rotation.x = Maths::Clamp(rotation.x, -90, 90);
-		rotation.z = Maths::Clamp(rotation.z, -90, 90);
-		rotation.y %= 360;
 	}
 
 	private void PlaceVoxel()
@@ -164,11 +169,11 @@ class Actor : PhysicsObject, IHasModel
 		}
 	}
 
-	private void LoadConfig()
+	void LoadConfig(ConfigFile@ cfg)
 	{
-		ConfigFile@ cfg = openConfig("Actor.cfg");
+		PhysicsObject::LoadConfig(cfg);
+
 		acceleration = cfg.read_f32("acceleration");
-		friction = cfg.read_f32("friction");
 		jumpForce = cfg.read_f32("jump_force");
 	}
 }

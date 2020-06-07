@@ -1,11 +1,23 @@
 #include "Object.as"
 #include "AABB.as"
 
-const float GRAVITY = 0.03f;
-
 class PhysicsObject : Object
 {
 	AABB@ hitbox;
+
+	float gravity;
+	float friction;
+	float airResitance;
+	float angularFriction;
+	float elasticity;
+
+	Vec3f velocity;
+	Vec3f oldVelocity;
+	Vec3f interVelocity;
+
+	Vec3f angularVelocity;
+	Vec3f oldAngularVelocity;
+	Vec3f interAngularVelocity;
 
 	private bool collisionX = false;
 	private bool collisionY = false;
@@ -13,17 +25,29 @@ class PhysicsObject : Object
 
 	PhysicsObject(Vec3f position, Vec3f rotation = Vec3f(0, 0, 0), Vec3f velocity = Vec3f(0, 0, 0))
 	{
-		super(position, rotation, velocity);
+		super(position, rotation);
+
+		this.velocity = velocity;
 	}
 
 	PhysicsObject(CBitStream@ bs)
 	{
 		super(bs);
+
+		velocity = Vec3f(bs);
+	}
+
+	void opAssign(const PhysicsObject &in physicsObject)
+	{
+		oldVelocity = velocity;
+		velocity = physicsObject.velocity;
 	}
 
 	void PreUpdate()
 	{
 		Object::PreUpdate();
+
+		oldVelocity = velocity;
 
 		//reset velocity from collision last tick
 		if (collisionX)
@@ -47,7 +71,7 @@ class PhysicsObject : Object
 	{
 		Object::Update();
 
-		velocity.y -= GRAVITY;
+		velocity.y -= gravity;
 		velocity.y = Maths::Clamp(velocity.y, -1, 1);
 	}
 
@@ -55,17 +79,41 @@ class PhysicsObject : Object
 	{
 		Object::PostUpdate();
 
+		//set velocity to zero if low enough
+		if (Maths::Abs(velocity.x) < 0.001f) velocity.x = 0;
+		if (Maths::Abs(velocity.y) < 0.001f) velocity.y = 0;
+		if (Maths::Abs(velocity.z) < 0.001f) velocity.z = 0;
+
 		CollisionResponse();
 	}
 
-	bool isOnGround()
+	void Interpolate()
 	{
-		return false;
+		interPosition = oldPosition.lerp(oldPosition + velocity, getInterFrameTime());
+		interPosition = interPosition.clamp(oldPosition, position);
+
+		interVelocity = oldVelocity.lerp(velocity, getInterFrameTime());
+		interAngularVelocity = oldAngularVelocity.lerp(angularVelocity, getInterFrameTime());
+
+		interRotation = oldRotation.lerpAngle(oldRotation + angularVelocity, getInterFrameTime());
 	}
 
 	void Serialize(CBitStream@ bs)
 	{
 		Object::Serialize(bs);
+
+		velocity.Serialize(bs);
+	}
+
+	void LoadConfig(ConfigFile@ cfg)
+	{
+		Object::LoadConfig(cfg);
+
+		gravity = cfg.read_f32("gravity", 0.03f);
+		friction = cfg.read_f32("friction", 0.01f);
+		airResitance = cfg.read_f32("air_resistance", 0.0f);
+		angularFriction = cfg.read_f32("angular_friction", 0.0f);
+		elasticity = cfg.read_f32("elasticity", 0.0f);
 	}
 
 	private void CollisionResponse()

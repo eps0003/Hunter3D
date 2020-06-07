@@ -10,15 +10,10 @@ class Object : Identifiable
 	Vec3f oldRotation;
 	Vec3f interRotation;
 
-	Vec3f velocity;
-	Vec3f oldVelocity;
-	Vec3f interVelocity;
-
-	Object(Vec3f position, Vec3f rotation = Vec3f(0, 0, 0), Vec3f velocity = Vec3f(0, 0, 0))
+	Object(Vec3f position, Vec3f rotation = Vec3f(0, 0, 0))
 	{
 		this.position = position;
 		this.rotation = rotation;
-		this.velocity = velocity;
 	}
 
 	Object(CBitStream@ bs)
@@ -27,26 +22,21 @@ class Object : Identifiable
 
 		position = Vec3f(bs);
 		rotation = Vec3f(bs);
-		velocity = Vec3f(bs);
 	}
 
 	void opAssign(const Object &in object)
 	{
 		oldPosition = position;
 		oldRotation = rotation;
-		oldVelocity = velocity;
 
 		position = object.position;
 		rotation = object.rotation;
-		velocity = object.velocity;
 	}
-
 
 	void PreUpdate()
 	{
 		oldPosition = position;
 		oldRotation = rotation;
-		oldVelocity = velocity;
 	}
 
 	void Update()
@@ -66,11 +56,7 @@ class Object : Identifiable
 
 	void Interpolate()
 	{
-		interPosition = oldPosition.lerp(oldPosition + velocity, getInterFrameTime());
-		interPosition = interPosition.clamp(oldPosition, position);
-
-		interVelocity = oldVelocity.lerp(velocity, getInterFrameTime());
-
+		interPosition = oldPosition.lerp(position, getInterFrameTime());
 		interRotation = oldRotation.lerpAngle(rotation, getInterFrameTime());
 	}
 
@@ -80,6 +66,10 @@ class Object : Identifiable
 
 		position.Serialize(bs);
 		rotation.Serialize(bs);
-		velocity.Serialize(bs);
+	}
+
+	void LoadConfig(ConfigFile@ cfg)
+	{
+
 	}
 }
