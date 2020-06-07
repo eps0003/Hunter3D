@@ -2,6 +2,7 @@
 #include "Vec3f.as"
 #include "Camera.as"
 #include "Utilities.as"
+#include "UVEditor.as"
 
 class ModelBuilder
 {
