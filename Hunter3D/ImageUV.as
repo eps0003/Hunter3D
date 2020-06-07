@@ -32,7 +32,25 @@ class ImageUV
 		return min != max;
 	}
 
-	string toString()
+	string toString(uint precision = 3)
+	{
+		return "(" + formatFloat(min.x, "", 0, precision) + ", " + formatFloat(min.y, "", 0, precision) + ") (" + formatFloat(max.x, "", 0, precision) + ", " + formatFloat(max.y, "", 0, precision) + ")";
+	}
+
+	string toString(string image)
+	{
+		Vec2f dim;
+		GUI::GetImageDimensions(image, dim);
+
+		int minX = dim.x * min.x;
+		int minY = dim.y * min.y;
+		int maxX = dim.x * max.x;
+		int maxY = dim.y * max.y;
+
+		return "(" + minX + ", " + minY + ") (" + maxX + ", " + maxY+ ")";
+	}
+
+	string serializeString()
 	{
 		return min.x + " " + min.y + " " + max.x + " " + max.y;
 	}

@@ -23,6 +23,7 @@ void onRestart(CRules@ this)
 {
 	Texture::createFromFile("pixel", "pixel.png");
 	@modelBuilder = ModelBuilder();
+	modelBuilder.Init();
 }
 
 bool onClientProcessChat(CRules@ this, const string &in textIn, string &out textOut, CPlayer@ player)

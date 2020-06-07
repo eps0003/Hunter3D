@@ -12,14 +12,19 @@ class Segment : SegmentChildren
 	// Vec3f rotation2; //5. secondary rotation after previous rotation
 
 	private Vertex[] vertices;
-	private ImageUV[] UVs;
+	private ImageUV@[] UVs;
 
 	Segment(string name, Vec3f dim, Vec3f origin)
 	{
 		this.name = name;
 		this.dim = dim;
 		this.origin = origin;
+
 		UVs.set_length(6);
+		for (uint i = 0; i < 6; i++)
+		{
+			@UVs[i] = ImageUV();
+		}
 	}
 
 	Segment(string name, ConfigFile@ cfg)
@@ -43,7 +48,7 @@ class Segment : SegmentChildren
 			for (uint i = 0; i < uvArr.length; i++)
 			{
 				string serialized = uvArr[i];
-				UVs[i] = ImageUV(serialized);
+				@UVs[i] = ImageUV(serialized);
 			}
 		}
 
@@ -70,12 +75,12 @@ class Segment : SegmentChildren
 		Vec3f min = -origin;
 		Vec3f max = dim - origin;
 		SColor color = color_white;
-		ImageUV uv;
+		ImageUV@ uv;
 
 		vertices.clear();
 
 		//back
-		uv = getUV(Direction::Back);
+		@uv = getUV(Direction::Back);
 		if (uv.isVisible() && dim.x != 0 && dim.y != 0)
 		{
 			vertices.push_back(Vertex(min.x, max.y, min.z, uv.min.x, uv.min.y, color));
@@ -85,7 +90,7 @@ class Segment : SegmentChildren
 		}
 
 		//front
-		uv = getUV(Direction::Front);
+		@uv = getUV(Direction::Front);
 		if (uv.isVisible() && dim.x != 0 && dim.y != 0)
 		{
 			vertices.push_back(Vertex(max.x, min.y, max.z, uv.min.x, uv.max.y, color));
@@ -95,7 +100,7 @@ class Segment : SegmentChildren
 		}
 
 		//up
-		uv = getUV(Direction::Up);
+		@uv = getUV(Direction::Up);
 		if (uv.isVisible() && dim.x != 0 && dim.z != 0)
 		{
 			vertices.push_back(Vertex(max.x, max.y, min.z, uv.min.x, uv.min.y, color));
@@ -105,7 +110,7 @@ class Segment : SegmentChildren
 		}
 
 		//down
-		uv = getUV(Direction::Down);
+		@uv = getUV(Direction::Down);
 		if (uv.isVisible() && dim.x != 0 && dim.z != 0)
 		{
 			vertices.push_back(Vertex(min.x, min.y, max.z, uv.min.x, uv.max.y, color));
@@ -115,7 +120,7 @@ class Segment : SegmentChildren
 		}
 
 		//right
-		uv = getUV(Direction::Right);
+		@uv = getUV(Direction::Right);
 		if (uv.isVisible() && dim.y != 0 && dim.z != 0)
 		{
 			vertices.push_back(Vertex(max.x, max.y, min.z, uv.min.x, uv.min.y, color));
@@ -125,7 +130,7 @@ class Segment : SegmentChildren
 		}
 
 		//left
-		uv = getUV(Direction::Left);
+		@uv = getUV(Direction::Left);
 		if (uv.isVisible() && dim.y != 0 && dim.z != 0)
 		{
 			vertices.push_back(Vertex(min.x, min.y, max.z, uv.min.x, uv.max.y, color));
@@ -135,12 +140,17 @@ class Segment : SegmentChildren
 		}
 	}
 
-	ImageUV getUV(int side)
+	ImageUV@[] getUVs()
+	{
+		return UVs;
+	}
+
+	ImageUV@ getUV(int side)
 	{
 		return UVs[side];
 	}
 
-	void SetUV(int side, ImageUV uv)
+	void SetUV(int side, ImageUV@ uv)
 	{
 		UVs[side] = uv;
 	}
@@ -161,8 +171,8 @@ class Segment : SegmentChildren
 		string[] uvArr;
 		for (uint i = 0; i < UVs.length; i++)
 		{
-			ImageUV uv = getUV(i);
-			uvArr.push_back(uv.toString());
+			ImageUV@ uv = getUV(i);
+			uvArr.push_back(uv.serializeString());
 		}
 		cfg.addArray_string(name + "_uv", uvArr);
 	}

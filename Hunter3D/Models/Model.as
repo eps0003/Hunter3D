@@ -30,6 +30,11 @@ class Model : SegmentChildren
 		this.skin = skin;
 	}
 
+	string getSkin()
+	{
+		return skin;
+	}
+
 	bool isLoaded()
 	{
 		return filePath == "" || getRules().exists(filePath);

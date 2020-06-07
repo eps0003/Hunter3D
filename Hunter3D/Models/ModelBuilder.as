@@ -5,11 +5,17 @@
 
 class ModelBuilder
 {
-	private string skin = "pixel";
 	private Object parent;
 	private Model model;
 	private string selectedSegment;
 	private uint selectedProperty = 0;
+
+	void Init()
+	{
+		LoadModel("ActorModel.cfg");
+		SetSkin("KnightSkin.png");
+		SelectSegment("body");
+	}
 
 	void Update()
 	{
@@ -23,54 +29,95 @@ class ModelBuilder
 			if (scrollDir != 0)
 			{
 				bool pressingKey = false;
-
 				Vec3f@[] properties = { segment.dim, segment.origin, segment.offset, segment.orbit, segment.rotation };
-				float[] preciseIncrement = { 0.01f, 0.01f, 0.01f, 1.0f, 1.0f };
-				float[] fastIncrement = { 0.2f, 0.2f, 0.2f, 10.0f, 10.0f };
-				bool[] generateVertices = { true, true, false, false, false };
 
-				float incrementAmount = controls.isKeyPressed(KEY_LSHIFT) ? preciseIncrement[selectedProperty] : fastIncrement[selectedProperty];
-
-				if (controls.isKeyPressed(KEY_KEY_Z))
+				if (selectedProperty < properties.length)
 				{
-					pressingKey = true;
-					properties[selectedProperty].x += incrementAmount * scrollDir;
+					float[] preciseIncrement = { 0.01f, 0.01f, 0.01f, 1.0f, 1.0f };
+					float[] fastIncrement = { 0.2f, 0.2f, 0.2f, 10.0f, 10.0f };
+					bool[] generateVertices = { true, true, false, false, false };
 
-					if (Maths::Abs(properties[selectedProperty].x) < 0.001f)
+					float incrementAmount = controls.isKeyPressed(KEY_LSHIFT) ? preciseIncrement[selectedProperty] : fastIncrement[selectedProperty];
+
+					if (controls.isKeyPressed(KEY_KEY_Z))
 					{
-						properties[selectedProperty].x = 0;
+						pressingKey = true;
+						properties[selectedProperty].x += incrementAmount * scrollDir;
+
+						if (Maths::Abs(properties[selectedProperty].x) < 0.001f)
+						{
+							properties[selectedProperty].x = 0;
+						}
+					}
+
+					if (controls.isKeyPressed(KEY_KEY_X))
+					{
+						pressingKey = true;
+						properties[selectedProperty].y += incrementAmount * scrollDir;
+
+						if (Maths::Abs(properties[selectedProperty].y) < 0.001f)
+						{
+							properties[selectedProperty].y = 0;
+						}
+					}
+
+					if (controls.isKeyPressed(KEY_KEY_C))
+					{
+						pressingKey = true;
+						properties[selectedProperty].z += incrementAmount * scrollDir;
+
+						if (Maths::Abs(properties[selectedProperty].z) < 0.001f)
+						{
+							properties[selectedProperty].z = 0;
+						}
+					}
+
+					if (pressingKey && generateVertices[selectedProperty])
+					{
+						segment.GenerateVertices();
 					}
 				}
-
-				if (controls.isKeyPressed(KEY_KEY_X))
+				else
 				{
-					pressingKey = true;
-					properties[selectedProperty].y += incrementAmount * scrollDir;
+					ImageUV@[] UVs = segment.getUVs();
+					uint index = selectedProperty - properties.length;
 
-					if (Maths::Abs(properties[selectedProperty].y) < 0.001f)
+					Vec2f dim;
+					GUI::GetImageDimensions(model.getSkin(), dim);
+
+					if (controls.isKeyPressed(KEY_KEY_Z))
 					{
-						properties[selectedProperty].y = 0;
+						pressingKey = true;
+						UVs[index].min.x += 1 / dim.x * scrollDir;
 					}
-				}
 
-				if (controls.isKeyPressed(KEY_KEY_C))
-				{
-					pressingKey = true;
-					properties[selectedProperty].z += incrementAmount * scrollDir;
-
-					if (Maths::Abs(properties[selectedProperty].z) < 0.001f)
+					if (controls.isKeyPressed(KEY_KEY_X))
 					{
-						properties[selectedProperty].z = 0;
+						pressingKey = true;
+						UVs[index].min.y += 1 / dim.y * scrollDir;
+					}
+
+					if (controls.isKeyPressed(KEY_KEY_C))
+					{
+						pressingKey = true;
+						UVs[index].max.x += 1 / dim.x * scrollDir;
+					}
+
+					if (controls.isKeyPressed(KEY_KEY_V))
+					{
+						pressingKey = true;
+						UVs[index].max.y += 1 / dim.y * scrollDir;
+					}
+
+					if (pressingKey)
+					{
+						segment.GenerateVertices();
 					}
 				}
 
 				if (!pressingKey)
 				{
-					selectedProperty = (selectedProperty + 5 - scrollDir) % 5;
-				}
-				else if (generateVertices[selectedProperty])
-				{
-					segment.GenerateVertices();
+					selectedProperty = (selectedProperty + 11 - scrollDir) % 11;
 				}
 			}
 		}
@@ -95,6 +142,16 @@ class ModelBuilder
 			GUI::DrawText("offset: "   + segment.offset.toString(),   Vec2f(10, 110), selectedProperty == 2 ? selectedColor : color_black);
 			GUI::DrawText("orbit: "    + segment.orbit.toString(),    Vec2f(10, 130), selectedProperty == 3 ? selectedColor : color_black);
 			GUI::DrawText("rotation: " + segment.rotation.toString(), Vec2f(10, 150), selectedProperty == 4 ? selectedColor : color_black);
+
+			for (uint i = 0; i < 6; i++)
+			{
+				ImageUV@ uv = segment.getUV(i);
+				Vec2f pos(10, 190 + i * 20);
+				SColor col = selectedProperty - 5 == i ? selectedColor : color_black;
+				GUI::DrawText(directionNames[i] + " UV: " + uv.toString(model.getSkin()), pos, col);
+			}
+
+			UVEditor().Render(Vec2f(10, 340), model.getSkin(), segment.getUVs(), selectedProperty - 5);
 		}
 	}
 
