@@ -90,24 +90,28 @@ class ModelBuilder
 					{
 						pressingKey = true;
 						UVs[index].min.x += 1 / dim.x * scrollDir;
+						UVs[index].min.x = Maths::Clamp01(UVs[index].min.x);
 					}
 
 					if (controls.isKeyPressed(KEY_KEY_X))
 					{
 						pressingKey = true;
 						UVs[index].min.y += 1 / dim.y * scrollDir;
+						UVs[index].min.y = Maths::Clamp01(UVs[index].min.y);
 					}
 
 					if (controls.isKeyPressed(KEY_KEY_C))
 					{
 						pressingKey = true;
 						UVs[index].max.x += 1 / dim.x * scrollDir;
+						UVs[index].max.x = Maths::Clamp01(UVs[index].max.x);
 					}
 
 					if (controls.isKeyPressed(KEY_KEY_V))
 					{
 						pressingKey = true;
 						UVs[index].max.y += 1 / dim.y * scrollDir;
+						UVs[index].max.y = Maths::Clamp01(UVs[index].max.y);
 					}
 
 					if (pressingKey)
@@ -253,7 +257,6 @@ class ModelBuilder
 
 			parent.AddChild(childCopy);
 			print("Attached '" + childName + "' to '" + parentName + "'");
-			print("descendants: "+model.getDescendantCount());
 		}
 		else
 		{
