@@ -29,8 +29,8 @@ class Actor : PhysicsObject, IHasModel
 		u16 playerID = bs.read_u16();
 		@player = getPlayerByNetworkId(playerID);
 
-		// @hitbox = AABB(Vec3f(0.6f, 1.6f, 0.6f));0.7; 1.7; 0.7;
-		@hitbox = AABB(Vec3f(-0.35f, -1.7 * 7/8, -0.3f), Vec3f(0.35f, 1.7 * 1/8, 0.35f));
+		@hitbox = AABB(Vec3f(0.6f, 1.6f, 0.6f));
+		cameraHeight = 1.5f;
 
 		SetModel(ActorModel("KnightSkin.png"));
 	}

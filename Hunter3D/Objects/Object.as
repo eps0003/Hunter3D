@@ -10,6 +10,8 @@ class Object : Identifiable
 	Vec3f oldRotation;
 	Vec3f interRotation;
 
+	float cameraHeight = 0;
+
 	Object(Vec3f position, Vec3f rotation = Vec3f(0, 0, 0))
 	{
 		this.position = position;

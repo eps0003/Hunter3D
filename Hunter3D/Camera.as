@@ -31,7 +31,7 @@ class Camera : IHasParent
 		if (hasParent())
 		{
 			float[] model = getModelMatrix();
-			float[] view = getViewMatrix(parent.interPosition, parent.interRotation);
+			float[] view = getViewMatrix(parent.interPosition + Vec3f(0, parent.cameraHeight, 0), parent.interRotation);
 			float[] proj = getProjectionMatrix();
 			Render::SetTransform(model, view, proj);
 		}
