@@ -5,7 +5,8 @@
 class Model : SegmentChildren
 {
 	private string filePath = "";
-	private string skin = "pixel";
+	private string texture = "pixel";
+	private SMaterial@ material = SMaterial();
 
 	Model() {}
 
@@ -23,16 +24,19 @@ class Model : SegmentChildren
 		{
 			LoadModel(filePath);
 		}
+
+		SetMaterial(texture);
 	}
 
-	void SetSkin(string skin)
+	void SetTexture(string texture)
 	{
-		this.skin = skin;
+		this.texture = texture;
+		SetMaterial(texture);
 	}
 
-	string getSkin()
+	string getTexture()
 	{
-		return skin;
+		return texture;
 	}
 
 	bool isLoaded()
@@ -49,17 +53,13 @@ class Model : SegmentChildren
 
 			Update(parent);
 
-			Render::SetBackfaceCull(false);
-
 			Segment@[] segments = getChildren();
 			for (uint i = 0; i < segments.length; i++)
 			{
 				Segment@ segment = segments[i];
 				Matrix::SetTranslation(matrix, parent.interPosition.x, parent.interPosition.y, parent.interPosition.z);
-				segment.Render(skin, matrix);
+				segment.Render(matrix);
 			}
-
-			Render::SetBackfaceCull(true);
 		}
 	}
 
@@ -84,6 +84,24 @@ class Model : SegmentChildren
 	void Serialize(ConfigFile@ cfg)
 	{
 		Serialize("model", cfg);
+	}
+
+	private void SetMaterial(string texture)
+	{
+		//create new material with texture
+		@material = SMaterial();
+		material.AddTexture(texture);
+		material.SetFlag(SMaterial::LIGHTING, false);
+		material.SetFlag(SMaterial::BILINEAR_FILTER, false);
+		material.SetFlag(SMaterial::BACK_FACE_CULLING, false);
+
+		//apply material to all segments
+		Segment@[] segments = getDescendants();
+		for (uint i = 0; i < segments.length; i++)
+		{
+			Segment@ segment = segments[i];
+			segment.SetMaterial(material);
+		}
 	}
 
 	//child must override

@@ -148,7 +148,7 @@ class Map
 		//setup material
 		material.AddTexture(texture);
 		material.SetFlag(SMaterial::LIGHTING, false);
-		material.SetFlag(SMaterial::ANTI_ALIASING, false);
+		material.SetFlag(SMaterial::BILINEAR_FILTER, false);
 
 		//get chunk dimensions
 		chunkDim = getChunkPos(mapDim);

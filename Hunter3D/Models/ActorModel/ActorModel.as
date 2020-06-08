@@ -3,10 +3,10 @@
 
 class ActorModel : Model
 {
-	ActorModel(string skin)
+	ActorModel(string texture)
 	{
 		super("Models/ActorModel.cfg");
-		SetSkin(skin);
+		SetTexture(texture);
 	}
 
 	private void CreateSegments()

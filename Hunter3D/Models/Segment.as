@@ -11,7 +11,9 @@ class Segment : SegmentChildren
 	Vec3f rotation;  //4. rotation around segment origin
 	// Vec3f rotation2; //5. secondary rotation after previous rotation
 
-	private Vertex[] vertices;
+	SMesh@ mesh = SMesh();
+	private Vertex[] vertices(24);
+	private u16[] indices(36);
 	private ImageUV@[] UVs;
 
 	Segment(string name, Vec3f dim, Vec3f origin)
@@ -56,18 +58,26 @@ class Segment : SegmentChildren
 		GenerateVertices();
 	}
 
-	void Render(string skin, float[] matrix)
+	void Render(float[] matrix)
 	{
 		//render myself
-		PositionAndRotate(@matrix);
-		Render::RawQuads(skin, vertices);
+		if (!vertices.empty())
+		{
+			PositionAndRotate(@matrix);
+			mesh.RenderMeshWithMaterial();
+		}
 
 		//render children
 		for (uint i = 0; i < children.length; i++)
 		{
 			Segment@ child = children[i];
-			child.Render(skin, matrix);
+			child.Render(matrix);
 		}
+	}
+
+	void SetMaterial(SMaterial@ material)
+	{
+		mesh.SetMaterial(material);
 	}
 
 	void GenerateVertices()
@@ -77,66 +87,92 @@ class Segment : SegmentChildren
 		SColor color = color_white;
 		ImageUV@ uv;
 
-		vertices.clear();
+		uint vi = 0;
+		uint ii = 0;
 
 		//back
 		@uv = getUV(Direction::Back);
 		if (uv.isVisible() && dim.x != 0 && dim.y != 0)
 		{
-			vertices.push_back(Vertex(min.x, max.y, min.z, uv.min.x, uv.min.y, color));
-			vertices.push_back(Vertex(max.x, max.y, min.z, uv.max.x, uv.min.y, color));
-			vertices.push_back(Vertex(max.x, min.y, min.z, uv.max.x, uv.max.y, color));
-			vertices.push_back(Vertex(min.x, min.y, min.z, uv.min.x, uv.max.y, color));
+			vertices[vi++] = Vertex(min.x, max.y, min.z, uv.min.x, uv.min.y, color);
+			vertices[vi++] = Vertex(max.x, max.y, min.z, uv.max.x, uv.min.y, color);
+			vertices[vi++] = Vertex(max.x, min.y, min.z, uv.max.x, uv.max.y, color);
+			vertices[vi++] = Vertex(min.x, min.y, min.z, uv.min.x, uv.max.y, color);
+
+			indices[ii++] = vi-4; indices[ii++] = vi-3; indices[ii++] = vi-1;
+			indices[ii++] = vi-3; indices[ii++] = vi-2; indices[ii++] = vi-1;
 		}
 
 		//front
 		@uv = getUV(Direction::Front);
 		if (uv.isVisible() && dim.x != 0 && dim.y != 0)
 		{
-			vertices.push_back(Vertex(max.x, min.y, max.z, uv.min.x, uv.max.y, color));
-			vertices.push_back(Vertex(max.x, max.y, max.z, uv.min.x, uv.min.y, color));
-			vertices.push_back(Vertex(min.x, max.y, max.z, uv.max.x, uv.min.y, color));
-			vertices.push_back(Vertex(min.x, min.y, max.z, uv.max.x, uv.max.y, color));
+			vertices[vi++] = Vertex(max.x, min.y, max.z, uv.min.x, uv.max.y, color);
+			vertices[vi++] = Vertex(max.x, max.y, max.z, uv.min.x, uv.min.y, color);
+			vertices[vi++] = Vertex(min.x, max.y, max.z, uv.max.x, uv.min.y, color);
+			vertices[vi++] = Vertex(min.x, min.y, max.z, uv.max.x, uv.max.y, color);
+
+			indices[ii++] = vi-4; indices[ii++] = vi-3; indices[ii++] = vi-1;
+			indices[ii++] = vi-3; indices[ii++] = vi-2; indices[ii++] = vi-1;
 		}
 
 		//up
 		@uv = getUV(Direction::Up);
 		if (uv.isVisible() && dim.x != 0 && dim.z != 0)
 		{
-			vertices.push_back(Vertex(max.x, max.y, min.z, uv.min.x, uv.min.y, color));
-			vertices.push_back(Vertex(min.x, max.y, min.z, uv.max.x, uv.min.y, color));
-			vertices.push_back(Vertex(min.x, max.y, max.z, uv.max.x, uv.max.y, color));
-			vertices.push_back(Vertex(max.x, max.y, max.z, uv.min.x, uv.max.y, color));
+			vertices[vi++] = Vertex(max.x, max.y, min.z, uv.min.x, uv.min.y, color);
+			vertices[vi++] = Vertex(min.x, max.y, min.z, uv.max.x, uv.min.y, color);
+			vertices[vi++] = Vertex(min.x, max.y, max.z, uv.max.x, uv.max.y, color);
+			vertices[vi++] = Vertex(max.x, max.y, max.z, uv.min.x, uv.max.y, color);
+
+			indices[ii++] = vi-4; indices[ii++] = vi-3; indices[ii++] = vi-1;
+			indices[ii++] = vi-3; indices[ii++] = vi-2; indices[ii++] = vi-1;
 		}
 
 		//down
 		@uv = getUV(Direction::Down);
 		if (uv.isVisible() && dim.x != 0 && dim.z != 0)
 		{
-			vertices.push_back(Vertex(min.x, min.y, max.z, uv.min.x, uv.max.y, color));
-			vertices.push_back(Vertex(min.x, min.y, min.z, uv.min.x, uv.min.y, color));
-			vertices.push_back(Vertex(max.x, min.y, min.z, uv.max.x, uv.min.y, color));
-			vertices.push_back(Vertex(max.x, min.y, max.z, uv.max.x, uv.max.y, color));
+			vertices[vi++] = Vertex(min.x, min.y, max.z, uv.min.x, uv.max.y, color);
+			vertices[vi++] = Vertex(min.x, min.y, min.z, uv.min.x, uv.min.y, color);
+			vertices[vi++] = Vertex(max.x, min.y, min.z, uv.max.x, uv.min.y, color);
+			vertices[vi++] = Vertex(max.x, min.y, max.z, uv.max.x, uv.max.y, color);
+
+			indices[ii++] = vi-4; indices[ii++] = vi-3; indices[ii++] = vi-1;
+			indices[ii++] = vi-3; indices[ii++] = vi-2; indices[ii++] = vi-1;
 		}
 
 		//right
 		@uv = getUV(Direction::Right);
 		if (uv.isVisible() && dim.y != 0 && dim.z != 0)
 		{
-			vertices.push_back(Vertex(max.x, max.y, min.z, uv.min.x, uv.min.y, color));
-			vertices.push_back(Vertex(max.x, max.y, max.z, uv.max.x, uv.min.y, color));
-			vertices.push_back(Vertex(max.x, min.y, max.z, uv.max.x, uv.max.y, color));
-			vertices.push_back(Vertex(max.x, min.y, min.z, uv.min.x, uv.max.y, color));
+			vertices[vi++] = Vertex(max.x, max.y, min.z, uv.min.x, uv.min.y, color);
+			vertices[vi++] = Vertex(max.x, max.y, max.z, uv.max.x, uv.min.y, color);
+			vertices[vi++] = Vertex(max.x, min.y, max.z, uv.max.x, uv.max.y, color);
+			vertices[vi++] = Vertex(max.x, min.y, min.z, uv.min.x, uv.max.y, color);
+
+			indices[ii++] = vi-4; indices[ii++] = vi-3; indices[ii++] = vi-1;
+			indices[ii++] = vi-3; indices[ii++] = vi-2; indices[ii++] = vi-1;
 		}
 
 		//left
 		@uv = getUV(Direction::Left);
 		if (uv.isVisible() && dim.y != 0 && dim.z != 0)
 		{
-			vertices.push_back(Vertex(min.x, min.y, max.z, uv.min.x, uv.max.y, color));
-			vertices.push_back(Vertex(min.x, max.y, max.z, uv.min.x, uv.min.y, color));
-			vertices.push_back(Vertex(min.x, max.y, min.z, uv.max.x, uv.min.y, color));
-			vertices.push_back(Vertex(min.x, min.y, min.z, uv.max.x, uv.max.y, color));
+			vertices[vi++] = Vertex(min.x, min.y, max.z, uv.min.x, uv.max.y, color);
+			vertices[vi++] = Vertex(min.x, max.y, max.z, uv.min.x, uv.min.y, color);
+			vertices[vi++] = Vertex(min.x, max.y, min.z, uv.max.x, uv.min.y, color);
+			vertices[vi++] = Vertex(min.x, min.y, min.z, uv.max.x, uv.max.y, color);
+
+			indices[ii++] = vi-4; indices[ii++] = vi-3; indices[ii++] = vi-1;
+			indices[ii++] = vi-3; indices[ii++] = vi-2; indices[ii++] = vi-1;
+		}
+
+		if (!vertices.empty())
+		{
+			mesh.SetVertex(vertices);
+			mesh.SetIndices(indices);
+			mesh.BuildMesh();
 		}
 	}
 

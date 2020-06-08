@@ -14,7 +14,7 @@ class ModelBuilder
 	void Init()
 	{
 		LoadModel("ActorModel.cfg");
-		SetSkin("KnightSkin.png");
+		SetTexture("KnightSkin.png");
 		SelectSegment("body");
 	}
 
@@ -84,7 +84,7 @@ class ModelBuilder
 					uint index = selectedProperty - properties.length;
 
 					Vec2f dim;
-					GUI::GetImageDimensions(model.getSkin(), dim);
+					GUI::GetImageDimensions(model.getTexture(), dim);
 
 					if (controls.isKeyPressed(KEY_KEY_Z))
 					{
@@ -153,10 +153,10 @@ class ModelBuilder
 				ImageUV@ uv = segment.getUV(i);
 				Vec2f pos(10, 190 + i * 20);
 				SColor col = selectedProperty - 5 == i ? selectedColor : color_black;
-				GUI::DrawText(directionNames[i] + " UV: " + uv.toString(model.getSkin()), pos, col);
+				GUI::DrawText(directionNames[i] + " UV: " + uv.toString(model.getTexture()), pos, col);
 			}
 
-			UVEditor().Render(Vec2f(10, 340), model.getSkin(), segment.getUVs(), selectedProperty - 5);
+			UVEditor().Render(Vec2f(10, 340), model.getTexture(), segment.getUVs(), selectedProperty - 5);
 		}
 	}
 
@@ -305,10 +305,10 @@ class ModelBuilder
 		}
 	}
 
-	void SetSkin(string skin)
+	void SetTexture(string texture)
 	{
-		model.SetSkin(skin);
-		print("Set skin: " + skin);
+		model.SetTexture(texture);
+		print("Set texture: " + texture);
 	}
 
 	void SaveModel(string filePath)
@@ -370,6 +370,10 @@ class ModelBuilder
 
 			string name = args[0];
 			SelectSegment(name);
+		}
+		else if (cmd == "deselect")
+		{
+			DeselectSegment();
 		}
 		else if (cmd == "create")
 		{
@@ -494,11 +498,11 @@ class ModelBuilder
 				SetSegmentUV(name, side, x, y, w, h);
 			}
 		}
-		else if (cmd == "skin")
+		else if (cmd == "texture" || cmd == "skin")
 		{
 			if (args.length < 1) return;
 
-			SetSkin(args[0]);
+			SetTexture(args[0]);
 		}
 		else if (cmd == "save")
 		{

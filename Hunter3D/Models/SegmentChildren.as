@@ -75,6 +75,25 @@ class SegmentChildren
 		return children;
 	}
 
+	Segment@[] getDescendants()
+	{
+		Segment@[] segments;
+
+		getDescendants(@segments);
+
+		return segments;
+	}
+
+	private void getDescendants(Segment@[]@ segments)
+	{
+		for (uint i = 0; i < children.length; i++)
+		{
+			Segment@ child = children[i];
+			segments.push_back(child);
+			child.getDescendants(@segments);
+		}
+	}
+
 	Segment@ getChild(string name)
 	{
 		for (uint i = 0; i < children.length; i++)
@@ -188,7 +207,6 @@ class SegmentChildren
 			{
 				string name = childrenNames[i];
 				Segment segment(name, cfg);
-				segment.GenerateVertices();
 				children.push_back(segment);
 			}
 		}

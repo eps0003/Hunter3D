@@ -2,12 +2,12 @@
 
 class UVEditor
 {
-	void Render(Vec2f position, string skin, ImageUV@[] UVs, uint selectedUV)
+	void Render(Vec2f position, string texture, ImageUV@[] UVs, uint selectedUV)
 	{
 		float scale = 4;
 
 		Vec2f dim;
-		GUI::GetImageDimensions(skin, dim);
+		GUI::GetImageDimensions(texture, dim);
 		dim *= scale;
 
 		Vec2f tl = position;
@@ -15,7 +15,7 @@ class UVEditor
 
 		GUI::DrawRectangle(tl - Vec2f(1, 1), br + Vec2f(1, 1), color_black);
 		GUI::DrawRectangle(tl, br, color_white);
-		GUI::DrawIcon(skin, tl, scale / 2.0f);
+		GUI::DrawIcon(texture, tl, scale / 2.0f);
 
 		for (uint i = 0; i < UVs.length; i++)
 		{
