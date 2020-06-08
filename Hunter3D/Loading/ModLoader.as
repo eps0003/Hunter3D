@@ -30,8 +30,7 @@ class ModLoader
 		if (!isLoaded())
 		{
 			//preload model
-			Model(models[modelsLoaded]);
-			modelsLoaded++;
+			Model(models[modelsLoaded++]);
 		}
 	}
 
