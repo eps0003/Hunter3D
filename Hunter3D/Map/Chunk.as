@@ -4,7 +4,9 @@ class Chunk
 {
 	private Voxel@[][][] voxels;
 
-	Vertex[] vertices;
+	SMesh@ mesh = SMesh();
+	private Vertex[] vertices;
+	private u16[] indices;
 
 	Chunk()
 	{
@@ -31,6 +33,46 @@ class Chunk
 		return null;
 	}
 
+	void GenerateMesh(Vec3f chunkPos)
+	{
+		print("Generate mesh " + chunkPos.toString());
+
+		vertices.clear();
+		indices.clear();
+
+		for (uint x = 0; x < CHUNK_SIZE; x++)
+		for (uint y = 0; y < CHUNK_SIZE; y++)
+		for (uint z = 0; z < CHUNK_SIZE; z++)
+		{
+			Vec3f voxelPos(x, y, z);
+			Voxel@ voxel = getVoxel(voxelPos);
+			if (voxel !is null)
+			{
+				Vec3f worldPos = getMap3D().getWorldPos(chunkPos, voxelPos);
+				voxel.GenerateMesh(this, worldPos, vertices, indices);
+			}
+		}
+
+		if (!vertices.empty())
+		{
+			mesh.SetVertex(vertices);
+			mesh.SetIndices(indices);
+			mesh.BuildMesh();
+		}
+	}
+
+	void Render()
+	{
+		if (!vertices.empty())
+		{
+			float[] matrix;
+			Matrix::MakeIdentity(matrix);
+			Render::SetModelTransform(matrix);
+
+			mesh.RenderMeshWithMaterial();
+		}
+	}
+
 	private bool isValidVoxel(Vec3f voxelPos)
 	{
 		return (
@@ -55,26 +97,6 @@ class Chunk
 			Voxel voxel();
 
 			@voxels[voxelPos.x][voxelPos.y][voxelPos.z] = voxel;
-		}
-	}
-
-	void GenerateMesh(Vec3f chunkPos)
-	{
-		print("Generate mesh " + chunkPos.toString());
-
-		vertices.clear();
-
-		for (uint x = 0; x < CHUNK_SIZE; x++)
-		for (uint y = 0; y < CHUNK_SIZE; y++)
-		for (uint z = 0; z < CHUNK_SIZE; z++)
-		{
-			Vec3f voxelPos(x, y, z);
-			Voxel@ voxel = getVoxel(voxelPos);
-			if (voxel !is null)
-			{
-				Vec3f worldPos = getMap3D().getWorldPos(chunkPos, voxelPos);
-				voxel.GenerateMesh(this, worldPos, vertices);
-			}
 		}
 	}
 }

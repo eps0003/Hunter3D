@@ -7,7 +7,6 @@ class Voxel
 	bool handPlaced;
 
 	Voxel@[] neighbors;
-	private uint vertexIndex;
 
 	Voxel()
 	{
@@ -97,7 +96,7 @@ class Voxel
 		return voxel is null || voxel.isTransparent();
 	}
 
-	void GenerateMesh(Chunk@ chunk, Vec3f worldPos, Vertex[]@ vertices)
+	void GenerateMesh(Chunk@ chunk, Vec3f worldPos, Vertex[]@ vertices, u16[]@ indices)
 	{
 		if (!isVisible()) return;
 
@@ -112,103 +111,154 @@ class Voxel
 		Vec3f p = worldPos - Vec3f(o, o, o);
 		float w = 1 + o * 2;
 
-		vertexIndex = chunk.vertices.length;
+		uint vi = vertices.length;
+		uint ii = indices.length;
+
+		bool leftVisible  = allFaces || isVoxelTransparent(neighbors[Direction::Left]);
+		bool rightVisible = allFaces || isVoxelTransparent(neighbors[Direction::Right]);
+		bool downVisible  = allFaces || isVoxelTransparent(neighbors[Direction::Down]);
+		bool upVisible    = allFaces || isVoxelTransparent(neighbors[Direction::Up]);
+		bool frontVisible = allFaces || isVoxelTransparent(neighbors[Direction::Front]);
+		bool backVisible  = allFaces || isVoxelTransparent(neighbors[Direction::Back]);
+
+		uint vertexCount = num(leftVisible) + num(rightVisible) + num(downVisible) + num(upVisible) + num(frontVisible) + num(backVisible);
+		vertexCount *= allFaces ? 8 : 4;
+		uint indexCount = vertexCount * 1.5f;
+
+		vertices.set_length(vertices.length + vertexCount);
+		indices.set_length(indices.length + indexCount);
 
 		//add plane to array if neighbour is empty
 
-		if (allFaces || isVoxelTransparent(neighbors[Direction::Left]))
+		if (leftVisible)
 		{
-			vertices.push_back(Vertex(p.x    , p.y + w, p.z + w, x1, y1, col));
-			vertices.push_back(Vertex(p.x    , p.y + w, p.z    , x2, y1, col));
-			vertices.push_back(Vertex(p.x    , p.y    , p.z    , x2, y2, col));
-			vertices.push_back(Vertex(p.x    , p.y    , p.z + w, x1, y2, col));
+			vertices[vi++] = Vertex(p.x, p.y + w, p.z + w, x1, y1, col);
+			vertices[vi++] = Vertex(p.x, p.y + w, p.z    , x2, y1, col);
+			vertices[vi++] = Vertex(p.x, p.y    , p.z    , x2, y2, col);
+			vertices[vi++] = Vertex(p.x, p.y    , p.z + w, x1, y2, col);
+
+			indices[ii++] = vi-4; indices[ii++] = vi-3; indices[ii++] = vi-1;
+			indices[ii++] = vi-3; indices[ii++] = vi-2; indices[ii++] = vi-1;
 
 			if (allFaces)
 			{
-				vertices.push_back(Vertex(p.x    , p.y + w, p.z    , x1, y1, col));
-				vertices.push_back(Vertex(p.x    , p.y + w, p.z + w, x2, y1, col));
-				vertices.push_back(Vertex(p.x    , p.y    , p.z + w, x2, y2, col));
-				vertices.push_back(Vertex(p.x    , p.y    , p.z    , x1, y2, col));
+				vertices[vi++] = Vertex(p.x, p.y + w, p.z    , x1, y1, col);
+				vertices[vi++] = Vertex(p.x, p.y + w, p.z + w, x2, y1, col);
+				vertices[vi++] = Vertex(p.x, p.y    , p.z + w, x2, y2, col);
+				vertices[vi++] = Vertex(p.x, p.y    , p.z    , x1, y2, col);
+
+				indices[ii++] = vi-4; indices[ii++] = vi-3; indices[ii++] = vi-1;
+				indices[ii++] = vi-3; indices[ii++] = vi-2; indices[ii++] = vi-1;
 			}
 		}
 
-		if (allFaces || isVoxelTransparent(neighbors[Direction::Right]))
+		if (rightVisible)
 		{
-			vertices.push_back(Vertex(p.x + w, p.y + w, p.z    , x1, y1, col));
-			vertices.push_back(Vertex(p.x + w, p.y + w, p.z + w, x2, y1, col));
-			vertices.push_back(Vertex(p.x + w, p.y    , p.z + w, x2, y2, col));
-			vertices.push_back(Vertex(p.x + w, p.y    , p.z    , x1, y2, col));
+			vertices[vi++] = Vertex(p.x + w, p.y + w, p.z    , x1, y1, col);
+			vertices[vi++] = Vertex(p.x + w, p.y + w, p.z + w, x2, y1, col);
+			vertices[vi++] = Vertex(p.x + w, p.y    , p.z + w, x2, y2, col);
+			vertices[vi++] = Vertex(p.x + w, p.y    , p.z    , x1, y2, col);
+
+			indices[ii++] = vi-4; indices[ii++] = vi-3; indices[ii++] = vi-1;
+			indices[ii++] = vi-3; indices[ii++] = vi-2; indices[ii++] = vi-1;
 
 			if (allFaces)
 			{
-				vertices.push_back(Vertex(p.x + w, p.y + w, p.z + w, x1, y1, col));
-				vertices.push_back(Vertex(p.x + w, p.y + w, p.z    , x2, y1, col));
-				vertices.push_back(Vertex(p.x + w, p.y    , p.z    , x2, y2, col));
-				vertices.push_back(Vertex(p.x + w, p.y    , p.z + w, x1, y2, col));
+				vertices[vi++] = Vertex(p.x + w, p.y + w, p.z + w, x1, y1, col);
+				vertices[vi++] = Vertex(p.x + w, p.y + w, p.z    , x2, y1, col);
+				vertices[vi++] = Vertex(p.x + w, p.y    , p.z    , x2, y2, col);
+				vertices[vi++] = Vertex(p.x + w, p.y    , p.z + w, x1, y2, col);
+
+				indices[ii++] = vi-4; indices[ii++] = vi-3; indices[ii++] = vi-1;
+				indices[ii++] = vi-3; indices[ii++] = vi-2; indices[ii++] = vi-1;
 			}
 		}
 
-		if (allFaces || isVoxelTransparent(neighbors[Direction::Down]))
+		if (downVisible)
 		{
-			vertices.push_back(Vertex(p.x + w, p.y    , p.z + w, x1, y1, col));
-			vertices.push_back(Vertex(p.x    , p.y    , p.z + w, x2, y1, col));
-			vertices.push_back(Vertex(p.x    , p.y    , p.z    , x2, y2, col));
-			vertices.push_back(Vertex(p.x + w, p.y    , p.z    , x1, y2, col));
+			vertices[vi++] = Vertex(p.x + w, p.y, p.z + w, x1, y1, col);
+			vertices[vi++] = Vertex(p.x    , p.y, p.z + w, x2, y1, col);
+			vertices[vi++] = Vertex(p.x    , p.y, p.z    , x2, y2, col);
+			vertices[vi++] = Vertex(p.x + w, p.y, p.z    , x1, y2, col);
+
+			indices[ii++] = vi-4; indices[ii++] = vi-3; indices[ii++] = vi-1;
+			indices[ii++] = vi-3; indices[ii++] = vi-2; indices[ii++] = vi-1;
 
 			if (allFaces)
 			{
-				vertices.push_back(Vertex(p.x    , p.y    , p.z + w, x1, y1, col));
-				vertices.push_back(Vertex(p.x + w, p.y    , p.z + w, x2, y1, col));
-				vertices.push_back(Vertex(p.x + w, p.y    , p.z    , x2, y2, col));
-				vertices.push_back(Vertex(p.x    , p.y    , p.z    , x1, y2, col));
+				vertices[vi++] = Vertex(p.x    , p.y, p.z + w, x1, y1, col);
+				vertices[vi++] = Vertex(p.x + w, p.y, p.z + w, x2, y1, col);
+				vertices[vi++] = Vertex(p.x + w, p.y, p.z    , x2, y2, col);
+				vertices[vi++] = Vertex(p.x    , p.y, p.z    , x1, y2, col);
+
+				indices[ii++] = vi-4; indices[ii++] = vi-3; indices[ii++] = vi-1;
+				indices[ii++] = vi-3; indices[ii++] = vi-2; indices[ii++] = vi-1;
 			}
 		}
 
-		if (allFaces || isVoxelTransparent(neighbors[Direction::Up]))
+		if (upVisible)
 		{
-			vertices.push_back(Vertex(p.x    , p.y + w, p.z + w, x1, y1, col));
-			vertices.push_back(Vertex(p.x + w, p.y + w, p.z + w, x2, y1, col));
-			vertices.push_back(Vertex(p.x + w, p.y + w, p.z    , x2, y2, col));
-			vertices.push_back(Vertex(p.x    , p.y + w, p.z    , x1, y2, col));
+			vertices[vi++] = Vertex(p.x    , p.y + w, p.z + w, x1, y1, col);
+			vertices[vi++] = Vertex(p.x + w, p.y + w, p.z + w, x2, y1, col);
+			vertices[vi++] = Vertex(p.x + w, p.y + w, p.z    , x2, y2, col);
+			vertices[vi++] = Vertex(p.x    , p.y + w, p.z    , x1, y2, col);
+
+			indices[ii++] = vi-4; indices[ii++] = vi-3; indices[ii++] = vi-1;
+			indices[ii++] = vi-3; indices[ii++] = vi-2; indices[ii++] = vi-1;
 
 			if (allFaces)
 			{
-				vertices.push_back(Vertex(p.x + w, p.y + w, p.z + w, x1, y1, col));
-				vertices.push_back(Vertex(p.x    , p.y + w, p.z + w, x2, y1, col));
-				vertices.push_back(Vertex(p.x    , p.y + w, p.z    , x2, y2, col));
-				vertices.push_back(Vertex(p.x + w, p.y + w, p.z    , x1, y2, col));
+				vertices[vi++] = Vertex(p.x + w, p.y + w, p.z + w, x1, y1, col);
+				vertices[vi++] = Vertex(p.x    , p.y + w, p.z + w, x2, y1, col);
+				vertices[vi++] = Vertex(p.x    , p.y + w, p.z    , x2, y2, col);
+				vertices[vi++] = Vertex(p.x + w, p.y + w, p.z    , x1, y2, col);
+
+				indices[ii++] = vi-4; indices[ii++] = vi-3; indices[ii++] = vi-1;
+				indices[ii++] = vi-3; indices[ii++] = vi-2; indices[ii++] = vi-1;
 			}
 		}
 
-		if (allFaces || isVoxelTransparent(neighbors[Direction::Front]))
+		if (frontVisible)
 		{
-			vertices.push_back(Vertex(p.x    , p.y + w, p.z    , x1, y1, col));
-			vertices.push_back(Vertex(p.x + w, p.y + w, p.z    , x2, y1, col));
-			vertices.push_back(Vertex(p.x + w, p.y    , p.z    , x2, y2, col));
-			vertices.push_back(Vertex(p.x    , p.y    , p.z    , x1, y2, col));
+			vertices[vi++] = Vertex(p.x    , p.y + w, p.z, x1, y1, col);
+			vertices[vi++] = Vertex(p.x + w, p.y + w, p.z, x2, y1, col);
+			vertices[vi++] = Vertex(p.x + w, p.y    , p.z, x2, y2, col);
+			vertices[vi++] = Vertex(p.x    , p.y    , p.z, x1, y2, col);
+
+			indices[ii++] = vi-4; indices[ii++] = vi-3; indices[ii++] = vi-1;
+			indices[ii++] = vi-3; indices[ii++] = vi-2; indices[ii++] = vi-1;
 
 			if (allFaces)
 			{
-				vertices.push_back(Vertex(p.x + w, p.y + w, p.z    , x1, y1, col));
-				vertices.push_back(Vertex(p.x    , p.y + w, p.z    , x2, y1, col));
-				vertices.push_back(Vertex(p.x    , p.y    , p.z    , x2, y2, col));
-				vertices.push_back(Vertex(p.x + w, p.y    , p.z    , x1, y2, col));
+				vertices[vi++] = Vertex(p.x + w, p.y + w, p.z, x1, y1, col);
+				vertices[vi++] = Vertex(p.x    , p.y + w, p.z, x2, y1, col);
+				vertices[vi++] = Vertex(p.x    , p.y    , p.z, x2, y2, col);
+				vertices[vi++] = Vertex(p.x + w, p.y    , p.z, x1, y2, col);
+
+				indices[ii++] = vi-4; indices[ii++] = vi-3; indices[ii++] = vi-1;
+				indices[ii++] = vi-3; indices[ii++] = vi-2; indices[ii++] = vi-1;
 			}
 		}
 
-		if (allFaces || isVoxelTransparent(neighbors[Direction::Back]))
+		if (backVisible)
 		{
-			vertices.push_back(Vertex(p.x + w, p.y + w, p.z + w, x1, y1, col));
-			vertices.push_back(Vertex(p.x    , p.y + w, p.z + w, x2, y1, col));
-			vertices.push_back(Vertex(p.x    , p.y    , p.z + w, x2, y2, col));
-			vertices.push_back(Vertex(p.x + w, p.y    , p.z + w, x1, y2, col));
+			vertices[vi++] = Vertex(p.x + w, p.y + w, p.z + w, x1, y1, col);
+			vertices[vi++] = Vertex(p.x    , p.y + w, p.z + w, x2, y1, col);
+			vertices[vi++] = Vertex(p.x    , p.y    , p.z + w, x2, y2, col);
+			vertices[vi++] = Vertex(p.x + w, p.y    , p.z + w, x1, y2, col);
+
+			indices[ii++] = vi-4; indices[ii++] = vi-3; indices[ii++] = vi-1;
+			indices[ii++] = vi-3; indices[ii++] = vi-2; indices[ii++] = vi-1;
 
 			if (allFaces)
 			{
-				vertices.push_back(Vertex(p.x    , p.y + w, p.z + w, x1, y1, col));
-				vertices.push_back(Vertex(p.x + w, p.y + w, p.z + w, x2, y1, col));
-				vertices.push_back(Vertex(p.x + w, p.y    , p.z + w, x2, y2, col));
-				vertices.push_back(Vertex(p.x    , p.y    , p.z + w, x1, y2, col));
+				vertices[vi++] = Vertex(p.x    , p.y + w, p.z + w, x1, y1, col);
+				vertices[vi++] = Vertex(p.x + w, p.y + w, p.z + w, x2, y1, col);
+				vertices[vi++] = Vertex(p.x + w, p.y    , p.z + w, x2, y2, col);
+				vertices[vi++] = Vertex(p.x    , p.y    , p.z + w, x1, y2, col);
+
+				indices[ii++] = vi-4; indices[ii++] = vi-3; indices[ii++] = vi-1;
+				indices[ii++] = vi-3; indices[ii++] = vi-2; indices[ii++] = vi-1;
 			}
 		}
 	}

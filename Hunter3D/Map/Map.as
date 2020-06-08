@@ -15,6 +15,8 @@ class Map
 	private Chunk@[][][] chunks;
 	private Vec3f mapDim;
 	private Vec3f chunkDim;
+	private string texture = "pixel";
+	SMaterial@ material = SMaterial();
 
 	Map(Vec3f size)
 	{
@@ -90,7 +92,7 @@ class Map
 		{
 			Vec3f chunkPos(x, y, z);
 			Chunk@ chunk = getChunk(chunkPos);
-			Render::RawQuads("pixel", chunk.vertices);
+			chunk.Render();
 		}
 	}
 
@@ -143,6 +145,11 @@ class Map
 
 	private void InitChunks()
 	{
+		//setup material
+		material.AddTexture(texture);
+		material.SetFlag(SMaterial::LIGHTING, false);
+		material.SetFlag(SMaterial::ANTI_ALIASING, false);
+
 		//get chunk dimensions
 		chunkDim = getChunkPos(mapDim);
 
@@ -158,6 +165,9 @@ class Map
 
 			Vec3f chunkPos(x, y, z);
 			Chunk chunk;
+
+			//set material
+			chunk.mesh.SetMaterial(material);
 
 			@chunks[chunkPos.x][chunkPos.y][chunkPos.z] = chunk;
 		}
