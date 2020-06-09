@@ -1,6 +1,6 @@
 #include "Voxel.as"
 
-class Chunk
+shared class Chunk
 {
 	private Voxel@[][][] voxels;
 

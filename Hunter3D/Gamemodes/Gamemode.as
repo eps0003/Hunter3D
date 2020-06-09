@@ -1,7 +1,7 @@
 #include "Utilities.as"
 #include "Map.as"
 
-class Gamemode
+shared class Gamemode
 {
 	string name;
 	string shortName;

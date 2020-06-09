@@ -1,6 +1,6 @@
 #include "IBounds.as"
 
-class Cylinder : IBounds, IHasParent
+shared class Cylinder : IBounds, IHasParent
 {
 	Vec3f dim;
 	Vec3f min;

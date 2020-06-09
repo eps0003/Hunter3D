@@ -1,6 +1,6 @@
 #include "Utilities.as"
 
-class Vec3f
+shared class Vec3f
 {
 	float x = 0;
 	float y = 0;

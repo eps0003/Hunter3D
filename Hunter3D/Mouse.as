@@ -1,7 +1,7 @@
 #include "Camera.as"
 #include "ModLoader.as"
 
-Mouse@ getMouse3D()
+shared Mouse@ getMouse3D()
 {
 	CRules@ rules = getRules();
 
@@ -16,7 +16,7 @@ Mouse@ getMouse3D()
 	return mouse;
 }
 
-class Mouse
+shared class Mouse
 {
 	Vec2f velocity;
 	float sensitivity;

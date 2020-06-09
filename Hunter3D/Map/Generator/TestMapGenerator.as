@@ -1,6 +1,6 @@
 #include "IMapGenerator.as"
 
-class TestMapGenerator : IMapGenerator
+shared class TestMapGenerator : IMapGenerator
 {
 	void GenerateMap(Vec3f size)
 	{

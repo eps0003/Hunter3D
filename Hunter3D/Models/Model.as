@@ -2,7 +2,7 @@
 #include "ImageUV.as"
 #include "Object.as"
 
-class Model : SegmentChildren
+shared class Model : SegmentChildren
 {
 	private string filePath = "";
 	private string texture = "pixel";

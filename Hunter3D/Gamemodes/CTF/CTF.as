@@ -2,7 +2,7 @@
 #include "TestMapGenerator.as"
 #include "RespawnManager.as"
 
-class CTF : Gamemode
+shared class CTF : Gamemode
 {
 	u8 respawnTime;
 

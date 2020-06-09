@@ -1,6 +1,6 @@
 #include "IHasParent.as"
 
-Camera@ getCamera3D()
+shared Camera@ getCamera3D()
 {
 	CRules@ rules = getRules();
 
@@ -15,7 +15,7 @@ Camera@ getCamera3D()
 	return camera;
 }
 
-class Camera : IHasParent
+shared class Camera : IHasParent
 {
 	private Object@ parent;
 	float fov;

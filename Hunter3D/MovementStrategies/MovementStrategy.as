@@ -2,7 +2,7 @@
 #include "Walking.as"
 #include "Mouse.as"
 
-class MovementStrategy
+shared class MovementStrategy
 {
 	void Move(Actor@ actor)
 	{

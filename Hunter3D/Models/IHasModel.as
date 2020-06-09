@@ -1,6 +1,6 @@
 #include "Model.as"
 
-interface IHasModel
+shared interface IHasModel
 {
 	bool hasModel();
 	void SetModel(Model@ model);

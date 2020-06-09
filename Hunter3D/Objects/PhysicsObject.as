@@ -1,7 +1,7 @@
 #include "Object.as"
 #include "AABB.as"
 
-class PhysicsObject : Object
+shared class PhysicsObject : Object
 {
 	AABB@ hitbox;
 

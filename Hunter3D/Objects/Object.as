@@ -1,6 +1,6 @@
 #include "Identifiable.as"
 
-class Object : Identifiable
+shared class Object : Identifiable
 {
 	Vec3f position;
 	Vec3f oldPosition;

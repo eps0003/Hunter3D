@@ -1,7 +1,7 @@
 #include "ImageUV.as"
 #include "SegmentChildren.as"
 
-class Segment : SegmentChildren
+shared class Segment : SegmentChildren
 {
 	string name;
 	Vec3f dim;

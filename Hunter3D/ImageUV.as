@@ -1,4 +1,4 @@
-class ImageUV
+shared class ImageUV
 {
 	Vec2f min(0, 0);
 	Vec2f max(1, 1);

@@ -1,6 +1,4 @@
-uint currentID = 0;
-
-class Identifiable
+shared class Identifiable
 {
 	uint id = 0;
 
@@ -21,7 +19,9 @@ class Identifiable
 	{
 		if (isServer())
 		{
-			id = ++currentID;
+			CRules@ rules = getRules();
+			rules.add_u32("current_id", 1);
+			id = rules.get_u32("current_id");
 		}
 	}
 

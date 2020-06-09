@@ -1,11 +1,21 @@
 #include "Object.as"
 
-ObjectManager@ getObjectManager()
+shared ObjectManager@ getObjectManager()
 {
-	return ObjectManager();
+	CRules@ rules = getRules();
+
+	ObjectManager@ objectManager;
+	if (rules.get("object_manager", @objectManager))
+	{
+		return objectManager;
+	}
+
+	@objectManager = ObjectManager();
+	rules.set("object_manager", objectManager);
+	return objectManager;
 }
 
-class ObjectManager
+shared class ObjectManager
 {
 	ObjectManager()
 	{
@@ -38,6 +48,14 @@ class ObjectManager
 				getRules().removeAt("objects", i);
 				return;
 			}
+		}
+	}
+
+	void RemoveObject(uint index)
+	{
+		if (index < getObjectCount())
+		{
+			getRules().removeAt("objects", index);
 		}
 	}
 

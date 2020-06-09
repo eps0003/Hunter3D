@@ -1,6 +1,6 @@
 #include "ImageUV.as"
 
-class UVEditor
+shared class UVEditor
 {
 	void Render(Vec2f position, string texture, ImageUV@[] UVs, uint selectedUV)
 	{

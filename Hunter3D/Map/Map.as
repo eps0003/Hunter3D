@@ -3,14 +3,14 @@
 
 const u8 CHUNK_SIZE = 8;
 
-Map@ getMap3D()
+shared Map@ getMap3D()
 {
 	Map@ map;
 	getRules().get("map", @map);
 	return map;
 }
 
-class Map
+shared class Map
 {
 	private Chunk@[][][] chunks;
 	private Vec3f mapDim;

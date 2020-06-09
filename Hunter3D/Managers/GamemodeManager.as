@@ -1,7 +1,7 @@
 #include "Gamemode.as"
 #include "CTF.as"
 
-GamemodeManager@ getGamemodeManager()
+shared GamemodeManager@ getGamemodeManager()
 {
 	CRules@ rules = getRules();
 
@@ -16,7 +16,7 @@ GamemodeManager@ getGamemodeManager()
 	return gamemodeManager;
 }
 
-class GamemodeManager
+shared class GamemodeManager
 {
 	private Gamemode@ gamemode = CTF();
 

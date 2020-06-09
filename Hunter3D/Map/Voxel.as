@@ -1,6 +1,6 @@
 #include "Utilities.as"
 
-class Voxel
+shared class Voxel
 {
 	u8 type;
 	u8 health;

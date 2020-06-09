@@ -1,6 +1,6 @@
 #include "Segment.as"
 
-class SegmentChildren
+shared class SegmentChildren
 {
 	private Segment@[] children;
 

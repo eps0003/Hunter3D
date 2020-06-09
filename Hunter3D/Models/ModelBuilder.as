@@ -4,7 +4,7 @@
 #include "Utilities.as"
 #include "UVEditor.as"
 
-class ModelBuilder
+shared class ModelBuilder
 {
 	private Object parent;
 	private Model model;
@@ -153,7 +153,7 @@ class ModelBuilder
 				ImageUV@ uv = segment.getUV(i);
 				Vec2f pos(10, 190 + i * 20);
 				SColor col = selectedProperty - 5 == i ? selectedColor : color_black;
-				GUI::DrawText(directionNames[i] + " UV: " + uv.toString(model.getTexture()), pos, col);
+				GUI::DrawText(getDirectionNames()[i] + " UV: " + uv.toString(model.getTexture()), pos, col);
 			}
 
 			UVEditor().Render(Vec2f(10, 340), model.getTexture(), segment.getUVs(), selectedProperty - 5);
@@ -297,7 +297,7 @@ class ModelBuilder
 		{
 			segment.SetUV(side, ImageUV(x, y, w, h));
 			segment.GenerateVertices();
-			print("Set " + directionNames[side] + " UV: " + name);
+			print("Set " + getDirectionNames()[side] + " UV: " + name);
 		}
 		else
 		{
@@ -487,7 +487,7 @@ class ModelBuilder
 			if (args.length < 6) return;
 
 			string name = args[0];
-			int side = directionNames.find(args[1]);
+			int side = getDirectionNames().find(args[1]);
 			float x = divide(args[2]);
 			float y = divide(args[3]);
 			float w = divide(args[4]);

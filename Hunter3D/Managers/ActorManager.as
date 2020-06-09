@@ -1,6 +1,7 @@
+#include "ObjectManager.as"
 #include "Actor.as"
 
-ActorManager@ getActorManager()
+shared ActorManager@ getActorManager()
 {
 	CRules@ rules = getRules();
 
@@ -15,12 +16,12 @@ ActorManager@ getActorManager()
 	return actorManager;
 }
 
-class ActorManager
+shared class ActorManager
 {
-	private Actor@[] actors;
-
 	void Interpolate()
 	{
+		Actor@[] actors = getActors();
+
 		for (uint i = 0; i < actors.length; i++)
 		{
 			Actor@ actor = actors[i];
@@ -30,6 +31,8 @@ class ActorManager
 
 	void Render()
 	{
+		Actor@[] actors = getActors();
+
 		for (uint i = 0; i < actors.length; i++)
 		{
 			Actor@ actor = actors[i];
@@ -39,6 +42,8 @@ class ActorManager
 
 	Actor@ getActor(Actor@ actor)
 	{
+		Actor@[] actors = getActors();
+
 		for (uint i = 0; i < actors.length; i++)
 		{
 			Actor@ a = actors[i];
@@ -53,6 +58,8 @@ class ActorManager
 
 	Actor@ getActorByUsername(string username)
 	{
+		Actor@[] actors = getActors();
+
 		for (uint i = 0; i < actors.length; i++)
 		{
 			Actor@ actor = actors[i];
@@ -67,6 +74,8 @@ class ActorManager
 
 	Actor@ getActorByID(uint id)
 	{
+		Actor@[] actors = getActors();
+
 		for (uint i = 0; i < actors.length; i++)
 		{
 			Actor@ actor = actors[i];
@@ -81,6 +90,8 @@ class ActorManager
 
 	Actor@ getActor(CPlayer@ player)
 	{
+		Actor@[] actors = getActors();
+
 		for (uint i = 0; i < actors.length; i++)
 		{
 			Actor@ actor = actors[i];
@@ -95,6 +106,21 @@ class ActorManager
 
 	Actor@[] getActors()
 	{
+		ObjectManager@ objectManager = getObjectManager();
+		Object@[] objects = objectManager.getObjects();
+		Actor@[] actors;
+
+		for (uint i = 0; i < objects.length; i++)
+		{
+			Object@ object = objects[i];
+			Actor@ actor = cast<Actor>(object);
+
+			if (actor !is null)
+			{
+				actors.push_back(actor);
+			}
+		}
+
 		return actors;
 	}
 
@@ -105,7 +131,7 @@ class ActorManager
 			actor.AssignUniqueID();
 		}
 
-		actors.push_back(actor);
+		getObjectManager().AddObject(actor);
 	}
 
 	void AddActor(CPlayer@ player, Vec3f position)
@@ -116,14 +142,19 @@ class ActorManager
 
 	void RemoveActor(Actor@ actor)
 	{
-		for (uint i = 0; i < actors.length; i++)
-		{
-			Actor@ a = actors[i];
-			if (a.isSameAs(actor))
-			{
-				actors.removeAt(i);
+		ObjectManager@ objectManager = getObjectManager();
+		Object@[] objects = objectManager.getObjects();
 
-				if (isClient())
+		for (uint i = 0; i < objects.length; i++)
+		{
+			Object@ object = objects[i];
+			Actor@ actor2 = cast<Actor>(object);
+
+			if (actor2 !is null && actor.isSameAs(actor2))
+			{
+				objectManager.RemoveObject(i);
+
+				if (actor.player.isMyPlayer())
 				{
 					getCamera3D().SetParent(null);
 				}
@@ -132,7 +163,7 @@ class ActorManager
 				{
 					CRules@ rules = getRules();
 					CBitStream bs;
-					a.Serialize(bs);
+					actor2.Serialize(bs);
 					rules.SendCommand(rules.getCommandID("s_remove_actor"), bs, true);
 				}
 
@@ -143,12 +174,22 @@ class ActorManager
 
 	void RemoveActor(CPlayer@ player)
 	{
-		for (uint i = 0; i < actors.length; i++)
+		ObjectManager@ objectManager = getObjectManager();
+		Object@[] objects = objectManager.getObjects();
+
+		for (uint i = 0; i < objects.length; i++)
 		{
-			Actor@ actor = actors[i];
-			if (actor.player is player)
+			Object@ object = objects[i];
+			Actor@ actor = cast<Actor>(object);
+
+			if (actor !is null && actor.player is player)
 			{
-				actors.removeAt(i);
+				objectManager.RemoveObject(i);
+
+				if (isClient())
+				{
+					getCamera3D().SetParent(null);
+				}
 
 				if (isServer())
 				{
@@ -165,12 +206,12 @@ class ActorManager
 
 	void ClearActors()
 	{
-		actors.clear();
+		// actors.clear();
 	}
 
 	uint getActorCount()
 	{
-		return actors.length;
+		return getActors().length;
 	}
 
 	bool playerHasActor(CPlayer@ player)
@@ -180,6 +221,8 @@ class ActorManager
 
 	void SerializeActors(CBitStream@ bs)
 	{
+		Actor@[] actors = getActors();
+
 		bs.write_u32(actors.length);
 
 		for (uint i = 0; i < actors.length; i++)

@@ -1,6 +1,6 @@
 #include "Utilities.as"
 
-class SmoothFly : MovementStrategy
+shared class SmoothFly : MovementStrategy
 {
 	void Move(Actor@ actor)
 	{

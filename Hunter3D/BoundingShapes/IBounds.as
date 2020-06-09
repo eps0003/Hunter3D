@@ -1,4 +1,4 @@
-interface IBounds
+shared interface IBounds
 {
 	bool intersectsAt(Vec3f worldPos);
 	bool intersectsNewAt(Vec3f currentPos, Vec3f worldPos);

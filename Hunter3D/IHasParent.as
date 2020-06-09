@@ -1,6 +1,6 @@
 #include "Object.as"
 
-interface IHasParent
+shared interface IHasParent
 {
 	void SetParent(Object@ parent);
 	Object@ getParent();

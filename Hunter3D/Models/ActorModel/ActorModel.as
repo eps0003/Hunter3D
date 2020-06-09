@@ -1,7 +1,7 @@
 #include "Model.as"
 #include "Camera.as"
 
-class ActorModel : Model
+shared class ActorModel : Model
 {
 	ActorModel(string texture)
 	{

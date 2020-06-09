@@ -1,7 +1,7 @@
 #include "Segment.as"
 #include "Object.as"
 
-interface IModel
+shared interface IModel
 {
 	void LoadModel();
 	bool isLoaded();

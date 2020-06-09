@@ -3,11 +3,26 @@
 
 #define SERVER_ONLY
 
-class MapSyncer : PlayerList
+shared MapSyncer@ getMapSyncer()
+{
+	CRules@ rules = getRules();
+
+	MapSyncer@ mapSyncer;
+	if (rules.get("map_syncer", @mapSyncer))
+	{
+		return mapSyncer;
+	}
+
+	@mapSyncer = MapSyncer();
+	rules.set("map_syncer", mapSyncer);
+	return mapSyncer;
+}
+
+shared class MapSyncer : PlayerList
 {
 	void server_Sync()
 	{
-		if (mapSyncer.shouldSync())
+		if (shouldSync())
 		{
 			CBitStream bs;
 			getMap3D().Serialize(bs);
@@ -38,28 +53,22 @@ void onInit(CRules@ this)
 	onRestart(this);
 }
 
-MapSyncer@ mapSyncer = MapSyncer();
-
 void onRestart(CRules@ this)
 {
-	for (uint i = 0; i < getPlayersCount(); i++)
-	{
-		CPlayer@ player = getPlayer(i);
-		mapSyncer.AddPlayer(player);
-	}
+	getMapSyncer().AddAllPlayers();
 }
 
 void onTick(CRules@ this)
 {
-	mapSyncer.server_Sync();
+	getMapSyncer().server_Sync();
 }
 
 void onNewPlayerJoin(CRules@ this, CPlayer@ player)
 {
-	mapSyncer.AddPlayer(player);
+	getMapSyncer().AddPlayer(player);
 }
 
 void onPlayerLeave(CRules@ this, CPlayer@ player)
 {
-	mapSyncer.RemovePlayer(player);
+	getMapSyncer().RemovePlayer(player);
 }

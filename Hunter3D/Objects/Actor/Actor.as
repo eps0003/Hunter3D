@@ -5,7 +5,7 @@
 #include "IHasModel.as"
 #include "MovementStrategy.as"
 
-class Actor : PhysicsObject, IHasModel
+shared class Actor : PhysicsObject, IHasModel
 {
 	CPlayer@ player;
 	private Model@ model;

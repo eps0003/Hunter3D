@@ -4,7 +4,7 @@
 #include "Vec3f.as"
 #include "Map.as"
 
-RespawnManager@ getRespawnManager()
+shared RespawnManager@ getRespawnManager()
 {
 	CRules@ rules = getRules();
 
@@ -19,7 +19,7 @@ RespawnManager@ getRespawnManager()
 	return respawnManager;
 }
 
-class RespawnManager
+shared class RespawnManager
 {
 	private PlayerList queue;
 

@@ -1,6 +1,6 @@
 #include "Model.as"
 
-ModLoader@ getModLoader()
+shared ModLoader@ getModLoader()
 {
 	CRules@ rules = getRules();
 
@@ -15,7 +15,7 @@ ModLoader@ getModLoader()
 	return modLoader;
 }
 
-class ModLoader
+shared class ModLoader
 {
 	private float progress = 0;
 	private string status = "Loading mod...";

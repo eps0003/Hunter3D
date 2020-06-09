@@ -1,4 +1,4 @@
-class PlayerList
+shared class PlayerList
 {
 	private CPlayer@[] players;
 
@@ -19,6 +19,18 @@ class PlayerList
 			{
 				players.push_back(player);
 			}
+		}
+	}
+
+	void AddAllPlayers()
+	{
+		ClearPlayers();
+
+		uint count = getPlayersCount();
+		for (uint i = 0; i < count; i++)
+		{
+			CPlayer@ player = getPlayer(i);
+			AddPlayer(player);
 		}
 	}
 
