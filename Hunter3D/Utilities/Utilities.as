@@ -170,14 +170,6 @@ namespace Vec2f
 		);
 	}
 
-	shared Vec2f lerp(Vec2f current, Vec2f desired, float t)
-	{
-		return Vec2f(
-			current.x + t * (desired.x - current.x),
-			current.y + t * (desired.y - current.y)
-		);
-	}
-
 	shared void Serialize(Vec2f vec, CBitStream@ params)
 	{
 		params.write_f32(vec.x);
