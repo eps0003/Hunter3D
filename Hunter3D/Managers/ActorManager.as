@@ -178,7 +178,8 @@ shared class ActorManager
 
 	void ClearActors()
 	{
-		Object@[] objects = getObjectManager().getObjects();
+		ObjectManager@ objectManager = getObjectManager();
+		Object@[] objects = objectManager.getObjects();
 
 		for (uint i = 0; i < objects.length; i++)
 		{
@@ -187,7 +188,7 @@ shared class ActorManager
 
 			if (actor !is null)
 			{
-				RemoveObject(i--);
+				objectManager.RemoveObject(i--);
 			}
 		}
 	}
