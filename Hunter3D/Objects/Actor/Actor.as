@@ -4,6 +4,7 @@
 #include "ActorModel.as"
 #include "IHasModel.as"
 #include "MovementStrategy.as"
+#include "Camera.as"
 
 shared class Actor : PhysicsObject, IHasModel
 {
@@ -68,7 +69,10 @@ shared class Actor : PhysicsObject, IHasModel
 	{
 		PhysicsObject::Render();
 
-		if (!player.isMyPlayer())
+		Camera@ camera = getCamera3D();
+
+		bool cameraNotAttached = camera.hasParent() && !camera.getParent().isSameAs(this);
+		if (cameraNotAttached)
 		{
 			hitbox.Render(interPosition);
 
@@ -81,7 +85,10 @@ shared class Actor : PhysicsObject, IHasModel
 
 	void RenderNameplate()
 	{
-		if (!player.isMyPlayer() && interPosition.isInFrontOfCamera())
+		Camera@ camera = getCamera3D();
+
+		bool cameraNotAttached = camera.hasParent() && !camera.getParent().isSameAs(this);
+		if (cameraNotAttached && interPosition.isInFrontOfCamera())
 		{
 			Vec3f pos = interPosition + Vec3f(0, 2, 0);
 			Vec2f screenPos = pos.projectToScreen();
