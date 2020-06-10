@@ -40,6 +40,17 @@ shared class ActorManager
 		}
 	}
 
+	void RenderGUI()
+	{
+		Actor@[] actors = getActors();
+
+		for (uint i = 0; i < actors.length; i++)
+		{
+			Actor@ actor = actors[i];
+			actor.RenderNameplate();
+		}
+	}
+
 	Actor@ getActor(Actor@ actor)
 	{
 		Actor@[] actors = getActors();

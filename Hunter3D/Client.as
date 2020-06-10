@@ -72,7 +72,15 @@ void onRender(CRules@ this)
 
 	if (!getModLoader().isLoaded()) return;
 
-	Actor@ myActor = getActorManager().getActor(getLocalPlayer());
+	Camera@ camera = getCamera3D();
+	ActorManager@ actorManager = getActorManager();
+
+	if (camera.hasParent())
+	{
+		actorManager.RenderGUI();
+	}
+
+	Actor@ myActor = actorManager.getActor(getLocalPlayer());
 	if (myActor !is null)
 	{
 		// GUI::DrawText("position: " + myActor.position.toString(), Vec2f(10, 50), color_black);
@@ -105,11 +113,13 @@ void Render(int id)
 	Camera@ camera = getCamera3D();
 	if (camera.hasParent())
 	{
-		getActorManager().Interpolate();
+		ActorManager@ actorManager = getActorManager();
+
+		actorManager.Interpolate();
 
 		camera.Render();
 		getMap3D().Render();
-		getActorManager().Render();
+		actorManager.Render();
 		modelBuilder.RenderModel();
 	}
 }

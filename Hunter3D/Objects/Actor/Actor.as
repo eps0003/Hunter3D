@@ -79,6 +79,16 @@ shared class Actor : PhysicsObject, IHasModel
 		}
 	}
 
+	void RenderNameplate()
+	{
+		if (!player.isMyPlayer() && interPosition.isInFrontOfCamera())
+		{
+			Vec3f pos = interPosition + Vec3f(0, 2, 0);
+			Vec2f screenPos = pos.projectToScreen();
+			GUI::DrawTextCentered(player.getCharacterName(), screenPos, color_white);
+		}
+	}
+
 	void Interpolate()
 	{
 		PhysicsObject::Interpolate();

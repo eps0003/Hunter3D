@@ -1,4 +1,5 @@
 #include "Utilities.as"
+#include "Camera.as"
 
 shared class Vec3f
 {
@@ -17,7 +18,7 @@ shared class Vec3f
 
 	Vec3f(Vec3f vec, float mag)
 	{
-		vec.Normalize();
+		vec = vec.normalized();
 		x = vec.x * mag;
 		y = vec.y * mag;
 		z = vec.z * mag;
@@ -192,20 +193,16 @@ shared class Vec3f
 		return "(" + formatFloat(x, "", 0, precision) + ", " + formatFloat(y, "", 0, precision) + ", " + formatFloat(z, "", 0, precision) + ")";
 	}
 
-	void Normalize()
+	Vec3f normalized()
 	{
 		float length = mag();
 		if (length > 0)
 		{
-			x /= length;
-			y /= length;
-			z /= length;
+			return this / length;
 		}
 		else
 		{
-			x = 0;
-			y = 0;
-			z = 0;
+			return Vec3f();
 		}
 	}
 
@@ -266,7 +263,7 @@ shared class Vec3f
 		);
 	}
 
-	f32 dot(Vec3f vec)
+	float dot(Vec3f vec)
 	{
 		return (x * vec.x) + (y * vec.y) + (z * vec.z);
 	}
@@ -347,5 +344,56 @@ shared class Vec3f
 	{
 		float[] arr = { x, y, z };
 		return arr;
+	}
+
+	Vec3f multiply(float[] m)
+	{
+		return Vec3f(
+			x*m[0] + y*m[4] + z*m[8]  + m[12],
+			x*m[1] + y*m[5] + z*m[9]  + m[13],
+			x*m[2] + y*m[6] + z*m[10] + m[14]
+		);
+	}
+
+	bool isInFrontOfCamera()
+	{
+		Camera@ camera = getCamera3D();
+		if (camera.hasParent())
+		{
+			Vec3f posDir = this - camera.getPosition();
+			Vec3f rotDir = camera.getRotation().dir();
+			float dotProduct = posDir.dot(rotDir);
+
+			return dotProduct >= 0;
+		}
+		return false;
+	}
+
+	bool isOnScreen()
+	{
+		if (isInFrontOfCamera())
+		{
+			Vec2f screenPos = projectToScreen();
+			return (
+				screenPos.x >= 0 &&
+				screenPos.x <= getScreenWidth() &&
+				screenPos.y >= 0 &&
+				screenPos.y <= getScreenHeight()
+			);
+		}
+		return false;
+	}
+
+	Vec2f projectToScreen()
+	{
+		Camera@ camera = getCamera3D();
+
+		Vec3f vec = multiply(camera.viewMatrix);
+		vec = vec.multiply(camera.projMatrix);
+
+		int x = ((vec.x / vec.z + 1.0f) / 2.0f) * getScreenWidth() + 0.5f;
+		int y = ((1.0f - vec.y / vec.z) / 2.0f) * getScreenHeight() + 0.5f;
+
+		return Vec2f(x, y);
 	}
 }

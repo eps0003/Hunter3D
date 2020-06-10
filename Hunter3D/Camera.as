@@ -20,9 +20,14 @@ shared class Camera : IHasParent
 	private Object@ parent;
 	float fov;
 
+	float[] modelMatrix;
+	float[] viewMatrix;
+	float[] projMatrix;
+
 	Camera(Object@ parent)
 	{
 		SetParent(parent);
+		Matrix::MakeIdentity(modelMatrix);
 		LoadPreferences();
 	}
 
@@ -30,10 +35,9 @@ shared class Camera : IHasParent
 	{
 		if (hasParent())
 		{
-			float[] model = getModelMatrix();
-			float[] view = getViewMatrix(parent.interPosition + Vec3f(0, parent.cameraHeight, 0), parent.interRotation);
-			float[] proj = getProjectionMatrix();
-			Render::SetTransform(model, view, proj);
+			viewMatrix = getViewMatrix(getPosition(), getRotation());
+			projMatrix = getProjectionMatrix();
+			Render::SetTransform(modelMatrix, viewMatrix, projMatrix);
 		}
 	}
 
@@ -52,11 +56,28 @@ shared class Camera : IHasParent
 		return parent !is null;
 	}
 
-	private float[] getModelMatrix()
+	Vec3f getPosition()
 	{
-		float[] matrix;
-		Matrix::MakeIdentity(matrix);
-		return matrix;
+		if (hasParent())
+		{
+			return parent.interPosition + Vec3f(0, parent.cameraHeight, 0);
+		}
+		else
+		{
+			return Vec3f();
+		}
+	}
+
+	Vec3f getRotation()
+	{
+		if (hasParent())
+		{
+			return parent.interRotation;
+		}
+		else
+		{
+			return Vec3f();
+		}
 	}
 
 	private float[] getProjectionMatrix()
