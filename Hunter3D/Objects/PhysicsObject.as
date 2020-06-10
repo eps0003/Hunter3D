@@ -37,9 +37,9 @@ shared class PhysicsObject : Object
 		velocity = Vec3f(bs);
 	}
 
-	void Overwrite(PhysicsObject physicsObject)
+	void opAssign(PhysicsObject physicsObject)
 	{
-		Overwrite(cast<Object>(physicsObject));
+		opAssign(cast<Object>(physicsObject));
 
 		oldVelocity = velocity;
 		velocity = physicsObject.velocity;

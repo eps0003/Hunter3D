@@ -35,9 +35,9 @@ shared class Actor : PhysicsObject, IHasModel
 		SetModel(ActorModel("KnightSkin.png"));
 	}
 
-	void Overwrite(Actor actor)
+	void opAssign(Actor actor)
 	{
-		Overwrite(cast<PhysicsObject>(actor));
+		opAssign(cast<PhysicsObject>(actor));
 	}
 
 	void Update()

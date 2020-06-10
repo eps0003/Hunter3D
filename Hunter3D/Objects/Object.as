@@ -26,7 +26,7 @@ shared class Object : Identifiable
 		rotation = Vec3f(bs);
 	}
 
-	void Overwrite(Object object)
+	void opAssign(Object object)
 	{
 		oldPosition = position;
 		oldRotation = rotation;

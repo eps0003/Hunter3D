@@ -37,7 +37,7 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 
 		if (existingActor !is null)
 		{
-			existingActor.Overwrite(actor);
+			existingActor = actor;
 		}
 	}
 }
