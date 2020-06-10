@@ -152,21 +152,7 @@ shared class ActorManager
 
 			if (actor2 !is null && actor.isSameAs(actor2))
 			{
-				objectManager.RemoveObject(i);
-
-				if (actor.player.isMyPlayer())
-				{
-					getCamera3D().SetParent(null);
-				}
-
-				if (isServer())
-				{
-					CRules@ rules = getRules();
-					CBitStream bs;
-					actor2.Serialize(bs);
-					rules.SendCommand(rules.getCommandID("s_remove_actor"), bs, true);
-				}
-
+				RemoveActor(objectManager, actor2, i);
 				return;
 			}
 		}
@@ -184,21 +170,7 @@ shared class ActorManager
 
 			if (actor !is null && actor.player is player)
 			{
-				objectManager.RemoveObject(i);
-
-				if (isClient())
-				{
-					getCamera3D().SetParent(null);
-				}
-
-				if (isServer())
-				{
-					CRules@ rules = getRules();
-					CBitStream bs;
-					actor.Serialize(bs);
-					rules.SendCommand(rules.getCommandID("s_remove_actor"), bs, true);
-				}
-
+				RemoveActor(objectManager, actor, i);
 				return;
 			}
 		}
@@ -206,7 +178,18 @@ shared class ActorManager
 
 	void ClearActors()
 	{
-		// actors.clear();
+		Object@[] objects = getObjectManager().getObjects();
+
+		for (uint i = 0; i < objects.length; i++)
+		{
+			Object@ object = objects[i];
+			Actor@ actor = cast<Actor>(object);
+
+			if (actor !is null)
+			{
+				RemoveObject(i--);
+			}
+		}
 	}
 
 	uint getActorCount()
@@ -259,6 +242,24 @@ shared class ActorManager
 					getCamera3D().SetParent(actor);
 				}
 			}
+		}
+	}
+
+	private void RemoveActor(ObjectManager@ objectManager, Actor@ actor, uint index)
+	{
+		objectManager.RemoveObject(index);
+
+		if (actor.player.isMyPlayer())
+		{
+			getCamera3D().SetParent(null);
+		}
+
+		if (isServer())
+		{
+			CRules@ rules = getRules();
+			CBitStream bs;
+			actor.Serialize(bs);
+			rules.SendCommand(rules.getCommandID("s_remove_actor"), bs, true);
 		}
 	}
 }

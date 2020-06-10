@@ -8,7 +8,7 @@ shared class CTF : Gamemode
 
 	CTF()
 	{
-		LoadConfig();
+		LoadConfig(openConfig("CTF.cfg"));
 	}
 
 	void onRestart(CRules@ this)
@@ -46,9 +46,8 @@ shared class CTF : Gamemode
 		}
 	}
 
-	void LoadConfig()
+	void LoadConfig(ConfigFile@ cfg)
 	{
-		ConfigFile@ cfg = openConfig("CTF.cfg");
 		Gamemode::LoadConfig(cfg);
 
 		respawnTime = cfg.read_u8("respawn_time", 0);

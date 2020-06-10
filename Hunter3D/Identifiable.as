@@ -9,12 +9,6 @@ shared class Identifiable
 		id = bs.read_u32();
 	}
 
-	//SERVER ONLY
-	Identifiable(uint id)
-	{
-		this.id = id;
-	}
-
 	void AssignUniqueID()
 	{
 		if (isServer())
