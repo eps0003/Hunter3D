@@ -1,4 +1,3 @@
-#include "Gamemode.as"
 #include "CTF.as"
 
 shared GamemodeManager@ getGamemodeManager()
