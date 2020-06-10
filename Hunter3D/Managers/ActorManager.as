@@ -241,7 +241,7 @@ shared class ActorManager
 				//update actors that arent mine
 				if (!actor.player.isMyPlayer())
 				{
-					existingActor = actor;
+					existingActor.Overwrite(actor);
 				}
 			}
 			else
