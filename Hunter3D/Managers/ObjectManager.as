@@ -17,11 +17,7 @@ shared ObjectManager@ getObjectManager()
 
 shared class ObjectManager
 {
-	ObjectManager()
-	{
-		Object@[] objects;
-		getRules().set("objects", objects);
-	}
+	private Object@[] objects;
 
 	void AddObject(Object@ object)
 	{
@@ -32,20 +28,18 @@ shared class ObjectManager
 				object.AssignUniqueID();
 			}
 
-			getRules().push("objects", @object);
+			objects.push_back(object);
 		}
 	}
 
 	void RemoveObject(Object@ object)
 	{
-		Object@[] objects = getObjects();
-
 		for (uint i = 0; i < objects.length; i++)
 		{
 			Object@ obj = objects[i];
 			if (object.isSameAs(obj))
 			{
-				getRules().removeAt("objects", i);
+				objects.removeAt(i);
 				return;
 			}
 		}
@@ -55,21 +49,17 @@ shared class ObjectManager
 	{
 		if (index < getObjectCount())
 		{
-			getRules().removeAt("objects", index);
+			objects.removeAt(index);
 		}
 	}
 
 	Object@[] getObjects()
 	{
-		Object@[] objects;
-		getRules().get("objects", objects);
 		return objects;
 	}
 
 	Object@ getObjectByID(uint id)
 	{
-		Object@[] objects = getObjects();
-
 		for (uint i = 0; i < objects.length; i++)
 		{
 			Object@ obj = objects[i];
@@ -83,18 +73,16 @@ shared class ObjectManager
 
 	void ClearObjects()
 	{
-		getRules().clear("objects");
+		objects.clear();
 	}
 
 	uint getObjectCount()
 	{
-		return getObjects().length;
+		return objects.length;
 	}
 
 	private bool hasObject(Object@ object)
 	{
-		Object@[] objects = getObjects();
-
 		for (uint i = 0; i < objects.length; i++)
 		{
 			Object@ obj = objects[i];
