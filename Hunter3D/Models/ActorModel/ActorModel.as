@@ -139,15 +139,16 @@ shared class ActorModel : Model
 
 	private void Update(Object@ parent)
 	{
-		// float vel = Vec2f(parent.interVelocity.x, parent.interVelocity.z).Length() * 5;
+		Actor@ actor = cast<Actor>(parent);
+		float vel = Vec2f(actor.interVelocity.x, actor.interVelocity.z).Length() * 5;
 
-		// float t = getInterGameTime();
-		// float sin = Maths::Sin(t / 2.5f) * vel;
-		// float cos = Maths::Cos(t / 2.5f) * vel;
-		// float limbSin = sin * 50;
-		// float limbCos = cos * 50;
+		float t = getInterGameTime();
+		float sin = Maths::Sin(t / 2.5f) * vel;
+		float cos = Maths::Cos(t / 2.5f) * vel;
+		float limbSin = sin * 50;
+		float limbCos = cos * 50;
 
-		// float cos2 = (Maths::Sin(t / (2.5f / 2.0f)) + 1) * vel; //sin
+		float cos2 = (Maths::Sin(t / (2.5f / 2.0f)) + 1) * vel; //sin
 
 		// getSegment(ActorModel::Body).offset.y = (-1.7 * 4/8) + Maths::Abs(cos * 0.1f);
 		// getSegment(ActorModel::Body).rotation = Vec3f(cos2 * 3 - 4 * vel, parent.interRotation.y, 0.0f);
@@ -165,5 +166,16 @@ shared class ActorModel : Model
 
 		// getSegment(ActorModel::UpperRightLeg).rotation.x = -limbCos;
 		// getSegment(ActorModel::LowerRightLeg).rotation.x = Maths::Min(0, -limbSin);
+
+		getDescendant("body").offset.y = 0.8f + Maths::Abs(cos * 0.1f);
+		getDescendant("body").rotation = Vec3f(cos2 * 3 - 4 * vel, parent.interRotation.y, 0.0f);
+
+		getDescendant("head").rotation.x = parent.interRotation.x;
+
+		getDescendant("armL").rotation.x = -limbCos;
+		getDescendant("armR").rotation.x = limbCos;
+
+		getDescendant("legL").rotation.x = limbCos;
+		getDescendant("legR").rotation.x = -limbCos;
 	}
 }
