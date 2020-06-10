@@ -97,13 +97,15 @@ shared class PhysicsObject : Object
 
 	void Interpolate()
 	{
-		interPosition = oldPosition.lerp(oldPosition + velocity, getInterFrameTime());
+		float t = getInterFrameTime();
+
+		interPosition = oldPosition.lerp(oldPosition + velocity, t);
 		interPosition = interPosition.clamp(oldPosition, position);
 
-		interVelocity = oldVelocity.lerp(velocity, getInterFrameTime());
-		interAngularVelocity = oldAngularVelocity.lerp(angularVelocity, getInterFrameTime());
+		interVelocity = oldVelocity.lerp(velocity, t);
+		interAngularVelocity = oldAngularVelocity.lerp(angularVelocity, t);
 
-		interRotation = oldRotation.lerpAngle(oldRotation + angularVelocity, getInterFrameTime());
+		interRotation = oldRotation.lerpAngle(oldRotation + angularVelocity, t);
 	}
 
 	void Serialize(CBitStream@ bs)

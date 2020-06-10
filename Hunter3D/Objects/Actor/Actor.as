@@ -93,7 +93,9 @@ shared class Actor : PhysicsObject, IHasModel
 	{
 		PhysicsObject::Interpolate();
 
-		interRotation = oldRotation.lerpAngle(rotation, getInterFrameTime());
+		float t = getInterFrameTime();
+
+		interRotation = oldRotation.lerpAngle(rotation, t);
 	}
 
 	void Serialize(CBitStream@ bs)

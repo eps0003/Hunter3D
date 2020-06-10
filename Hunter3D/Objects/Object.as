@@ -58,8 +58,10 @@ shared class Object : Identifiable
 
 	void Interpolate()
 	{
-		interPosition = oldPosition.lerp(position, getInterFrameTime());
-		interRotation = oldRotation.lerpAngle(rotation, getInterFrameTime());
+		float t = getInterFrameTime();
+
+		interPosition = oldPosition.lerp(position, t);
+		interRotation = oldRotation.lerpAngle(rotation, t);
 	}
 
 	void Serialize(CBitStream@ bs)
