@@ -56,6 +56,11 @@ shared class Object : Identifiable
 
 	}
 
+	void RenderHUD()
+	{
+
+	}
+
 	void Interpolate()
 	{
 		float t = getInterFrameTime();

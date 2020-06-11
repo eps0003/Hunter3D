@@ -133,7 +133,7 @@ shared class ModelBuilder
 		model.Render(parent);
 	}
 
-	void RenderGUI()
+	void RenderHUD()
 	{
 		if (isSegmentSelected())
 		{

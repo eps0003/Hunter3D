@@ -40,7 +40,7 @@ shared class ActorManager
 		}
 	}
 
-	void RenderGUI()
+	void RenderHUD()
 	{
 		Actor@[] actors = getActors();
 

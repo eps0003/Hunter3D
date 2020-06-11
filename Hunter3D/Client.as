@@ -6,11 +6,8 @@
 #include "TestMapGenerator.as"
 #include "ActorManager.as"
 #include "ModLoader.as"
-#include "ModelBuilder.as"
 
 #define CLIENT_ONLY
-
-ModelBuilder@ modelBuilder;
 
 void onInit(CRules@ this)
 {
@@ -21,15 +18,7 @@ void onInit(CRules@ this)
 
 void onRestart(CRules@ this)
 {
-	Texture::createFromFile("pixel", "pixel.png");
-	@modelBuilder = ModelBuilder();
-	modelBuilder.Init();
-}
-
-bool onClientProcessChat(CRules@ this, const string &in textIn, string &out textOut, CPlayer@ player)
-{
-	modelBuilder.CommandHandler(textIn);
-	return true;
+	Texture::createFromFile("pixel", "Pixel.png");
 }
 
 void onTick(CRules@ this)
@@ -49,8 +38,6 @@ void onTick(CRules@ this)
 			myActor.PreUpdate();
 			myActor.Update();
 			myActor.PostUpdate();
-
-			modelBuilder.Update();
 
 			if (getControls().isKeyJustPressed(KEY_KEY_L))
 			{
@@ -77,7 +64,7 @@ void onRender(CRules@ this)
 
 	if (camera.hasParent())
 	{
-		actorManager.RenderGUI();
+		actorManager.RenderHUD();
 	}
 
 	Actor@ myActor = actorManager.getActor(getLocalPlayer());
@@ -93,7 +80,6 @@ void onRender(CRules@ this)
 		// GUI::DrawText("interVelocity: " + myActor.interVelocity.toString(), Vec2f(10, 180), color_black);
 
 		// GUI::DrawText("mouseVelocity: " + getMouse3D().velocity.toString(), Vec2f(10, 210), color_black);
-		modelBuilder.RenderGUI();
 	}
 }
 
@@ -120,7 +106,6 @@ void Render(int id)
 		camera.Render();
 		getMap3D().Render();
 		actorManager.Render();
-		modelBuilder.RenderModel();
 	}
 }
 
