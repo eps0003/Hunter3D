@@ -19,6 +19,9 @@ shared Mouse@ getMouse3D()
 shared class Mouse
 {
 	Vec2f velocity;
+	Vec2f oldVelocity;
+	Vec2f interVelocity;
+
 	float sensitivity;
 
 	private bool wasInControl = false;
@@ -30,6 +33,7 @@ shared class Mouse
 
 	void Update()
 	{
+		oldVelocity = velocity;
 		CalculateVelocity();
 		wasInControl = isInControl();
 	}
@@ -37,6 +41,7 @@ shared class Mouse
 	void Render()
 	{
 		Visibility();
+		Interpolate();
 	}
 
 	bool isInControl()
@@ -47,6 +52,13 @@ shared class Mouse
 	bool isVisible()
 	{
 		return getCamera3D() is null || Menu::isMenuOpen();
+	}
+
+	private void Interpolate()
+	{
+		float t = getInterFrameTime();
+
+		interVelocity = Vec2f_lerp(oldVelocity, velocity, t);
 	}
 
 	private void Visibility()
