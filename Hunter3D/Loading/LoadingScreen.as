@@ -1,5 +1,6 @@
 #include "Utilities.as"
 #include "ModLoader.as"
+#include "Ease.as"
 
 #define CLIENT_ONLY
 
@@ -43,7 +44,7 @@ void onRender(CRules@ this)
 			}
 
 			float t = Maths::Clamp01((getInterGameTime() - loadTime) / FADE_DURATION);
-			loadOpacity = Maths::Lerp(255, 0, Ease::easeOut(t, Ease::quad));
+			loadOpacity = Maths::Lerp(255, 0, Ease().easeOut(t, EaseType::quad));
 		}
 	}
 }
