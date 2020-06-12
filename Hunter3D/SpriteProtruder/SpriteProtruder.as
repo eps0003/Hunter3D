@@ -452,6 +452,7 @@ class SpriteProtruder
 		material.SetFlag(SMaterial::LIGHTING, false);
 		material.SetFlag(SMaterial::BILINEAR_FILTER, false);
 		material.SetFlag(SMaterial::BACK_FACE_CULLING, false);
+		material.SetFlag(SMaterial::FOG_ENABLE, true);
 		material.SetMaterialType(SMaterial::TRANSPARENT_ALPHA_CHANNEL_REF);
 		mesh.SetMaterial(material);
 	}

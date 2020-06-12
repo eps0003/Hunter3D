@@ -94,6 +94,7 @@ shared class Model : SegmentChildren
 		material.SetFlag(SMaterial::LIGHTING, false);
 		material.SetFlag(SMaterial::BILINEAR_FILTER, false);
 		material.SetFlag(SMaterial::BACK_FACE_CULLING, false);
+		material.SetFlag(SMaterial::FOG_ENABLE, true);
 
 		//apply material to all segments
 		Segment@[] segments = getDescendants();

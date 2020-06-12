@@ -149,6 +149,7 @@ shared class Map
 		material.AddTexture(texture);
 		material.SetFlag(SMaterial::LIGHTING, false);
 		material.SetFlag(SMaterial::BILINEAR_FILTER, false);
+		material.SetFlag(SMaterial::FOG_ENABLE, true);
 
 		//get chunk dimensions
 		chunkDim = getChunkPos(mapDim);

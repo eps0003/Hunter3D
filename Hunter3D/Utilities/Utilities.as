@@ -10,6 +10,11 @@ enum Direction
 	Back
 }
 
+shared SColor getSkyColor()
+{
+	return SColor(255, 165, 189, 200);
+}
+
 shared string[] getDirectionNames()
 {
 	string[] directionNames = { "left", "right", "down", "up", "front", "back" };

@@ -88,8 +88,10 @@ void Render(int id)
 	if (!getModLoader().isLoaded()) return;
 
 	//background colour
+	SColor skyColor = getSkyColor();
 	Vec2f screenDim = getDriver().getScreenDimensions();
-	GUI::DrawRectangle(Vec2f_zero, screenDim, SColor(255, 165, 189, 200));
+	GUI::DrawRectangle(Vec2f_zero, screenDim, skyColor);
+	Render::SetFog(skyColor, SMesh::LINEAR, 100, 120, 0, false, false);
 
 	Render::SetAlphaBlend(false);
 	Render::SetZBuffer(true, true);
