@@ -48,6 +48,7 @@ shared class ActorManager
 		{
 			Actor@ actor = actors[i];
 			actor.RenderNameplate();
+			actor.RenderHUD();
 		}
 	}
 

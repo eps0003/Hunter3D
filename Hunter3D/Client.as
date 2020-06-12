@@ -70,16 +70,16 @@ void onRender(CRules@ this)
 	Actor@ myActor = actorManager.getActor(getLocalPlayer());
 	if (myActor !is null)
 	{
-		// GUI::DrawText("position: " + myActor.position.toString(), Vec2f(10, 50), color_black);
-		// GUI::DrawText("rotation: " + myActor.rotation.toString(), Vec2f(10, 70), color_black);
-		// GUI::DrawText("velocity: " + myActor.velocity.toString(), Vec2f(10, 90), color_black);
-		// GUI::DrawText("vellen: " + Vec2f(myActor.interVelocity.x, myActor.interVelocity.z).Length(), Vec2f(10, 110), color_black);
+		// GUI::DrawText("position: " + myActor.position.toString(), Vec2f(10, 40), color_black);
+		// GUI::DrawText("rotation: " + myActor.rotation.toString(), Vec2f(10, 60), color_black);
+		// GUI::DrawText("velocity: " + myActor.velocity.toString(), Vec2f(10, 80), color_black);
+		// GUI::DrawText("vellen: " + Vec2f(myActor.interVelocity.x, myActor.interVelocity.z).Length(), Vec2f(10, 100), color_black);
 
-		// GUI::DrawText("interPosition: " + myActor.interPosition.toString(), Vec2f(10, 140), color_black);
-		// GUI::DrawText("interRotation: " + myActor.interRotation.toString(), Vec2f(10, 160), color_black);
-		// GUI::DrawText("interVelocity: " + myActor.interVelocity.toString(), Vec2f(10, 180), color_black);
+		// GUI::DrawText("interPosition: " + myActor.interPosition.toString(), Vec2f(10, 130), color_black);
+		// GUI::DrawText("interRotation: " + myActor.interRotation.toString(), Vec2f(10, 150), color_black);
+		// GUI::DrawText("interVelocity: " + myActor.interVelocity.toString(), Vec2f(10, 170), color_black);
 
-		// GUI::DrawText("mouseVelocity: " + getMouse3D().velocity.toString(), Vec2f(10, 210), color_black);
+		// GUI::DrawText("mouseVelocity: " + getMouse3D().velocity.toString(), Vec2f(10, 200), color_black);
 	}
 }
 
