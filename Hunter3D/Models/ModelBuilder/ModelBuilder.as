@@ -2,7 +2,7 @@
 #include "Vec3f.as"
 #include "Camera.as"
 #include "Utilities.as"
-#include "UVEditor.as"
+#include "TextureAtlas.as"
 
 shared class ModelBuilder
 {
@@ -141,22 +141,22 @@ shared class ModelBuilder
 			SColor selectedColor(255, 255, 0, 0);
 			SColor color = color_black;
 
-			GUI::DrawText("name: "     + segment.name,                Vec2f(10,  50), color_black);
-			GUI::DrawText("dim: "      + segment.dim.toString(),      Vec2f(10,  70), selectedProperty == 0 ? selectedColor : color_black);
-			GUI::DrawText("origin: "   + segment.origin.toString(),   Vec2f(10,  90), selectedProperty == 1 ? selectedColor : color_black);
-			GUI::DrawText("offset: "   + segment.offset.toString(),   Vec2f(10, 110), selectedProperty == 2 ? selectedColor : color_black);
-			GUI::DrawText("orbit: "    + segment.orbit.toString(),    Vec2f(10, 130), selectedProperty == 3 ? selectedColor : color_black);
-			GUI::DrawText("rotation: " + segment.rotation.toString(), Vec2f(10, 150), selectedProperty == 4 ? selectedColor : color_black);
+			GUI::DrawText("name: "     + segment.name,                Vec2f(10,  40), color_black);
+			GUI::DrawText("dim: "      + segment.dim.toString(),      Vec2f(10,  60), selectedProperty == 0 ? selectedColor : color_black);
+			GUI::DrawText("origin: "   + segment.origin.toString(),   Vec2f(10,  80), selectedProperty == 1 ? selectedColor : color_black);
+			GUI::DrawText("offset: "   + segment.offset.toString(),   Vec2f(10, 100), selectedProperty == 2 ? selectedColor : color_black);
+			GUI::DrawText("orbit: "    + segment.orbit.toString(),    Vec2f(10, 120), selectedProperty == 3 ? selectedColor : color_black);
+			GUI::DrawText("rotation: " + segment.rotation.toString(), Vec2f(10, 140), selectedProperty == 4 ? selectedColor : color_black);
 
 			for (uint i = 0; i < 6; i++)
 			{
 				ImageUV@ uv = segment.getUV(i);
-				Vec2f pos(10, 190 + i * 20);
+				Vec2f pos(10, 180 + i * 20);
 				SColor col = selectedProperty - 5 == i ? selectedColor : color_black;
 				GUI::DrawText(getDirectionNames()[i] + " UV: " + uv.toString(model.getTexture()), pos, col);
 			}
 
-			UVEditor().Render(Vec2f(10, 340), model.getTexture(), segment.getUVs(), selectedProperty - 5);
+			TextureAtlas().Render(Vec2f(10, 330), 4, model.getTexture(), segment.getUVs(), selectedProperty - 5);
 		}
 	}
 

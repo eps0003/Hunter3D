@@ -1,11 +1,9 @@
 #include "ImageUV.as"
 
-shared class UVEditor
+shared class TextureAtlas
 {
-	void Render(Vec2f position, string texture, ImageUV@[] UVs, uint selectedUV)
+	void Render(Vec2f position, float scale, string texture, ImageUV@[] UVs, uint selectedUV)
 	{
-		float scale = 4;
-
 		Vec2f dim;
 		GUI::GetImageDimensions(texture, dim);
 		dim *= scale;
@@ -25,6 +23,26 @@ shared class UVEditor
 			SColor color = selectedUV == i ? SColor(255, 0, 255, 0) : SColor(255, 255, 0, 0);
 			DrawOutlinedRectangle(min, max, color);
 		}
+	}
+
+	void Render(Vec2f position, float scale, string texture, Vec2f selectedPixel, bool visiblePixel)
+	{
+		Vec2f dim;
+		GUI::GetImageDimensions(texture, dim);
+		dim *= scale;
+
+		Vec2f tl = position;
+		Vec2f br = tl + dim;
+
+		GUI::DrawRectangle(tl - Vec2f(1, 1), br + Vec2f(1, 1), color_black);
+		GUI::DrawRectangle(tl, br, color_white);
+		GUI::DrawIcon(texture, tl, scale / 2.0f);
+
+		Vec2f min = tl + selectedPixel * scale;
+		Vec2f max = min + Vec2f(scale, scale);
+		SColor color = visiblePixel ? SColor(255, 0, 255, 0) : SColor(255, 255, 0, 0);
+
+		DrawOutlinedRectangle(min - Vec2f(1, 1), max + Vec2f(1, 1), color);
 	}
 
 	private void DrawOutlinedRectangle(Vec2f tl, Vec2f br, SColor color, uint thickness = 1)
