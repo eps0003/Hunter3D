@@ -22,7 +22,7 @@ shared class Map
 	private SMaterial@ material = SMaterial();
 
 	private Chunk@[] visibleChunks;
-	private uint renderDistance = 1;
+	private uint renderDistance = 8;
 	private uint chunkUpdatesPerTick = 1;
 
 	Map(Vec3f size)
