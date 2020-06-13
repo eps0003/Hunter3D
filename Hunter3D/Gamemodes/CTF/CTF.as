@@ -14,7 +14,7 @@ shared class CTF : Gamemode
 	void onRestart(CRules@ this)
 	{
 		TestMapGenerator().GenerateMap(Vec3f(24, 8, 24));
-		getRespawnManager().AddAllToQueue(respawnTime);
+		getRespawnManager().AddAllToQueue(0);
 	}
 
 	void onTick(CRules@ this)
@@ -24,7 +24,7 @@ shared class CTF : Gamemode
 
 	void onNewPlayerJoin(CRules@ this, CPlayer@ player)
 	{
-		getRespawnManager().AddToQueue(player, respawnTime);
+		getRespawnManager().AddToQueue(player, 0);
 	}
 
 	void onPlayerLeave(CRules@ this, CPlayer@ player)
