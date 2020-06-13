@@ -2,6 +2,7 @@
 #include "IRenderable.as"
 #include "IHasTeam.as"
 #include "IHasConfig.as"
+#include "IHasParent.as"
 
 shared class Object : Identifiable, IHasConfig
 {
@@ -68,10 +69,5 @@ shared class Object : Identifiable, IHasConfig
 
 		position.Serialize(bs);
 		rotation.Serialize(bs);
-	}
-
-	void LoadConfig(ConfigFile@ cfg)
-	{
-
 	}
 }
