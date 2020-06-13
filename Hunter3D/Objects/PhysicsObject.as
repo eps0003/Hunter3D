@@ -48,6 +48,15 @@ shared class PhysicsObject : Object, IHasConfig
 		velocity = physicsObject.velocity;
 	}
 
+	void ClearPhysics()
+	{
+		velocity.Clear();
+		oldVelocity.Clear();
+
+		angularVelocity.Clear();
+		oldAngularVelocity.Clear();
+	}
+
 	void PreUpdate()
 	{
 		Object::PreUpdate();
