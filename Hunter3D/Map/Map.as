@@ -1,5 +1,6 @@
 #include "Vec3f.as"
 #include "Chunk.as"
+#include "Camera.as"
 
 const u8 CHUNK_SIZE = 8;
 
@@ -13,10 +14,16 @@ shared Map@ getMap3D()
 shared class Map
 {
 	private Chunk@[][][] chunks;
+
 	private Vec3f mapDim;
 	private Vec3f chunkDim;
+
 	private string texture = "pixel";
-	SMaterial@ material = SMaterial();
+	private SMaterial@ material = SMaterial();
+
+	private Chunk@[] visibleChunks;
+	private uint renderDistance = 1;
+	private uint chunkUpdatesPerTick = 1;
 
 	Map(Vec3f size)
 	{
@@ -84,16 +91,27 @@ shared class Map
 		}
 	}
 
+	void Update()
+	{
+		GetVisibleChunks();
+	}
+
 	void Render()
 	{
-		for (uint x = 0; x < chunkDim.x; x++)
-		for (uint y = 0; y < chunkDim.y; y++)
-		for (uint z = 0; z < chunkDim.z; z++)
+		for (uint i = 0; i < visibleChunks.length; i++)
 		{
-			Vec3f chunkPos(x, y, z);
-			Chunk@ chunk = getChunk(chunkPos);
+			Chunk@ chunk = visibleChunks[i];
 			chunk.Render();
 		}
+
+		// for (uint x = 0; x < chunkDim.x; x++)
+		// for (uint y = 0; y < chunkDim.y; y++)
+		// for (uint z = 0; z < chunkDim.z; z++)
+		// {
+		// 	Vec3f chunkPos(x, y, z);
+		// 	Chunk@ chunk = getChunk(chunkPos);
+		// 	chunk.Render();
+		// }
 	}
 
 	void Serialize(CBitStream@ bs)
@@ -181,6 +199,45 @@ shared class Map
 			Vec3f worldPos(x, y, z);
 			Voxel@ voxel = getVoxel(worldPos);
 			voxel.FindNeighbors(this, worldPos);
+		}
+	}
+
+	private void GetVisibleChunks()
+	{
+		Vec3f camPos = getCamera3D().getPosition();
+		Vec3f centerChunkPos = getChunkPos(camPos);
+
+		uint minX = Maths::Clamp(centerChunkPos.x - renderDistance, 0, chunkDim.x);
+		uint maxX = Maths::Clamp(centerChunkPos.x + renderDistance + 1, 0, chunkDim.x);
+		uint minY = 0;
+		uint maxY = chunkDim.y;
+		uint minZ = Maths::Clamp(centerChunkPos.z - renderDistance, 0, chunkDim.z);
+		uint maxZ = Maths::Clamp(centerChunkPos.z + renderDistance + 1, 0, chunkDim.z);
+
+		uint w = maxX - minX;
+		uint h = maxY - minY;
+		uint d = maxZ - minZ;
+
+		uint index = 0;
+		uint chunkUpdates = 0;
+
+		visibleChunks.clear();
+		visibleChunks.set_length(w * h * d);
+
+		for (uint x = minX; x < maxX; x++)
+		for (uint y = minY; y < maxY; y++)
+		for (uint z = minZ; z < maxZ; z++)
+		{
+			Vec3f chunkPos(x, y, z);
+			Chunk@ chunk = getChunk(chunkPos);
+
+			if (chunk.outdatedMesh && chunkUpdates <= chunkUpdatesPerTick)
+			{
+				chunk.GenerateMesh(chunkPos);
+				chunkUpdates++;
+			}
+
+			@visibleChunks[index++] = chunk;
 		}
 	}
 }

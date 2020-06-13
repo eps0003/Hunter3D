@@ -8,6 +8,8 @@ shared class Chunk
 	private Vertex[] vertices;
 	private u16[] indices;
 
+	bool outdatedMesh = true;
+
 	Chunk()
 	{
 		InitChunk();
@@ -19,6 +21,7 @@ shared class Chunk
 		if (currentVoxel != null)
 		{
 			currentVoxel = voxel;
+			outdatedMesh = true;
 			return true;
 		}
 		return false;
@@ -35,6 +38,7 @@ shared class Chunk
 
 	void GenerateMesh(Vec3f chunkPos)
 	{
+		outdatedMesh = false;
 		print("Generate mesh " + chunkPos.toString());
 
 		vertices.clear();
