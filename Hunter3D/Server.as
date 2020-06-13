@@ -1,11 +1,21 @@
 #include "Vec3f.as"
 #include "Map.as"
-#include "ActorManager.as"
+#include "ObjectManager.as"
 
 #define SERVER_ONLY
 
 void onTick(CRules@ this)
 {
+	Object@[] objects = getObjectManager().getNonActorObjects();
+	for (uint i = 0; i < objects.length; i++)
+	{
+		Object@ object = objects[i];
+
+		object.PreUpdate();
+		object.Update();
+		object.PostUpdate();
+	}
+
 	CBitStream bs;
 	getActorManager().SerializeActors(bs);
 	this.SendCommand(this.getCommandID("s_sync_objects"), bs, true);

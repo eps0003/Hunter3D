@@ -18,28 +18,6 @@ shared ActorManager@ getActorManager()
 
 shared class ActorManager
 {
-	void Interpolate()
-	{
-		Actor@[] actors = getActors();
-
-		for (uint i = 0; i < actors.length; i++)
-		{
-			Actor@ actor = actors[i];
-			actor.Interpolate();
-		}
-	}
-
-	void Render()
-	{
-		Actor@[] actors = getActors();
-
-		for (uint i = 0; i < actors.length; i++)
-		{
-			Actor@ actor = actors[i];
-			actor.Render();
-		}
-	}
-
 	void RenderHUD()
 	{
 		Actor@[] actors = getActors();
@@ -84,22 +62,6 @@ shared class ActorManager
 		return null;
 	}
 
-	Actor@ getActorByID(uint id)
-	{
-		Actor@[] actors = getActors();
-
-		for (uint i = 0; i < actors.length; i++)
-		{
-			Actor@ actor = actors[i];
-			if (actor.id == id)
-			{
-				return actor;
-			}
-		}
-
-		return null;
-	}
-
 	Actor@ getActor(CPlayer@ player)
 	{
 		Actor@[] actors = getActors();
@@ -134,22 +96,6 @@ shared class ActorManager
 		}
 
 		return actors;
-	}
-
-	void AddActor(Actor@ actor)
-	{
-		if (isServer())
-		{
-			actor.AssignUniqueID();
-		}
-
-		getObjectManager().AddObject(actor);
-	}
-
-	void AddActor(CPlayer@ player, Vec3f position)
-	{
-		Actor actor(player, position);
-		AddActor(actor);
 	}
 
 	void RemoveActor(Actor@ actor)
@@ -248,7 +194,7 @@ shared class ActorManager
 			else
 			{
 				//spawn actor
-				AddActor(actor);
+				getObjectManager().AddObject(actor);
 
 				if (actor.player.isMyPlayer())
 				{

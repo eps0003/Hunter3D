@@ -1,6 +1,9 @@
 #include "Identifiable.as"
+#include "IRenderable.as"
+#include "IHasTeam.as"
+#include "IHasConfig.as"
 
-shared class Object : Identifiable
+shared class Object : Identifiable, IHasConfig
 {
 	Vec3f position;
 	Vec3f oldPosition;
@@ -47,16 +50,6 @@ shared class Object : Identifiable
 	}
 
 	void PostUpdate()
-	{
-
-	}
-
-	void Render()
-	{
-
-	}
-
-	void RenderHUD()
 	{
 
 	}

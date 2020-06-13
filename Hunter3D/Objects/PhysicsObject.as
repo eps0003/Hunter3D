@@ -1,10 +1,10 @@
 #include "Object.as"
 #include "AABB.as"
+#include "Map.as"
+#include "CollisionFlags.as"
 
-shared class PhysicsObject : Object
+shared class PhysicsObject : Object, IHasConfig
 {
-	AABB@ hitbox;
-
 	float gravity;
 	float friction;
 	float airResitance;
@@ -18,6 +18,9 @@ shared class PhysicsObject : Object
 	Vec3f angularVelocity;
 	Vec3f oldAngularVelocity;
 	Vec3f interAngularVelocity;
+
+	private AABB@ collisionBox;
+	private uint collisionFlags = 0;
 
 	private bool collisionX = false;
 	private bool collisionY = false;
@@ -126,69 +129,229 @@ shared class PhysicsObject : Object
 		elasticity = cfg.read_f32("elasticity", 0.0f);
 	}
 
+	void SetCollisionBox(AABB@ aabb)
+	{
+		@collisionBox = aabb;
+	}
+
+	AABB@ getCollisionBox()
+	{
+		return collisionBox;
+	}
+
+	void SetCollisionFlags(uint flags)
+	{
+		collisionFlags = flags;
+	}
+
+	private bool hasCollisionFlags(uint flags)
+	{
+		return (collisionFlags & flags) == flags;
+	}
+
 	private void CollisionResponse()
 	{
-		if (hitbox !is null)
+		AABB@ collisionBox = getCollisionBox();
+		if (collisionBox !is null)
 		{
+			bool collideVoxels = hasCollisionFlags(CollisionFlag::Voxels);
+			bool collideMapEdge = hasCollisionFlags(CollisionFlag::MapEdge);
+			Vec3f mapDim = getMap3D().getMapDimensions();
+
 			//x collision
+			collisionX = true;
 			Vec3f xPosition(position.x + velocity.x, position.y, position.z);
-			if (hitbox.intersectsNewAt(position, xPosition) || hitbox.intersectsMapEdgeAt(xPosition))
+
+			if (collideVoxels && collisionBox.intersectsNewAt(position, xPosition))
 			{
 				if (velocity.x > 0)
 				{
-					position.x = Maths::Ceil(position.x + hitbox.max.x) - hitbox.max.x;
+					position.x = Maths::Ceil(position.x + collisionBox.max.x) - collisionBox.max.x;
 				}
 				else if (velocity.x < 0)
 				{
-					position.x = Maths::Floor(position.x + hitbox.min.x) - hitbox.min.x;
+					position.x = Maths::Floor(position.x + collisionBox.min.x) - collisionBox.min.x;
 				}
-				collisionX = true;
 			}
-
-			if (!collisionX)
+			else if (collideMapEdge && collisionBox.intersectsMapEdgeAt(xPosition))
 			{
+				if (velocity.x > 0)
+				{
+					position.x = mapDim.x - collisionBox.max.x;
+				}
+				else if (velocity.x < 0)
+				{
+					position.x = -collisionBox.min.x;
+				}
+			}
+			else
+			{
+				collisionX = false;
 				position.x += velocity.x;
 			}
 
 			//z collision
+			collisionZ = true;
 			Vec3f zPosition(position.x, position.y, position.z + velocity.z);
-			if (hitbox.intersectsNewAt(position, zPosition) || hitbox.intersectsMapEdgeAt(zPosition))
+
+			if (collideVoxels && collisionBox.intersectsNewAt(position, zPosition))
 			{
 				if (velocity.z > 0)
 				{
-					position.z = Maths::Ceil(position.z + hitbox.max.z) - hitbox.max.z;
+					position.z = Maths::Ceil(position.z + collisionBox.max.z) - collisionBox.max.z;
 				}
 				else if (velocity.z < 0)
 				{
-					position.z = Maths::Floor(position.z + hitbox.min.z) - hitbox.min.z;
+					position.z = Maths::Floor(position.z + collisionBox.min.z) - collisionBox.min.z;
 				}
-				collisionZ = true;
 			}
-
-			if (!collisionZ)
+			else if (collideMapEdge && collisionBox.intersectsMapEdgeAt(zPosition))
 			{
+				if (velocity.z > 0)
+				{
+					position.z = mapDim.z - collisionBox.max.z;
+				}
+				else if (velocity.x < 0)
+				{
+					position.z = -collisionBox.min.z;
+				}
+			}
+			else
+			{
+				collisionZ = false;
 				position.z += velocity.z;
 			}
 
 			//y collision
+			collisionY = true;
 			Vec3f yPosition(position.x, position.y + velocity.y, position.z);
-			if (hitbox.intersectsNewAt(position, yPosition) || hitbox.intersectsMapEdgeAt(yPosition))
+
+			if (collideVoxels && collisionBox.intersectsNewAt(position, yPosition))
 			{
 				if (velocity.y > 0)
 				{
-					position.y = Maths::Ceil(position.y + hitbox.max.y) - hitbox.max.y;
+					position.y = Maths::Ceil(position.y + collisionBox.max.y) - collisionBox.max.y;
 				}
 				else if (velocity.y < 0)
 				{
-					position.y = Maths::Floor(position.y + hitbox.min.y) - hitbox.min.y;
+					position.y = Maths::Floor(position.y + collisionBox.min.y) - collisionBox.min.y;
 				}
-				collisionY = true;
 			}
-
-			if (!collisionY)
+			else
 			{
+				collisionY = false;
 				position.y += velocity.y;
 			}
+
+			// //voxel collision
+			// if (hasCollisionFlags(CollisionFlag::Voxels))
+			// {
+			// 	//x collision
+			// 	Vec3f xPosition(position.x + velocity.x, position.y, position.z);
+			// 	if (collisionBox.intersectsNewAt(position, xPosition))
+			// 	{
+			// 		if (velocity.x > 0)
+			// 		{
+			// 			position.x = Maths::Ceil(position.x + collisionBox.max.x) - collisionBox.max.x;
+			// 		}
+			// 		else if (velocity.x < 0)
+			// 		{
+			// 			position.x = Maths::Floor(position.x + collisionBox.min.x) - collisionBox.min.x;
+			// 		}
+			// 		collisionX = true;
+			// 	}
+
+			// 	if (!collisionX)
+			// 	{
+			// 		position.x += velocity.x;
+			// 	}
+
+			// 	//z collision
+			// 	Vec3f zPosition(position.x, position.y, position.z + velocity.z);
+			// 	if (collisionBox.intersectsNewAt(position, zPosition))
+			// 	{
+			// 		if (velocity.z > 0)
+			// 		{
+			// 			position.z = Maths::Ceil(position.z + collisionBox.max.z) - collisionBox.max.z;
+			// 		}
+			// 		else if (velocity.z < 0)
+			// 		{
+			// 			position.z = Maths::Floor(position.z + collisionBox.min.z) - collisionBox.min.z;
+			// 		}
+			// 		collisionZ = true;
+			// 	}
+
+			// 	if (!collisionZ)
+			// 	{
+			// 		position.z += velocity.z;
+			// 	}
+
+			// 	//y collision
+			// 	Vec3f yPosition(position.x, position.y + velocity.y, position.z);
+			// 	if (collisionBox.intersectsNewAt(position, yPosition))
+			// 	{
+			// 		if (velocity.y > 0)
+			// 		{
+			// 			position.y = Maths::Ceil(position.y + collisionBox.max.y) - collisionBox.max.y;
+			// 		}
+			// 		else if (velocity.y < 0)
+			// 		{
+			// 			position.y = Maths::Floor(position.y + collisionBox.min.y) - collisionBox.min.y;
+			// 		}
+			// 		collisionY = true;
+			// 	}
+
+			// 	if (!collisionY)
+			// 	{
+			// 		position.y += velocity.y;
+			// 	}
+			// }
+
+			// //map edge collision
+			// if (hasCollisionFlags(CollisionFlag::MapEdge))
+			// {
+			// 	Vec3f mapDim = getMap3D().getMapDimensions();
+
+			// 	//x collision
+			// 	Vec3f xPosition(position.x + velocity.x, position.y, position.z);
+			// 	if (collisionBox.intersectsMapEdgeAt(xPosition))
+			// 	{
+			// 		if (velocity.x > 0)
+			// 		{
+			// 			position.x = mapDim.x - collisionBox.max.x;
+			// 		}
+			// 		else if (velocity.x < 0)
+			// 		{
+			// 			position.x = -collisionBox.min.x;
+			// 		}
+			// 		collisionX = true;
+			// 	}
+
+			// 	if (!collisionX)
+			// 	{
+			// 		position.x += velocity.x;
+			// 	}
+
+			// 	//z collision
+			// 	Vec3f zPosition(position.x, position.y, position.z + velocity.z);
+			// 	if (collisionBox.intersectsMapEdgeAt(zPosition))
+			// 	{
+			// 		if (velocity.z > 0)
+			// 		{
+			// 			position.z = mapDim.z - collisionBox.max.z;
+			// 		}
+			// 		else if (velocity.x < 0)
+			// 		{
+			// 			position.z = -collisionBox.min.z;
+			// 		}
+			// 		collisionZ = true;
+			// 	}
+
+			// 	if (!collisionZ)
+			// 	{
+			// 		position.z += velocity.z;
+			// 	}
+			// }
 		}
 	}
 }

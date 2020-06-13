@@ -1,5 +1,5 @@
 #include "PlayerList.as"
-#include "ActorManager.as"
+#include "ObjectManager.as"
 #include "GamemodeManager.as"
 #include "Vec3f.as"
 #include "Map.as"
@@ -71,7 +71,7 @@ shared class RespawnManager
 		{
 			RemoveFromQueue(player);
 			Actor@ actor = Actor(player, position);
-			getActorManager().AddActor(actor);
+			getObjectManager().AddObject(actor);
 			print("Respawned " + player.getUsername() + " at " + position.toString());
 		}
 	}

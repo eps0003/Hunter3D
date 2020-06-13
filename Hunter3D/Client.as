@@ -4,7 +4,7 @@
 #include "Camera.as"
 #include "Actor.as"
 #include "TestMapGenerator.as"
-#include "ActorManager.as"
+#include "ObjectManager.as"
 #include "ModLoader.as"
 
 #define CLIENT_ONLY
@@ -101,13 +101,13 @@ void Render(int id)
 	Camera@ camera = getCamera3D();
 	if (camera.hasParent())
 	{
-		ActorManager@ actorManager = getActorManager();
+		ObjectManager@ objectManager = getObjectManager();
 
-		actorManager.Interpolate();
+		objectManager.Interpolate();
 
 		camera.Render();
 		getMap3D().Render();
-		actorManager.Render();
+		objectManager.Render();
 	}
 }
 
@@ -117,14 +117,10 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 	{
 		print("Received map");
 
-		CPlayer@ me = getLocalPlayer();
-
 		Map map(params);
 		Vec3f mapCenter = map.getMapDimensions() / 2;
 
 		this.set("map", map);
-
-		map.GenerateMesh();
 	}
 	else if (cmd == this.getCommandID("s_sync_voxel"))
 	{

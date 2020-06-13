@@ -1,4 +1,5 @@
 #include "GamemodeManager.as"
+#include "Identifiable.as"
 
 #define SERVER_ONLY;
 
@@ -10,6 +11,7 @@ void onInit(CRules@ this)
 
 void onRestart(CRules@ this)
 {
+	ResetUniqueID();
 	getGamemodeManager().getGamemode().onRestart(this);
 }
 

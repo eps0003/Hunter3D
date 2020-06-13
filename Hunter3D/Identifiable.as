@@ -1,8 +1,17 @@
+shared void ResetUniqueID()
+{
+	getRules().set_u32("current_id", 0);
+}
+
 shared class Identifiable
 {
 	uint id = 0;
+	string name;
 
-	Identifiable() {}
+	Identifiable(string name)
+	{
+		this.name = name;
+	}
 
 	Identifiable(CBitStream@ bs)
 	{

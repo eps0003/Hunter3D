@@ -1,12 +1,12 @@
 #include "PhysicsObject.as"
 #include "Mouse.as"
-#include "ActorManager.as"
+#include "ObjectManager.as"
 #include "ActorModel.as"
-#include "IHasModel.as"
 #include "MovementStrategy.as"
 #include "Camera.as"
+#include "Weapon.as"
 
-shared class Actor : PhysicsObject, IHasModel
+shared class Actor : PhysicsObject, IRenderable, IHasTeam, IHasConfig
 {
 	CPlayer@ player;
 	private Model@ model;
@@ -18,6 +18,7 @@ shared class Actor : PhysicsObject, IHasModel
 	Actor(CPlayer@ player, Vec3f position)
 	{
 		super(position);
+		name = "Actor";
 
 		@this.player = player;
 	}
@@ -25,15 +26,17 @@ shared class Actor : PhysicsObject, IHasModel
 	Actor(CBitStream@ bs)
 	{
 		super(bs);
+		name = "Actor";
 		LoadConfig(openConfig("Actor.cfg"));
 
 		u16 playerID = bs.read_u16();
 		@player = getPlayerByNetworkId(playerID);
 
-		@hitbox = AABB(Vec3f(0.6f, 1.6f, 0.6f));
-		cameraHeight = 1.5f;
+		SetCollisionBox(AABB(Vec3f(0.6f, 1.6f, 0.6f)));
+		SetCollisionFlags(CollisionFlag::Voxels);
 
-		SetModel(ActorModel("KnightSkin.png"));
+		cameraHeight = 1.5f;
+		@model = ActorModel("KnightSkin.png");
 	}
 
 	void opAssign(Actor actor)
@@ -65,34 +68,55 @@ shared class Actor : PhysicsObject, IHasModel
 		rules.SendCommand(rules.getCommandID("c_sync_actor"), bs, false);
 	}
 
-	void Render()
+	bool isVisible()
 	{
-		PhysicsObject::Render();
-
 		Camera@ camera = getCamera3D();
 
-		bool cameraNotAttached = camera.hasParent() && !camera.getParent().isSameAs(this);
-		if (cameraNotAttached)
-		{
-			hitbox.Render(interPosition);
+		bool hasModel = model !is null;
+		bool cameraParentNotMe = camera.hasParent() && !camera.getParent().isSameAs(this);
 
-			if (hasModel())
-			{
-				model.Render(this);
-			}
+		return hasModel && cameraParentNotMe;
+	}
+
+	void Render()
+	{
+		AABB@ collisionBox = getCollisionBox();
+		if (collisionBox !is null)
+		{
+			collisionBox.Render(interPosition);
 		}
+
+		model.Render(this);
+	}
+
+	u8 getTeamNum()
+	{
+		return player.getTeamNum();
+	}
+
+	void SetTeamNum(u8 team)
+	{
+		player.server_setTeamNum(team);
+	}
+
+	void RenderHUD()
+	{
+
 	}
 
 	void RenderNameplate()
 	{
 		Camera@ camera = getCamera3D();
-
 		bool cameraNotAttached = camera.hasParent() && !camera.getParent().isSameAs(this);
-		if (cameraNotAttached && interPosition.isInFrontOfCamera())
+
+		if (isNameplateVisible() && cameraNotAttached && interPosition.isInFrontOfCamera())
 		{
 			Vec3f pos = interPosition + Vec3f(0, 2, 0);
 			Vec2f screenPos = pos.projectToScreen();
-			GUI::DrawTextCentered(player.getCharacterName(), screenPos, color_white);
+			uint distance = (camera.getPosition() - pos).mag();
+
+			GUI::DrawTextCentered(player.getCharacterName(), screenPos - Vec2f(0, 8), color_white);
+			GUI::DrawTextCentered(distance + " " + String::plural(distance, "block"), screenPos + Vec2f(0, 8), color_white);
 		}
 	}
 
@@ -111,21 +135,6 @@ shared class Actor : PhysicsObject, IHasModel
 		bs.write_u16(player.getNetworkID());
 	}
 
-	bool hasModel()
-	{
-		return model !is null;
-	}
-
-	void SetModel(Model@ model)
-	{
-		@this.model = model;
-	}
-
-	Model@ getModel()
-	{
-		return model;
-	}
-
 	bool hasMovementStrategy()
 	{
 		return movementStrategy !is null;
@@ -139,6 +148,14 @@ shared class Actor : PhysicsObject, IHasModel
 	bool isSameAs(Actor@ actor)
 	{
 		return PhysicsObject::isSameAs(actor) && player is actor.player;
+	}
+
+	void LoadConfig(ConfigFile@ cfg)
+	{
+		PhysicsObject::LoadConfig(cfg);
+
+		acceleration = cfg.read_f32("acceleration");
+		jumpForce = cfg.read_f32("jump_force");
 	}
 
 	private void Move()
@@ -188,11 +205,8 @@ shared class Actor : PhysicsObject, IHasModel
 		}
 	}
 
-	void LoadConfig(ConfigFile@ cfg)
+	private bool isNameplateVisible()
 	{
-		PhysicsObject::LoadConfig(cfg);
-
-		acceleration = cfg.read_f32("acceleration");
-		jumpForce = cfg.read_f32("jump_force");
+		return getTeamNum() == getLocalPlayer().getTeamNum();
 	}
 }
