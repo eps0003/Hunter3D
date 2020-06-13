@@ -18,6 +18,7 @@ void onTick(CRules@ this)
 
 	CBitStream bs;
 	getActorManager().SerializeActors(bs);
+	getFlagManager().SerializeFlags(bs);
 	this.SendCommand(this.getCommandID("s_sync_objects"), bs, true);
 }
 

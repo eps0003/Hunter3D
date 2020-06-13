@@ -162,6 +162,7 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 	else if (cmd == this.getCommandID("s_sync_objects"))
 	{
 		getActorManager().DeserializeActors(params);
+		getFlagManager().DeserializeFlags(params);
 	}
 	else if (cmd == this.getCommandID("s_remove_actor"))
 	{

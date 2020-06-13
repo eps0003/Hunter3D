@@ -1,6 +1,7 @@
 #include "Object.as"
 #include "IRenderable.as"
 #include "ActorManager.as"
+#include "FlagManager.as"
 
 shared ObjectManager@ getObjectManager()
 {
