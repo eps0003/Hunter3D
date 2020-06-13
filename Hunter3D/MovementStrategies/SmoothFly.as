@@ -1,5 +1,3 @@
-#include "Utilities.as"
-
 shared class SmoothFly : MovementStrategy
 {
 	void Move(Actor@ actor)

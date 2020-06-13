@@ -1,5 +1,4 @@
 #include "Utilities.as"
-#include "Camera.as"
 
 shared class Vec3f
 {

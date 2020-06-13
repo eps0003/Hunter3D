@@ -1,5 +1,3 @@
-#include "Utilities.as"
-
 shared class Walking : MovementStrategy
 {
 	void Move(Actor@ actor)

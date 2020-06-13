@@ -1,5 +1,3 @@
-#include "Vec3f.as"
-
 enum Direction
 {
 	Left,

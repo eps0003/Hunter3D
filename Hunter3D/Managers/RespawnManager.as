@@ -1,8 +1,6 @@
 #include "PlayerList.as"
 #include "ObjectManager.as"
 #include "GamemodeManager.as"
-#include "Vec3f.as"
-#include "Map.as"
 
 shared RespawnManager@ getRespawnManager()
 {

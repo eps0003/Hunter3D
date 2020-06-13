@@ -1,5 +1,3 @@
-#include "Utilities.as"
-
 shared class Voxel
 {
 	u8 type;

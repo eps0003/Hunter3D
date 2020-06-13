@@ -1,5 +1,4 @@
 #include "Model.as"
-#include "Camera.as"
 
 shared class ActorModel : Model
 {

@@ -1,4 +1,3 @@
-#include "Utilities.as"
 #include "TextureAtlas.as"
 
 class SpriteProtruder

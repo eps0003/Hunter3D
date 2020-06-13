@@ -1,4 +1,3 @@
-#include "ImageUV.as"
 #include "SegmentChildren.as"
 
 shared class Segment : SegmentChildren

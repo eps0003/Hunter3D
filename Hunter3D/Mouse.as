@@ -1,4 +1,3 @@
-#include "Camera.as"
 #include "ModLoader.as"
 
 shared Mouse@ getMouse3D()

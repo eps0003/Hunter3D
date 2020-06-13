@@ -2,10 +2,9 @@
 #include "Map.as"
 #include "Mouse.as"
 #include "Camera.as"
-#include "Actor.as"
-#include "TestMapGenerator.as"
 #include "ObjectManager.as"
 #include "ModLoader.as"
+#include "Utilities.as"
 
 #define CLIENT_ONLY
 

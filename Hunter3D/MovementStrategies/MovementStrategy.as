@@ -1,6 +1,5 @@
 #include "SmoothFly.as"
 #include "Walking.as"
-#include "Mouse.as"
 
 shared class MovementStrategy
 {

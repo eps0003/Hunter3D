@@ -1,7 +1,4 @@
 #include "Segment.as"
-#include "Vec3f.as"
-#include "Camera.as"
-#include "Utilities.as"
 #include "TextureAtlas.as"
 
 shared class ModelBuilder

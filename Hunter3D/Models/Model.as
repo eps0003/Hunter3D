@@ -1,6 +1,7 @@
 #include "Segment.as"
 #include "ImageUV.as"
 #include "Object.as"
+#include "Vec3f.as"
 
 shared class Model : SegmentChildren
 {

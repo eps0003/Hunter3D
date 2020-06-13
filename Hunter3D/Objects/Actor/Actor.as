@@ -3,7 +3,6 @@
 #include "ObjectManager.as"
 #include "ActorModel.as"
 #include "MovementStrategy.as"
-#include "Camera.as"
 #include "Weapon.as"
 
 shared class Actor : PhysicsObject, IRenderable, IHasTeam, IHasConfig
