@@ -4,7 +4,7 @@
 #include "IHasConfig.as"
 #include "IHasParent.as"
 
-shared class Object : Identifiable, IHasConfig
+shared class Object : Identifiable
 {
 	Vec3f position;
 	Vec3f oldPosition;
