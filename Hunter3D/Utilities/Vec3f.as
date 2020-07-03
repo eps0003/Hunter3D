@@ -299,6 +299,15 @@ shared class Vec3f
 		);
 	}
 
+	Vec3f ceil()
+	{
+		return Vec3f(
+			Maths::Ceil(x),
+			Maths::Ceil(y),
+			Maths::Ceil(z)
+		);
+	}
+
 	Vec3f abs()
 	{
 		return Vec3f(

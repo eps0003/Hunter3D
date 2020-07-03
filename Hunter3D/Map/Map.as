@@ -165,7 +165,7 @@ shared class Map
 		material.SetFlag(SMaterial::FOG_ENABLE, true);
 
 		//get chunk dimensions
-		chunkDim = getChunkPos(mapDim);
+		chunkDim = (mapDim / CHUNK_SIZE).ceil();
 
 		//generate chunks
 		for (uint x = 0; x < chunkDim.x; x++)
