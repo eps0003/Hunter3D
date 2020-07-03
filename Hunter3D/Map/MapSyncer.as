@@ -1,7 +1,7 @@
 #include "PlayerList.as"
 #include "Map.as"
 
-const uint CHUNKS_PER_PACKET = 1;
+const uint CHUNKS_PER_PACKET = 2;
 
 shared MapSyncer@ getMapSyncer()
 {
@@ -36,7 +36,7 @@ shared class MapSyncer
 
 	void AddMapRequest(CPlayer@ player, uint packet = 0)
 	{
-		if (packet < getMap3D().getChunkCount())
+		if (packet < getTotalPacketCount())
 		{
 			MapRequest request(player, packet);
 			requests.push_back(request);
@@ -75,11 +75,12 @@ shared class MapSyncer
 
 	void server_Sync()
 	{
+		Map@ map = getMap3D();
+		if (map is null || !map.loaded) return;
+
 		MapRequest@ request = getNextMapRequest();
 		if (request !is null)
 		{
-			Map@ map = getMap3D();
-
 			CPlayer@ player = request.player;
 			uint index = request.packet;
 
@@ -94,9 +95,6 @@ shared class MapSyncer
 			uint firstChunk = index * CHUNKS_PER_PACKET;
 			uint lastChunk = firstChunk + CHUNKS_PER_PACKET;
 
-			//get total number of packets
-			uint totalPackets = Maths::Ceil(float(map.getChunkCount()) / float(CHUNKS_PER_PACKET));
-
 			//serialize index
 			CBitStream bs;
 			bs.write_u32(index);
@@ -104,7 +102,7 @@ shared class MapSyncer
 			//serialize map size
 			if (index == 0)
 			{
-				getMap3D().getMapDimensions().Serialize(bs);
+				map.getMapDimensions().Serialize(bs);
 			}
 
 			//loop through these chunks and serialize
@@ -118,11 +116,16 @@ shared class MapSyncer
 			//send to requesting player
 			CRules@ rules = getRules();
 			rules.SendCommand(rules.getCommandID("s_map_data"), bs, player);
-			print("Synced map packet " + (index + 1) + "/" + totalPackets + " to " + player.getUsername());
+			print("Synced map packet " + (index + 1) + "/" + getTotalPacketCount() + " to " + player.getUsername());
 
 			//request next packet
 			AddMapRequest(player, ++index);
 		}
+	}
+
+	private uint getTotalPacketCount()
+	{
+		return Maths::Ceil(float(getMap3D().getChunkCount()) / float(CHUNKS_PER_PACKET));
 	}
 }
 

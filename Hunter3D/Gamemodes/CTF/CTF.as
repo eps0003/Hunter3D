@@ -8,17 +8,18 @@ shared class CTF : Gamemode
 
 	CTF()
 	{
+		super(TestMapGenerator(Vec3f(24, 8, 24)));
 		LoadConfig(openConfig("CTF.cfg"));
 	}
 
 	void onRestart(CRules@ this)
 	{
-		TestMapGenerator().GenerateMap(Vec3f(24, 8, 24));
 		getRespawnManager().AddAllToQueue(0);
 	}
 
 	void onTick(CRules@ this)
 	{
+		Gamemode::onTick(this);
 		getRespawnManager().Update();
 	}
 

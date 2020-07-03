@@ -5,9 +5,23 @@ shared class Gamemode
 	string name;
 	string shortName;
 
+	private MapGenerator@ mapgen;
+
+	Gamemode(MapGenerator@ mapgen)
+	{
+		@this.mapgen = mapgen;
+	}
+
 	void onInit(CRules@ this) {}
 	void onRestart(CRules@ this) {}
-	void onTick(CRules@ this) {}
+	void onTick(CRules@ this)
+	{
+		Map@ map = getMap3D();
+		if (map is null || !map.loaded)
+		{
+			mapgen.GenerateMap();
+		}
+	}
 	void onNewPlayerJoin(CRules@ this, CPlayer@ player) {}
 	void onPlayerLeave(CRules@ this, CPlayer@ player) {}
 	void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ attacker, u8 customData) {}

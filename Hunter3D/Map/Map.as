@@ -95,15 +95,6 @@ shared class Map
 			Chunk@ chunk = visibleChunks[i];
 			chunk.Render();
 		}
-
-		// for (uint x = 0; x < chunkDim.x; x++)
-		// for (uint y = 0; y < chunkDim.y; y++)
-		// for (uint z = 0; z < chunkDim.z; z++)
-		// {
-		// 	Vec3f chunkPos(x, y, z);
-		// 	Chunk@ chunk = getChunk(chunkPos);
-		// 	chunk.Render();
-		// }
 	}
 
 	Chunk@ getChunk(Vec3f chunkPos)

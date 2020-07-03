@@ -1,16 +1,33 @@
-#include "IMapGenerator.as"
+#include "MapGenerator.as"
 
-shared class TestMapGenerator : IMapGenerator
+shared class TestMapGenerator : MapGenerator
 {
-	void GenerateMap(Vec3f size)
+	TestMapGenerator(Vec3f size)
 	{
-		Map map(size);
+		super(size);
+	}
 
-		for (uint x = 0; x < size.x; x++)
-		for (uint y = 0; y < size.y; y++)
-		for (uint z = 0; z < size.z; z++)
+	TestMapGenerator(Vec3f size, uint seed)
+	{
+		super(size, seed);
+	}
+
+	void GenerateMap()
+	{
+		if (chunkIndex == 0)
 		{
-			Vec3f position(x, y, z);
+			Map map(size);
+			getRules().set("map", map);
+		}
+
+		Map@ map = getMap3D();
+		uint index = chunkIndex * VOXELS_PER_CHUNK;
+
+		for (uint i = index; i < index + VOXELS_PER_CHUNK; i++)
+		{
+			uint x = i / (size.y * size.z);
+			uint y = (i / size.z) % size.y;
+			uint z = i % size.z;
 
 			u8 type = 0;
 			if (y == 0)
@@ -19,9 +36,16 @@ shared class TestMapGenerator : IMapGenerator
 			}
 
 			Voxel voxel(type);
-			map.SetVoxel(position, voxel);
+			map.SetVoxel(Vec3f(x, y, z), voxel);
 		}
 
-		getRules().set("map", map);
+		if (chunkIndex < getChunkCount() - 1)
+		{
+			chunkIndex++;
+		}
+		else
+		{
+			map.loaded = true;
+		}
 	}
 }

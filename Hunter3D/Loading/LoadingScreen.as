@@ -6,15 +6,26 @@
 
 const float FADE_DURATION = 60.0f;
 
-float loadOpacity = 255;
-uint loadTime = 0;
+float loadOpacity;
+uint loadTime;
 float oldProgress;
+
+void onInit(CRules@ this)
+{
+	onRestart(this);
+}
+
+void onRestart(CRules@ this)
+{
+	loadOpacity = 255;
+	loadTime = 0;
+}
 
 void onTick(CRules@ this)
 {
 	ModLoader@ modLoader = getModLoader();
-	modLoader.LoadMod();
 	oldProgress = modLoader.getProgress();
+	modLoader.LoadMod();
 }
 
 void onRender(CRules@ this)
