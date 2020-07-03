@@ -23,8 +23,11 @@ shared class Voxel
 	Voxel(CBitStream@ bs)
 	{
 		type = bs.read_u8();
-		health = bs.read_u8();
-		handPlaced = bs.read_bool();
+		if (type > 0)
+		{
+			health = bs.read_u8();
+			handPlaced = bs.read_bool();
+		}
 	}
 
 	bool opEquals(const Voxel &in voxel)
@@ -276,8 +279,11 @@ shared class Voxel
 	void Serialize(CBitStream@ bs)
 	{
 		bs.write_u8(type);
-		bs.write_u8(health);
-		bs.write_bool(handPlaced);
+		if (type > 0)
+		{
+			bs.write_u8(health);
+			bs.write_bool(handPlaced);
+		}
 	}
 
 	void client_Sync(Vec3f worldPos)

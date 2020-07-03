@@ -19,31 +19,18 @@ shared class Map
 	private Vec3f chunkDim;
 
 	private string texture = "pixel";
-	private SMaterial@ material = SMaterial();
+	SMaterial@ material = SMaterial();
 
 	private Chunk@[] visibleChunks;
 	private uint renderDistance = 8;
 	private uint chunkUpdatesPerTick = 1;
 
-	Map(Vec3f size)
-	{
-		this.mapDim = size;
-		InitChunks();
-	}
+	bool loaded = false;
 
-	Map(CBitStream@ bs)
+	Map(Vec3f mapDim)
 	{
-		this.mapDim = Vec3f(bs);
+		this.mapDim = mapDim;
 		InitChunks();
-
-		for (uint x = 0; x < mapDim.x; x++)
-		for (uint y = 0; y < mapDim.y; y++)
-		for (uint z = 0; z < mapDim.z; z++)
-		{
-			Vec3f worldPos(x, y, z);
-			Voxel voxel(bs);
-			SetVoxel(worldPos, voxel);
-		}
 	}
 
 	bool SetVoxel(Vec3f worldPos, Voxel voxel)
@@ -77,6 +64,11 @@ shared class Map
 	Vec3f getMapDimensions()
 	{
 		return mapDim;
+	}
+
+	uint getChunkCount()
+	{
+		return chunkDim.x * chunkDim.y * chunkDim.z;
 	}
 
 	void GenerateMesh()
@@ -114,22 +106,22 @@ shared class Map
 		// }
 	}
 
-	void Serialize(CBitStream@ bs)
-	{
-		mapDim.Serialize(bs);
-
-		for (uint x = 0; x < mapDim.x; x++)
-		for (uint y = 0; y < mapDim.y; y++)
-		for (uint z = 0; z < mapDim.z; z++)
-		{
-			Vec3f worldPos(x, y, z);
-			Voxel@ voxel = getVoxel(worldPos);
-			voxel.Serialize(bs);
-		}
-	}
-
 	Chunk@ getChunk(Vec3f chunkPos)
 	{
+		if (isValidChunk(chunkPos))
+		{
+			return chunks[chunkPos.x][chunkPos.y][chunkPos.z];
+		}
+		return null;
+	}
+
+	Chunk@ getChunk(uint index)
+	{
+		Vec3f chunkPos;
+		chunkPos.x = index / (chunkDim.y * chunkDim.z);
+		chunkPos.y = (index / chunkDim.z) % chunkDim.y;
+		chunkPos.z = index % chunkDim.z;
+
 		if (isValidChunk(chunkPos))
 		{
 			return chunks[chunkPos.x][chunkPos.y][chunkPos.z];
@@ -150,6 +142,18 @@ shared class Map
 	Vec3f getVoxelPos(Vec3f worldPos)
 	{
 		return worldPos % CHUNK_SIZE;
+	}
+
+	void FindVoxelNeighbors()
+	{
+		for (uint x = 0; x < mapDim.x; x++)
+		for (uint y = 0; y < mapDim.y; y++)
+		for (uint z = 0; z < mapDim.z; z++)
+		{
+			Vec3f worldPos(x, y, z);
+			Voxel@ voxel = getVoxel(worldPos);
+			voxel.FindNeighbors(this, worldPos);
+		}
 	}
 
 	private bool isValidChunk(Vec3f chunkPos)
@@ -183,23 +187,13 @@ shared class Map
 			if (z == 0) chunks[x][y].set_length(chunkDim.z);
 
 			Vec3f chunkPos(x, y, z);
-			Chunk chunk;
-
-			//set material
-			chunk.mesh.SetMaterial(material);
+			Chunk chunk(this);
 
 			@chunks[chunkPos.x][chunkPos.y][chunkPos.z] = chunk;
 		}
 
 		//find voxel neighbors
-		for (uint x = 0; x < mapDim.x; x++)
-		for (uint y = 0; y < mapDim.y; y++)
-		for (uint z = 0; z < mapDim.z; z++)
-		{
-			Vec3f worldPos(x, y, z);
-			Voxel@ voxel = getVoxel(worldPos);
-			voxel.FindNeighbors(this, worldPos);
-		}
+		FindVoxelNeighbors();
 	}
 
 	private void GetVisibleChunks()

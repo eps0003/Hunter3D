@@ -27,7 +27,7 @@ shared class ModLoader
 
 	void LoadMod()
 	{
-		if (!isLoaded())
+		if (!isModelsLoaded())
 		{
 			//preload model
 			Model(models[modelsLoaded++]);
@@ -36,7 +36,7 @@ shared class ModLoader
 
 	bool isLoaded()
 	{
-		return isModelsLoaded();
+		return isModelsLoaded() && isMapLoaded();
 	}
 
 	string getStatusMessage()
@@ -62,5 +62,11 @@ shared class ModLoader
 	private bool isModelsLoaded()
 	{
 		return modelsLoaded >= models.length;
+	}
+
+	private bool isMapLoaded()
+	{
+		Map@ map = getMap3D();
+		return map !is null && map.loaded;
 	}
 }

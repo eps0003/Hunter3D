@@ -4,15 +4,50 @@ shared class Chunk
 {
 	private Voxel@[][][] voxels;
 
-	SMesh@ mesh = SMesh();
+	private SMesh@ mesh = SMesh();
 	private Vertex[] vertices;
 	private u16[] indices;
 
 	bool outdatedMesh = true;
 
-	Chunk()
+	Chunk(Map@ map)
 	{
-		InitChunk();
+		mesh.SetMaterial(map.material);
+
+		for (uint x = 0; x < CHUNK_SIZE; x++)
+		for (uint y = 0; y < CHUNK_SIZE; y++)
+		for (uint z = 0; z < CHUNK_SIZE; z++)
+		{
+			//initialize voxels array
+			if (x == 0) voxels.set_length(CHUNK_SIZE);
+			if (y == 0) voxels[x].set_length(CHUNK_SIZE);
+			if (z == 0) voxels[x][y].set_length(CHUNK_SIZE);
+
+			Vec3f voxelPos(x, y, z);
+			Voxel voxel();
+
+			@voxels[voxelPos.x][voxelPos.y][voxelPos.z] = voxel;
+		}
+	}
+
+	Chunk(Map@ map, CBitStream@ bs)
+	{
+		mesh.SetMaterial(map.material);
+
+		for (uint x = 0; x < CHUNK_SIZE; x++)
+		for (uint y = 0; y < CHUNK_SIZE; y++)
+		for (uint z = 0; z < CHUNK_SIZE; z++)
+		{
+			//initialize voxels array
+			if (x == 0) voxels.set_length(CHUNK_SIZE);
+			if (y == 0) voxels[x].set_length(CHUNK_SIZE);
+			if (z == 0) voxels[x][y].set_length(CHUNK_SIZE);
+
+			Vec3f voxelPos(x, y, z);
+			Voxel voxel(bs);
+
+			@voxels[voxelPos.x][voxelPos.y][voxelPos.z] = voxel;
+		}
 	}
 
 	bool SetVoxel(Vec3f voxelPos, Voxel voxel)
@@ -77,6 +112,18 @@ shared class Chunk
 		}
 	}
 
+	void Serialize(CBitStream@ bs)
+	{
+		for (uint x = 0; x < CHUNK_SIZE; x++)
+		for (uint y = 0; y < CHUNK_SIZE; y++)
+		for (uint z = 0; z < CHUNK_SIZE; z++)
+		{
+			Vec3f voxelPos(x, y, z);
+			Voxel@ voxel = getVoxel(voxelPos);
+			voxel.Serialize(bs);
+		}
+	}
+
 	private bool isValidVoxel(Vec3f voxelPos)
 	{
 		return (
@@ -84,23 +131,5 @@ shared class Chunk
 			voxelPos.y >= 0 && voxelPos.y < CHUNK_SIZE &&
 			voxelPos.z >= 0 && voxelPos.z < CHUNK_SIZE
 		);
-	}
-
-	private void InitChunk()
-	{
-		for (uint x = 0; x < CHUNK_SIZE; x++)
-		for (uint y = 0; y < CHUNK_SIZE; y++)
-		for (uint z = 0; z < CHUNK_SIZE; z++)
-		{
-			//initialize voxels array
-			if (x == 0) voxels.set_length(CHUNK_SIZE);
-			if (y == 0) voxels[x].set_length(CHUNK_SIZE);
-			if (z == 0) voxels[x][y].set_length(CHUNK_SIZE);
-
-			Vec3f voxelPos(x, y, z);
-			Voxel voxel();
-
-			@voxels[voxelPos.x][voxelPos.y][voxelPos.z] = voxel;
-		}
 	}
 }

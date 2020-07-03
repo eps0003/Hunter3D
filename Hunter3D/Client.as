@@ -114,16 +114,7 @@ void Render(int id)
 
 void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 {
-	if (cmd == this.getCommandID("s_map_data"))
-	{
-		print("Received map");
-
-		Map map(params);
-		Vec3f mapCenter = map.getMapDimensions() / 2;
-
-		this.set("map", map);
-	}
-	else if (cmd == this.getCommandID("s_sync_voxel"))
+	if (cmd == this.getCommandID("s_sync_voxel"))
 	{
 		u16 playerID = params.read_u16();
 		CPlayer@ player = getPlayerByNetworkId(playerID);
