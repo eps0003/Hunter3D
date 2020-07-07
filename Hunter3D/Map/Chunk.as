@@ -2,7 +2,7 @@
 
 shared class Chunk
 {
-	private Voxel@[][][] voxels;
+	Voxel@[][][] voxels;
 
 	private SMesh@ mesh = SMesh();
 	private Vertex[] vertices;
@@ -16,17 +16,11 @@ shared class Chunk
 
 		for (uint x = 0; x < CHUNK_SIZE; x++)
 		for (uint y = 0; y < CHUNK_SIZE; y++)
-		for (uint z = 0; z < CHUNK_SIZE; z++)
 		{
 			//initialize voxels array
 			if (x == 0) voxels.set_length(CHUNK_SIZE);
 			if (y == 0) voxels[x].set_length(CHUNK_SIZE);
-			if (z == 0) voxels[x][y].set_length(CHUNK_SIZE);
-
-			Vec3f voxelPos(x, y, z);
-			Voxel voxel();
-
-			@voxels[voxelPos.x][voxelPos.y][voxelPos.z] = voxel;
+			voxels[x][y].set_length(CHUNK_SIZE);
 		}
 	}
 
@@ -46,7 +40,7 @@ shared class Chunk
 			Vec3f voxelPos(x, y, z);
 			Voxel voxel(bs);
 
-			@voxels[voxelPos.x][voxelPos.y][voxelPos.z] = voxel;
+			InitVoxel(voxelPos, voxel);
 		}
 	}
 
@@ -69,6 +63,11 @@ shared class Chunk
 			return voxels[voxelPos.x][voxelPos.y][voxelPos.z];
 		}
 		return null;
+	}
+
+	void InitVoxel(Vec3f voxelPos, Voxel voxel)
+	{
+		@voxels[voxelPos.x][voxelPos.y][voxelPos.z] = voxel;
 	}
 
 	void GenerateMesh(Vec3f chunkPos)

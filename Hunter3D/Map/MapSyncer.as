@@ -1,7 +1,7 @@
 #include "PlayerList.as"
 #include "Map.as"
 
-const uint CHUNKS_PER_PACKET = 2;
+const uint CHUNKS_PER_PACKET = 10;
 
 shared MapSyncer@ getMapSyncer()
 {
@@ -36,11 +36,11 @@ shared class MapSyncer
 
 	void AddMapRequest(CPlayer@ player, uint packet = 0)
 	{
-		if (packet < getTotalPacketCount())
-		{
-			MapRequest request(player, packet);
-			requests.push_back(request);
-		}
+		// if (packet < getTotalPacketCount())
+		// {
+		// 	MapRequest request(player, packet);
+		// 	requests.push_back(request);
+		// }
 	}
 
 	void AddMapRequestForEveryone()
@@ -120,6 +120,8 @@ shared class MapSyncer
 
 			//request next packet
 			AddMapRequest(player, ++index);
+
+			getNet().server_KeepConnectionsAlive();
 		}
 	}
 
@@ -186,6 +188,8 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 			Chunk@ chunk = map.getChunk(i);
 			if (chunk is null) break;
 			chunk = Chunk(map, params);
+
+			getNet().server_KeepConnectionsAlive();
 		}
 
 		if (index == totalPackets - 1)

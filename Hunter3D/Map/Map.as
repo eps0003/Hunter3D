@@ -13,7 +13,7 @@ shared Map@ getMap3D()
 
 shared class Map
 {
-	private Chunk@[][][] chunks;
+	Chunk@[][][] chunks;
 
 	private Vec3f mapDim;
 	private Vec3f chunkDim;
@@ -30,7 +30,15 @@ shared class Map
 	Map(Vec3f mapDim)
 	{
 		this.mapDim = mapDim;
-		InitChunks();
+
+		//get chunk dimensions
+		chunkDim = (mapDim / CHUNK_SIZE).ceil();
+
+		//setup material
+		material.AddTexture(texture);
+		material.SetFlag(SMaterial::LIGHTING, false);
+		material.SetFlag(SMaterial::BILINEAR_FILTER, false);
+		material.SetFlag(SMaterial::FOG_ENABLE, true);
 	}
 
 	bool SetVoxel(Vec3f worldPos, Voxel voxel)
@@ -66,6 +74,11 @@ shared class Map
 		return mapDim;
 	}
 
+	Vec3f getChunkDimensions()
+	{
+		return chunkDim;
+	}
+
 	uint getChunkCount()
 	{
 		return chunkDim.x * chunkDim.y * chunkDim.z;
@@ -95,6 +108,18 @@ shared class Map
 			Chunk@ chunk = visibleChunks[i];
 			chunk.Render();
 		}
+	}
+
+	void InitChunk(Vec3f chunkPos)
+	{
+		@chunks[chunkPos.x][chunkPos.y][chunkPos.z] = Chunk(this);
+	}
+
+	void InitVoxel(Vec3f worldPos, Voxel voxel)
+	{
+		Vec3f chunkPos = getChunkPos(worldPos);
+		Vec3f voxelPos = getVoxelPos(worldPos);
+		chunks[chunkPos.x][chunkPos.y][chunkPos.z].InitVoxel(voxelPos, voxel);
 	}
 
 	Chunk@ getChunk(Vec3f chunkPos)
@@ -158,15 +183,6 @@ shared class Map
 
 	private void InitChunks()
 	{
-		//setup material
-		material.AddTexture(texture);
-		material.SetFlag(SMaterial::LIGHTING, false);
-		material.SetFlag(SMaterial::BILINEAR_FILTER, false);
-		material.SetFlag(SMaterial::FOG_ENABLE, true);
-
-		//get chunk dimensions
-		chunkDim = (mapDim / CHUNK_SIZE).ceil();
-
 		//generate chunks
 		for (uint x = 0; x < chunkDim.x; x++)
 		for (uint y = 0; y < chunkDim.y; y++)
