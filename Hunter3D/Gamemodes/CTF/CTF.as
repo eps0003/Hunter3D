@@ -8,24 +8,13 @@ shared class CTF : Gamemode
 
 	CTF()
 	{
-		super(TestMapGenerator(Vec3f(256, 64, 256)));
+		super(TestMapGenerator(Vec3f(36, 12, 36)));
 		LoadConfig(openConfig("CTF.cfg"));
-	}
-
-	void onRestart(CRules@ this)
-	{
-		getRespawnManager().AddAllToQueue(0);
 	}
 
 	void onTick(CRules@ this)
 	{
-		Gamemode::onTick(this);
 		getRespawnManager().Update();
-	}
-
-	void onNewPlayerJoin(CRules@ this, CPlayer@ player)
-	{
-		getRespawnManager().AddToQueue(player, 0);
 	}
 
 	void onPlayerLeave(CRules@ this, CPlayer@ player)
@@ -40,11 +29,18 @@ shared class CTF : Gamemode
 
 	void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 	{
+		Gamemode::onCommand(this, cmd, params);
+
 		if (cmd == this.getCommandID("c_remove_actor"))
 		{
 			Actor actor(params);
 			getRespawnManager().AddToQueue(actor.player, respawnTime);
 		}
+	}
+
+	void onPlayerLoaded(CRules@ this, CPlayer@ player)
+	{
+		getRespawnManager().AddToQueue(player, 0);
 	}
 
 	void LoadConfig(ConfigFile@ cfg)

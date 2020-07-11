@@ -25,7 +25,7 @@ shared class FlagManager
 		for (uint i = 0; i < flags.length; i++)
 		{
 			Flag@ f = flags[i];
-			if (f.isSameAs(flag))
+			if (f == flag)
 			{
 				return f;
 			}

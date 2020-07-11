@@ -15,58 +15,157 @@ shared ModLoader@ getModLoader()
 	return modLoader;
 }
 
+enum LoadState
+{
+	GenerateMap,
+	DeserializeMap,
+	GenerateChunks,
+	PreloadModels,
+	Done
+}
+
 shared class ModLoader
 {
-	private float progress = 0;
-	private string status = "Loading mod...";
+	uint state = 0;
+	uint index = 0;
+	float progress = 0;
+	string message;
 
-	private string[] models = {
+	string[] models = {
 		"Models/ActorModel.cfg"
 	};
-	private int modelsLoaded = 0;
 
-	void LoadMod()
+	void Load()
 	{
-		if (!isModelsLoaded())
+		if (!isLoading()) return;
+
+		switch (state)
 		{
-			//preload model
-			Model(models[modelsLoaded++]);
+			case LoadState::GenerateMap:
+			{
+				message = "Generating map...";
+
+				Map@ map = getMap3D();
+				if (map !is null && (!isServer() || map.isLoaded()))
+				{
+					print("Map generated", ConsoleColour::CRAZY);
+					NextState();
+				}
+			}
+			break;
+
+			case LoadState::DeserializeMap:
+			{
+				message = "Receiving map...";
+
+				Map@ map = getMap3D();
+				if (map !is null && map.isLoaded())
+				{
+					print("Map received", ConsoleColour::CRAZY);
+					NextState();
+
+					//immediately skip to next state if running localhost
+					if (!isServer())
+					{
+						break;
+					}
+				}
+				else
+				{
+					break;
+				}
+			}
+
+			case LoadState::GenerateChunks:
+			{
+				Map@ map = getMap3D();
+
+				if (index == 0)
+				{
+					map.InitChunks();
+				}
+
+				uint chunkCount = map.getChunkCount();
+				message = "Generating chunks...";
+				SetProgress(float(index) / float(chunkCount));
+				// print("Generating chunk: " + (index + 1) + "/" + chunkCount);
+
+				for (uint i = 0; i < 4; i++)
+				{
+					Chunk chunk(map, index);
+					map.SetChunk(index, chunk);
+					index++;
+
+					if (index >= chunkCount)
+					{
+						print("Chunks generated", ConsoleColour::CRAZY);
+						NextState();
+						break;
+					}
+				}
+			}
+			break;
+
+			case LoadState::PreloadModels:
+			{
+				message = "Loading models...";
+				SetProgress(float(index) / float(models.length));
+
+				Model(models[index++]);
+
+				if (index >= models.length)
+				{
+					print("Models loaded", ConsoleColour::CRAZY);
+					NextState();
+				}
+			}
+			break;
+
+			case LoadState::Done:
+			{
+				message = "Hunter3D loaded!";
+				print("Hunter3D loaded!", ConsoleColour::CRAZY);
+
+				CBitStream bs;
+				bs.write_u16(getLocalPlayer().getNetworkID());
+
+				CRules@ rules = getRules();
+				rules.SendCommand(rules.getCommandID("c_loaded"), bs, false);
+
+				NextState();
+			}
 		}
 	}
 
-	bool isLoaded()
+	void SetState(uint state)
 	{
-		return isModelsLoaded() && isMapLoaded();
+		this.state = state;
+		index = 0;
+		SetProgress(0);
 	}
 
-	string getStatusMessage()
+	void NextState()
 	{
-		if (!isModelsLoaded())
-		{
-			return "Loading models...";
-		}
+		SetState(state + 1);
+	}
 
-		return "Hunter3D loaded!";
+	bool isLoading()
+	{
+		return state <= LoadState::Done;
+	}
+
+	string getMessage()
+	{
+		return message;
 	}
 
 	float getProgress()
 	{
-		if (!isModelsLoaded())
-		{
-			return float(modelsLoaded) / float(models.length);
-		}
-
-		return 1;
+		return progress;
 	}
 
-	private bool isModelsLoaded()
+	void SetProgress(float progress)
 	{
-		return modelsLoaded >= models.length;
-	}
-
-	private bool isMapLoaded()
-	{
-		Map@ map = getMap3D();
-		return map !is null && map.loaded;
+		this.progress = progress;
 	}
 }

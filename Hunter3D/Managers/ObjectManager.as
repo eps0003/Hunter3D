@@ -64,7 +64,7 @@ shared class ObjectManager
 		for (uint i = 0; i < objects.length; i++)
 		{
 			Object@ obj = objects[i];
-			if (object.isSameAs(obj))
+			if (object == obj)
 			{
 				objects.removeAt(i);
 				return;
@@ -131,7 +131,7 @@ shared class ObjectManager
 		for (uint i = 0; i < objects.length; i++)
 		{
 			Object@ obj = objects[i];
-			if (object.isSameAs(obj))
+			if (object == obj)
 			{
 				return true;
 			}

@@ -31,8 +31,9 @@ shared ConfigFile openPreferences()
 	if (!cfg.loadFile("../Cache/Hunter3D.cfg"))
 	{
 		//set default values
-		cfg.add_f32("fov", 70);
-		cfg.add_f32("sensitivity", 1);
+		cfg.add_f32("fov", 70.0f);
+		cfg.add_f32("sensitivity", 1.0f);
+		cfg.add_f32("render_distance", 70.0f);
 
 		//save to cache
 		cfg.saveFile("Hunter3D.cfg");
@@ -321,7 +322,7 @@ namespace Text
 		for (uint i = 0; i < count; i++)
 		{
 			CPlayer@ player = getPlayer(i);
-			if (player.getTeamNum() == team)
+			if (player !is null && player.getTeamNum() == team)
 			{
 				addTextToPlayerChat(text, player);
 			}
@@ -334,7 +335,7 @@ namespace Text
 		for (uint i = 0; i < count; i++)
 		{
 			CPlayer@ player = getPlayer(i);
-			if (player.getTeamNum() == team)
+			if (player !is null && player.getTeamNum() == team)
 			{
 				addTextToPlayerChat(text, color, player);
 			}

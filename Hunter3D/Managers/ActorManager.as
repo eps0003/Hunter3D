@@ -37,7 +37,7 @@ shared class ActorManager
 		for (uint i = 0; i < actors.length; i++)
 		{
 			Actor@ a = actors[i];
-			if (a.isSameAs(actor))
+			if (a == actor)
 			{
 				return a;
 			}
@@ -108,7 +108,7 @@ shared class ActorManager
 			Object@ object = objects[i];
 			Actor@ actor2 = cast<Actor>(object);
 
-			if (actor2 !is null && actor.isSameAs(actor2))
+			if (actor2 !is null && actor == actor2)
 			{
 				RemoveActor(objectManager, actor2, i);
 				return;

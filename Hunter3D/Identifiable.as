@@ -18,6 +18,11 @@ shared class Identifiable
 		id = bs.read_u32();
 	}
 
+	bool opEquals(Identifiable@ identifiable)
+	{
+		return id == identifiable.id;
+	}
+
 	void AssignUniqueID()
 	{
 		if (isServer())
@@ -26,11 +31,6 @@ shared class Identifiable
 			rules.add_u32("current_id", 1);
 			id = rules.get_u32("current_id");
 		}
-	}
-
-	bool isSameAs(Object@ object)
-	{
-		return id == object.id;
 	}
 
 	void Serialize(CBitStream@ bs)

@@ -59,7 +59,10 @@ shared class RespawnManager
 		for (uint i = 0; i < getPlayerCount(); i++)
 		{
 			CPlayer@ player = getPlayer(i);
-			AddToQueue(player, respawnTime);
+			if (player !is null)
+			{
+				AddToQueue(player, respawnTime);
+			}
 		}
 	}
 
@@ -70,6 +73,7 @@ shared class RespawnManager
 			RemoveFromQueue(player);
 			Actor@ actor = Actor(player, position);
 			getObjectManager().AddObject(actor);
+			getGamemodeManager().getGamemode().onActorSpawn(getRules(), player, actor);
 			print("Respawned " + player.getUsername() + " at " + position.toString());
 		}
 	}

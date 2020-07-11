@@ -28,6 +28,11 @@ shared class Flag : PhysicsObject, IRenderable, IHasTeam, IHasConfig
 		SetCollisionFlags(CollisionFlag::Voxels);
 	}
 
+	bool opEquals(Flag flag)
+	{
+		return opEquals(cast<PhysicsObject>(flag));
+	}
+
 	void opAssign(Flag flag)
 	{
 		opAssign(cast<PhysicsObject>(flag));

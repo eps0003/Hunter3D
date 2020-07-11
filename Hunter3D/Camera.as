@@ -19,6 +19,7 @@ shared class Camera : IHasParent
 {
 	private Object@ parent;
 	float fov;
+	float renderDistance;
 
 	float[] modelMatrix;
 	float[] viewMatrix;
@@ -29,6 +30,8 @@ shared class Camera : IHasParent
 		SetParent(parent);
 		Matrix::MakeIdentity(modelMatrix);
 		LoadPreferences();
+
+		Render::SetFog(getSkyColor(), SMesh::LINEAR, renderDistance * 0.9f, renderDistance, 0, false, true);
 	}
 
 	void Render()
@@ -89,7 +92,7 @@ shared class Camera : IHasParent
 		Matrix::MakePerspective(matrix,
 			fov * Maths::Pi / 180,
 			ratio,
-			0.01f, 1000
+			0.01f, renderDistance
 		);
 
 		return matrix;
@@ -131,5 +134,6 @@ shared class Camera : IHasParent
 	{
 		ConfigFile cfg = openPreferences();
 		fov = cfg.read_f32("fov", 70.0f);
+		renderDistance = cfg.read_f32("render_distance", 70.0f);
 	}
 }

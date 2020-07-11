@@ -45,7 +45,7 @@ shared class Mouse
 
 	bool isInControl()
 	{
-		return isWindowFocused() && !isVisible() && getModLoader().isLoaded();
+		return isWindowFocused() && !isVisible() && !getModLoader().isLoading();
 	}
 
 	bool isVisible()

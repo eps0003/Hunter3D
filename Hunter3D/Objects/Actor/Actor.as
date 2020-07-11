@@ -3,7 +3,6 @@
 #include "ObjectManager.as"
 #include "ActorModel.as"
 #include "MovementStrategy.as"
-#include "Weapon.as"
 
 shared class Actor : PhysicsObject, IRenderable, IHasTeam, IHasConfig
 {
@@ -43,6 +42,11 @@ shared class Actor : PhysicsObject, IRenderable, IHasTeam, IHasConfig
 		opAssign(cast<PhysicsObject>(actor));
 	}
 
+	bool opEquals(Actor@ actor)
+	{
+		return opEquals(cast<PhysicsObject>(actor)) && player is actor.player;
+	}
+
 	void Update()
 	{
 		PhysicsObject::Update();
@@ -72,7 +76,7 @@ shared class Actor : PhysicsObject, IRenderable, IHasTeam, IHasConfig
 		Camera@ camera = getCamera3D();
 
 		bool hasModel = model !is null;
-		bool cameraParentNotMe = camera.hasParent() && !camera.getParent().isSameAs(this);
+		bool cameraParentNotMe = camera.hasParent() && camera.getParent() != cast<Object>(this);
 
 		return hasModel && cameraParentNotMe;
 	}
@@ -106,7 +110,7 @@ shared class Actor : PhysicsObject, IRenderable, IHasTeam, IHasConfig
 	void RenderNameplate()
 	{
 		Camera@ camera = getCamera3D();
-		bool cameraNotAttached = camera.hasParent() && !camera.getParent().isSameAs(this);
+		bool cameraNotAttached = camera.hasParent() && camera.getParent() != cast<Object>(this);
 
 		if (isNameplateVisible() && cameraNotAttached && interPosition.isInFrontOfCamera())
 		{
@@ -142,11 +146,6 @@ shared class Actor : PhysicsObject, IRenderable, IHasTeam, IHasConfig
 	void SetMovementStrategy(MovementStrategy@ strategy)
 	{
 		@movementStrategy = strategy;
-	}
-
-	bool isSameAs(Actor@ actor)
-	{
-		return PhysicsObject::isSameAs(actor) && player is actor.player;
 	}
 
 	void LoadConfig(ConfigFile@ cfg)
@@ -189,18 +188,18 @@ shared class Actor : PhysicsObject, IRenderable, IHasTeam, IHasConfig
 		Mouse@ mouse = getMouse3D();
 		if (controls.isKeyJustPressed(KEY_LBUTTON) && mouse.isInControl())
 		{
-			Vec3f worldPos = position + Vec3f(0, -1, 2);
-			Voxel voxel(1, true);
 			Map@ map = getMap3D();
-			if (map.SetVoxel(worldPos, voxel))
+			u8 block = BlockType::OakWood;
+			Vec3f worldPos = (position + Vec3f(0, cameraHeight, 0) + rotation.dir() * 2).floor();
+
+			if (map.isValidBlock(worldPos.x, worldPos.y, worldPos.z) && map.getBlock(worldPos.x, worldPos.y, worldPos.z) != block)
 			{
-				Vec3f chunkPos = map.getChunkPos(worldPos);
-				Chunk@ chunk = map.getChunk(chunkPos);
-				chunk.GenerateMesh(chunkPos);
+				map.SetBlock(worldPos.x, worldPos.y, worldPos.z, block);
+				print("Placed block at " + worldPos.toString());
 
-				voxel.client_Sync(worldPos);
+				Chunk@ chunk = map.getChunk(worldPos.x, worldPos.y, worldPos.z);
+				chunk.SetRebuild();
 			}
-
 		}
 	}
 

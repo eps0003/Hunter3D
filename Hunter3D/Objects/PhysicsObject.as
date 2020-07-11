@@ -48,6 +48,11 @@ shared class PhysicsObject : Object, IHasConfig
 		velocity = physicsObject.velocity;
 	}
 
+	bool opEquals(PhysicsObject@ physicsObject)
+	{
+		return opEquals(cast<Object>(physicsObject));
+	}
+
 	void ClearPhysics()
 	{
 		velocity.Clear();
@@ -146,12 +151,12 @@ shared class PhysicsObject : Object, IHasConfig
 		return collisionBox;
 	}
 
-	void SetCollisionFlags(uint flags)
+	void SetCollisionFlags(u8 flags)
 	{
 		collisionFlags = flags;
 	}
 
-	private bool hasCollisionFlags(uint flags)
+	private bool hasCollisionFlags(u8 flags)
 	{
 		return (collisionFlags & flags) == flags;
 	}

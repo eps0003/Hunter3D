@@ -27,7 +27,7 @@ void onTick(CRules@ this)
 
 	getMouse3D().Update();
 
-	if (!getModLoader().isLoaded()) return;
+	if (getModLoader().isLoading()) return;
 
 	if (getCamera3D().hasParent())
 	{
@@ -58,7 +58,7 @@ void onRender(CRules@ this)
 
 	getMouse3D().Render();
 
-	if (!getModLoader().isLoaded()) return;
+	if (getModLoader().isLoading()) return;
 
 	Camera@ camera = getCamera3D();
 	ActorManager@ actorManager = getActorManager();
@@ -71,28 +71,26 @@ void onRender(CRules@ this)
 	Actor@ myActor = actorManager.getActor(getLocalPlayer());
 	if (myActor !is null)
 	{
-		// GUI::DrawText("position: " + myActor.position.toString(), Vec2f(10, 40), color_black);
-		// GUI::DrawText("rotation: " + myActor.rotation.toString(), Vec2f(10, 60), color_black);
-		// GUI::DrawText("velocity: " + myActor.velocity.toString(), Vec2f(10, 80), color_black);
-		// GUI::DrawText("vellen: " + Vec2f(myActor.interVelocity.x, myActor.interVelocity.z).Length(), Vec2f(10, 100), color_black);
+		GUI::DrawText("position: " + myActor.position.toString(), Vec2f(10, 40), color_black);
+		GUI::DrawText("rotation: " + myActor.rotation.toString(), Vec2f(10, 60), color_black);
+		GUI::DrawText("velocity: " + myActor.velocity.toString(), Vec2f(10, 80), color_black);
+		GUI::DrawText("vellen: " + Vec2f(myActor.interVelocity.x, myActor.interVelocity.z).Length(), Vec2f(10, 100), color_black);
 
-		// GUI::DrawText("interPosition: " + myActor.interPosition.toString(), Vec2f(10, 130), color_black);
-		// GUI::DrawText("interRotation: " + myActor.interRotation.toString(), Vec2f(10, 150), color_black);
-		// GUI::DrawText("interVelocity: " + myActor.interVelocity.toString(), Vec2f(10, 170), color_black);
+		GUI::DrawText("interPosition: " + myActor.interPosition.toString(), Vec2f(10, 130), color_black);
+		GUI::DrawText("interRotation: " + myActor.interRotation.toString(), Vec2f(10, 150), color_black);
+		GUI::DrawText("interVelocity: " + myActor.interVelocity.toString(), Vec2f(10, 170), color_black);
 
-		// GUI::DrawText("mouseVelocity: " + getMouse3D().velocity.toString(), Vec2f(10, 200), color_black);
+		GUI::DrawText("mouseVelocity: " + getMouse3D().velocity.toString(), Vec2f(10, 200), color_black);
 	}
 }
 
 void Render(int id)
 {
-	if (!getModLoader().isLoaded()) return;
+	if (getModLoader().isLoading()) return;
 
 	//background colour
-	SColor skyColor = getSkyColor();
 	Vec2f screenDim = getDriver().getScreenDimensions();
-	GUI::DrawRectangle(Vec2f_zero, screenDim, skyColor);
-	Render::SetFog(skyColor, SMesh::LINEAR, 100, 120, 0, false, false);
+	GUI::DrawRectangle(Vec2f_zero, screenDim, getSkyColor());
 
 	Render::SetAlphaBlend(false);
 	Render::SetZBuffer(true, true);
@@ -116,38 +114,38 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 {
 	if (cmd == this.getCommandID("s_sync_voxel"))
 	{
-		u16 playerID = params.read_u16();
-		CPlayer@ player = getPlayerByNetworkId(playerID);
-		Vec3f worldPos(params);
-		Voxel voxel(params);
+		// u16 playerID = params.read_u16();
+		// CPlayer@ player = getPlayerByNetworkId(playerID);
+		// Vec3f worldPos(params);
+		// Voxel voxel(params);
 
-		if (player.isMyPlayer())
-		{
-			if (voxel.handPlaced)
-			{
-				if (voxel.isVisible())
-				{
-					//voxel successfully destroyed. poof particles
-				}
-				else
-				{
-					//voxel successfully placed. poof particles
-				}
-			}
-		}
-		else
-		{
-			Map@ map = getMap3D();
-			map.SetVoxel(worldPos, voxel);
+		// if (player.isMyPlayer())
+		// {
+		// 	if (voxel.handPlaced)
+		// 	{
+		// 		if (voxel.isVisible())
+		// 		{
+		// 			//voxel successfully destroyed. poof particles
+		// 		}
+		// 		else
+		// 		{
+		// 			//voxel successfully placed. poof particles
+		// 		}
+		// 	}
+		// }
+		// else
+		// {
+		// 	Map@ map = getMap3D();
+		// 	map.SetVoxel(worldPos, voxel);
 
-			print("Received voxel from server at " + worldPos.toString());
+		// 	print("Received voxel from server at " + worldPos.toString());
 
-			Vec3f chunkPos = map.getChunkPos(worldPos);
-			Chunk@ chunk = map.getChunk(chunkPos);
-			chunk.GenerateMesh(chunkPos);
+		// 	Vec3f chunkPos = map.getChunkPos(worldPos);
+		// 	Chunk@ chunk = map.getChunk(chunkPos);
+		// 	chunk.GenerateMesh(chunkPos);
 
-			//poof particles
-		}
+		// 	//poof particles
+		// }
 	}
 	else if (cmd == this.getCommandID("s_sync_objects"))
 	{

@@ -7,18 +7,13 @@ shared class TestMapGenerator : MapGenerator
 		super(size);
 	}
 
-	TestMapGenerator(Vec3f size, uint seed)
-	{
-		super(size, seed);
-	}
-
-	u8 GenerateVoxel(uint x, uint y, uint z)
+	u8 GenerateBlock(uint x, uint y, uint z)
 	{
 		if (y == 0)
 		{
-			return XORRandom(255) + 1;
+			return BlockType::Grass;
 		}
 
-		return 0;
+		return BlockType::Air;
 	}
 }

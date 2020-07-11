@@ -1,7 +1,7 @@
 #include "PlayerList.as"
 #include "Map.as"
-
-const uint CHUNKS_PER_PACKET = 10;
+#include "Utilities.as"
+#include "ModLoader.as"
 
 shared MapSyncer@ getMapSyncer()
 {
@@ -32,20 +32,22 @@ shared class MapRequest
 
 shared class MapSyncer
 {
-	private MapRequest@[] requests;
+	private MapRequest@[] mapRequests;
+	private CBitStream@[] mapPackets;
+	private uint voxelsPerPacket = 10000;
 
 	void AddMapRequest(CPlayer@ player, uint packet = 0)
 	{
-		// if (packet < getTotalPacketCount())
-		// {
-		// 	MapRequest request(player, packet);
-		// 	requests.push_back(request);
-		// }
+		if (packet < getTotalPacketCount())
+		{
+			MapRequest request(player, packet);
+			mapRequests.push_back(request);
+		}
 	}
 
 	void AddMapRequestForEveryone()
 	{
-		requests.clear();
+		mapRequests.clear();
 
 		for (uint i = 0; i < getPlayersCount(); i++)
 		{
@@ -57,26 +59,31 @@ shared class MapSyncer
 		}
 	}
 
+	void AddMapPacket(CBitStream@ packet)
+	{
+		mapPackets.push_back(packet);
+	}
+
 	MapRequest@ getNextMapRequest()
 	{
 		MapRequest@ request;
 		if (hasRequests())
 		{
-			@request = requests[0];
-			requests.removeAt(0);
+			@request = mapRequests[0];
+			mapRequests.removeAt(0);
 		}
 		return request;
 	}
 
 	bool hasRequests()
 	{
-		return !requests.empty();
+		return !mapRequests.empty();
 	}
 
 	void server_Sync()
 	{
 		Map@ map = getMap3D();
-		if (map is null || !map.loaded) return;
+		if (map is null || !map.isLoaded() || isClient()) return;
 
 		MapRequest@ request = getNextMapRequest();
 		if (request !is null)
@@ -92,8 +99,8 @@ shared class MapSyncer
 			}
 
 			//get index of first and last chunk to sync
-			uint firstChunk = index * CHUNKS_PER_PACKET;
-			uint lastChunk = firstChunk + CHUNKS_PER_PACKET;
+			uint firstVoxel = index * voxelsPerPacket;
+			uint lastVoxel = firstVoxel + voxelsPerPacket;
 
 			//serialize index
 			CBitStream bs;
@@ -105,29 +112,74 @@ shared class MapSyncer
 				map.getMapDimensions().Serialize(bs);
 			}
 
-			//loop through these chunks and serialize
-			for (uint i = firstChunk; i < lastChunk; i++)
+			//loop through these voxels and serialize
+			for (uint i = firstVoxel; i < lastVoxel; i++)
 			{
-				Chunk@ chunk = map.getChunk(i);
-				if (chunk is null) break;
-				chunk.Serialize(bs);
+				if (i >= map.getVoxelCount()) break;
+
+				u8 block = map.getBlock(i);
+				bs.write_u8(block);
+
+				getNet().server_KeepConnectionsAlive();
 			}
 
 			//send to requesting player
 			CRules@ rules = getRules();
 			rules.SendCommand(rules.getCommandID("s_map_data"), bs, player);
-			print("Synced map packet " + (index + 1) + "/" + getTotalPacketCount() + " to " + player.getUsername());
+			// print("Synced map packet " + (index + 1) + "/" + getTotalPacketCount() + " to " + player.getUsername());
 
 			//request next packet
 			AddMapRequest(player, ++index);
+		}
+	}
 
-			getNet().server_KeepConnectionsAlive();
+	void client_Deserialize()
+	{
+		if (!mapPackets.empty())
+		{
+			CBitStream@ packet = mapPackets[0];
+			mapPackets.removeAt(0);
+
+			//get index of first and last chunk to sync
+			uint index = packet.read_u32();
+			uint firstVoxel = index * voxelsPerPacket;
+			uint lastVoxel = firstVoxel + voxelsPerPacket;
+
+			if (index == 0)
+			{
+				Vec3f mapDim(packet);
+				Map map(mapDim);
+				getRules().set("map", map);
+			}
+
+			Map@ map = getMap3D();
+
+			//loop through these voxels and serialize
+			for (uint i = firstVoxel; i < lastVoxel; i++)
+			{
+				if (i >= map.getVoxelCount()) break;
+
+				u8 block = packet.read_u8();
+				map.SetBlock(i, block);
+
+				getNet().server_KeepConnectionsAlive();
+			}
+
+			// print("Deserialized map packet " + (index + 1) + "/" + getTotalPacketCount());
+
+			if (index == getTotalPacketCount() - 1)
+			{
+				map.SetLoaded();
+			}
+
+			ModLoader@ modLoader = getModLoader();
+			modLoader.SetProgress(float(index + 1) / float(getTotalPacketCount()));
 		}
 	}
 
 	private uint getTotalPacketCount()
 	{
-		return Maths::Ceil(float(getMap3D().getChunkCount()) / float(CHUNKS_PER_PACKET));
+		return Maths::Ceil(float(getMap3D().getVoxelCount()) / float(voxelsPerPacket));
 	}
 }
 
@@ -152,50 +204,29 @@ void onNewPlayerJoin(CRules@ this, CPlayer@ player)
 
 void onTick(CRules@ this)
 {
-	if (!isServer()) return;
-
-	getMapSyncer().server_Sync();
+	if (Network::isMultiplayer())
+	{
+		MapSyncer@ mapSyncer = getMapSyncer();
+		if (isServer())
+		{
+			mapSyncer.server_Sync();
+		}
+		else
+		{
+			mapSyncer.client_Deserialize();
+		}
+	}
 }
 
 void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 {
 	if (cmd == this.getCommandID("s_map_data"))
 	{
-		if (!isClient()) return;
-
-		uint index = params.read_u32();
-
-		if (index == 0)
+		if (isClient())
 		{
-			Vec3f mapDim(params);
-			Map map(mapDim);
-			this.set("map", map);
-		}
-
-		Map@ map = getMap3D();
-
-		uint firstChunk = index * CHUNKS_PER_PACKET;
-		uint lastChunk = firstChunk + CHUNKS_PER_PACKET;
-
-		//get total number of packets
-		uint totalPackets = Maths::Ceil(float(map.getChunkCount()) / float(CHUNKS_PER_PACKET));
-
-		print("Received map packet " + (index + 1) + "/" + totalPackets);
-
-		//loop through these chunks and serialize
-		for (uint i = firstChunk; i < lastChunk; i++)
-		{
-			Chunk@ chunk = map.getChunk(i);
-			if (chunk is null) break;
-			chunk = Chunk(map, params);
-
-			getNet().server_KeepConnectionsAlive();
-		}
-
-		if (index == totalPackets - 1)
-		{
-			map.FindVoxelNeighbors();
-			map.loaded = true;
+			CBitStream bs = params;
+			bs.SetBitIndex(params.getBitIndex());
+			getMapSyncer().AddMapPacket(bs);
 		}
 	}
 }

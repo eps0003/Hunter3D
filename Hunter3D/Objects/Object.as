@@ -39,6 +39,11 @@ shared class Object : Identifiable
 		rotation = object.rotation;
 	}
 
+	bool opEquals(Object@ object)
+	{
+		return opEquals(cast<Identifiable>(object));
+	}
+
 	void PreUpdate()
 	{
 		oldPosition = position;

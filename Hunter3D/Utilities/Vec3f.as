@@ -290,6 +290,24 @@ shared class Vec3f
 		);
 	}
 
+	Vec3f min(Vec3f vec)
+	{
+		return Vec3f(
+			Maths::Min(x, vec.x),
+			Maths::Min(y, vec.y),
+			Maths::Min(z, vec.z)
+		);
+	}
+
+	Vec3f max(Vec3f vec)
+	{
+		return Vec3f(
+			Maths::Max(x, vec.x),
+			Maths::Max(y, vec.y),
+			Maths::Max(z, vec.z)
+		);
+	}
+
 	Vec3f floor()
 	{
 		return Vec3f(

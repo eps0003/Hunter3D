@@ -1,134 +1,161 @@
-#include "Voxel.as"
-
 shared class Chunk
 {
-	Voxel@[][][] voxels;
-
-	private SMesh@ mesh = SMesh();
+	private Map@ map;
+	private SMesh mesh;
 	private Vertex[] vertices;
 	private u16[] indices;
+	private uint index;
 
-	bool outdatedMesh = true;
+	private bool rebuild = true;
 
-	Chunk(Map@ map)
+	Chunk(Map@ map, uint index)
 	{
-		mesh.SetMaterial(map.material);
+		@this.map = map;
+		this.index = index;
 
-		for (uint x = 0; x < CHUNK_SIZE; x++)
-		for (uint y = 0; y < CHUNK_SIZE; y++)
-		{
-			//initialize voxels array
-			if (x == 0) voxels.set_length(CHUNK_SIZE);
-			if (y == 0) voxels[x].set_length(CHUNK_SIZE);
-			voxels[x][y].set_length(CHUNK_SIZE);
-		}
+		GenerateMesh();
 	}
 
-	Chunk(Map@ map, CBitStream@ bs)
+	void SetRebuild()
 	{
-		mesh.SetMaterial(map.material);
-
-		for (uint x = 0; x < CHUNK_SIZE; x++)
-		for (uint y = 0; y < CHUNK_SIZE; y++)
-		for (uint z = 0; z < CHUNK_SIZE; z++)
-		{
-			//initialize voxels array
-			if (x == 0) voxels.set_length(CHUNK_SIZE);
-			if (y == 0) voxels[x].set_length(CHUNK_SIZE);
-			if (z == 0) voxels[x][y].set_length(CHUNK_SIZE);
-
-			Vec3f voxelPos(x, y, z);
-			Voxel voxel(bs);
-
-			InitVoxel(voxelPos, voxel);
-		}
+		rebuild = true;
 	}
 
-	bool SetVoxel(Vec3f voxelPos, Voxel voxel)
+	void GenerateMesh()
 	{
-		Voxel@ currentVoxel = getVoxel(voxelPos);
-		if (currentVoxel != null)
+		if (rebuild)
 		{
-			currentVoxel = voxel;
-			outdatedMesh = true;
-			return true;
-		}
-		return false;
-	}
+			rebuild = false;
 
-	Voxel@ getVoxel(Vec3f voxelPos)
-	{
-		if (isValidVoxel(voxelPos))
-		{
-			return voxels[voxelPos.x][voxelPos.y][voxelPos.z];
-		}
-		return null;
-	}
+			vertices.clear();
+			indices.clear();
 
-	void InitVoxel(Vec3f voxelPos, Voxel voxel)
-	{
-		@voxels[voxelPos.x][voxelPos.y][voxelPos.z] = voxel;
-	}
+			Vec3f chunkPos = map.to3DChunk(index);
 
-	void GenerateMesh(Vec3f chunkPos)
-	{
-		outdatedMesh = false;
-		print("Generate mesh " + chunkPos.toString());
+			Vec3f startWorldPos = chunkPos * CHUNK_SIZE;
+			Vec3f endWorldPos = (startWorldPos + CHUNK_SIZE).min(map.getMapDimensions());
 
-		vertices.clear();
-		indices.clear();
-
-		for (uint x = 0; x < CHUNK_SIZE; x++)
-		for (uint y = 0; y < CHUNK_SIZE; y++)
-		for (uint z = 0; z < CHUNK_SIZE; z++)
-		{
-			Vec3f voxelPos(x, y, z);
-			Voxel@ voxel = getVoxel(voxelPos);
-			if (voxel !is null)
+			for (uint x = startWorldPos.x; x < endWorldPos.x; x++)
+			for (uint y = startWorldPos.y; y < endWorldPos.y; y++)
+			for (uint z = startWorldPos.z; z < endWorldPos.z; z++)
 			{
-				Vec3f worldPos = getMap3D().getWorldPos(chunkPos, voxelPos);
-				voxel.GenerateMesh(this, worldPos, vertices, indices);
+				u8 block = map.getBlock(x, y, z);
+
+				if (map.isBlockVisible(block))
+				{
+					float x1 = block / 8.0f;
+					float y1 = Maths::Floor(x1) / 32.0f;
+					float x2 = x1 + (1.0f / 32.0f);
+					float y2 = y1 + (1.0f / 32.0f);
+
+					SColor col = color_white;
+
+					float overlap = 0.001f; //so faint lines dont appear between planes
+					Vec3f p = Vec3f(x, y, z) - overlap;
+					float w = 1 + overlap * 2;
+
+					u8 left  = map.getBlockSafe(x - 1, y, z);
+					u8 right = map.getBlockSafe(x + 1, y, z);
+					u8 down  = map.getBlockSafe(x, y - 1, z);
+					u8 up    = map.getBlockSafe(x, y + 1, z);
+					u8 front = map.getBlockSafe(x, y, z - 1);
+					u8 back  = map.getBlockSafe(x, y, z + 1);
+
+					bool leftVisible  = map.isBlockSeeThrough(left);
+					bool rightVisible = map.isBlockSeeThrough(right);
+					bool downVisible  = map.isBlockSeeThrough(down);
+					bool upVisible    = map.isBlockSeeThrough(up);
+					bool frontVisible = map.isBlockSeeThrough(front);
+					bool backVisible  = map.isBlockSeeThrough(back);
+
+					uint vertexCount = (num(leftVisible) + num(rightVisible) + num(downVisible) + num(upVisible) + num(frontVisible) + num(backVisible)) * 4;
+					uint indexCount = vertexCount * 1.5f;
+
+					uint vi = vertices.length;
+					uint ii = indices.length;
+
+					vertices.set_length(vertices.length + vertexCount);
+					indices.set_length(indices.length + indexCount);
+
+					if (leftVisible)
+					{
+						vertices[vi++] = Vertex(p.x, p.y + w, p.z + w, x1, y1, col);
+						vertices[vi++] = Vertex(p.x, p.y + w, p.z    , x2, y1, col);
+						vertices[vi++] = Vertex(p.x, p.y    , p.z    , x2, y2, col);
+						vertices[vi++] = Vertex(p.x, p.y    , p.z + w, x1, y2, col);
+						ii = AddIndices(ii, vi);
+					}
+
+					if (rightVisible)
+					{
+						vertices[vi++] = Vertex(p.x + w, p.y + w, p.z    , x1, y1, col);
+						vertices[vi++] = Vertex(p.x + w, p.y + w, p.z + w, x2, y1, col);
+						vertices[vi++] = Vertex(p.x + w, p.y    , p.z + w, x2, y2, col);
+						vertices[vi++] = Vertex(p.x + w, p.y    , p.z    , x1, y2, col);
+						ii = AddIndices(ii, vi);
+					}
+
+					if (downVisible)
+					{
+						vertices[vi++] = Vertex(p.x + w, p.y, p.z + w, x1, y1, col);
+						vertices[vi++] = Vertex(p.x    , p.y, p.z + w, x2, y1, col);
+						vertices[vi++] = Vertex(p.x    , p.y, p.z    , x2, y2, col);
+						vertices[vi++] = Vertex(p.x + w, p.y, p.z    , x1, y2, col);
+						ii = AddIndices(ii, vi);
+					}
+
+					if (upVisible)
+					{
+						vertices[vi++] = Vertex(p.x    , p.y + w, p.z + w, x1, y1, col);
+						vertices[vi++] = Vertex(p.x + w, p.y + w, p.z + w, x2, y1, col);
+						vertices[vi++] = Vertex(p.x + w, p.y + w, p.z    , x2, y2, col);
+						vertices[vi++] = Vertex(p.x    , p.y + w, p.z    , x1, y2, col);
+						ii = AddIndices(ii, vi);
+					}
+
+					if (frontVisible)
+					{
+						vertices[vi++] = Vertex(p.x    , p.y + w, p.z, x1, y1, col);
+						vertices[vi++] = Vertex(p.x + w, p.y + w, p.z, x2, y1, col);
+						vertices[vi++] = Vertex(p.x + w, p.y    , p.z, x2, y2, col);
+						vertices[vi++] = Vertex(p.x    , p.y    , p.z, x1, y2, col);
+						ii = AddIndices(ii, vi);
+					}
+
+					if (backVisible)
+					{
+						vertices[vi++] = Vertex(p.x + w, p.y + w, p.z + w, x1, y1, col);
+						vertices[vi++] = Vertex(p.x    , p.y + w, p.z + w, x2, y1, col);
+						vertices[vi++] = Vertex(p.x    , p.y    , p.z + w, x2, y2, col);
+						vertices[vi++] = Vertex(p.x + w, p.y    , p.z + w, x1, y2, col);
+						ii = AddIndices(ii, vi);
+					}
+				}
 			}
 		}
 
 		if (!vertices.empty())
 		{
-			mesh.SetVertex(vertices);
-			mesh.SetIndices(indices);
-			mesh.BuildMesh();
+            mesh.SetVertex(vertices);
+            mesh.SetIndices(indices);
+            mesh.SetDirty(SMesh::VERTEX_INDEX);
+            mesh.BuildMesh();
+		}
+		else
+		{
+			mesh.Clear();
 		}
 	}
 
 	void Render()
 	{
-		if (!vertices.empty())
-		{
-			float[] matrix;
-			Matrix::MakeIdentity(matrix);
-			Render::SetModelTransform(matrix);
-
-			mesh.RenderMeshWithMaterial();
-		}
+		mesh.RenderMesh();
 	}
 
-	void Serialize(CBitStream@ bs)
+	private uint AddIndices(uint ii, uint vi)
 	{
-		for (uint x = 0; x < CHUNK_SIZE; x++)
-		for (uint y = 0; y < CHUNK_SIZE; y++)
-		for (uint z = 0; z < CHUNK_SIZE; z++)
-		{
-			Vec3f voxelPos(x, y, z);
-			Voxel@ voxel = getVoxel(voxelPos);
-			voxel.Serialize(bs);
-		}
-	}
-
-	private bool isValidVoxel(Vec3f voxelPos)
-	{
-		return (
-			voxelPos.x >= 0 && voxelPos.x < CHUNK_SIZE &&
-			voxelPos.y >= 0 && voxelPos.y < CHUNK_SIZE &&
-			voxelPos.z >= 0 && voxelPos.z < CHUNK_SIZE
-		);
+		indices[ii++] = vi-4; indices[ii++] = vi-3; indices[ii++] = vi-1;
+		indices[ii++] = vi-3; indices[ii++] = vi-2; indices[ii++] = vi-1;
+		return ii;
 	}
 }

@@ -17,7 +17,9 @@ void onRestart(CRules@ this)
 
 void onTick(CRules@ this)
 {
-	getGamemodeManager().getGamemode().onTick(this);
+	Gamemode@ gamemode = getGamemodeManager().getGamemode();
+	gamemode.GenerateMap();
+	gamemode.onTick(this);
 }
 
 void onNewPlayerJoin(CRules@ this, CPlayer@ player)
@@ -28,6 +30,7 @@ void onNewPlayerJoin(CRules@ this, CPlayer@ player)
 void onPlayerLeave(CRules@ this, CPlayer@ player)
 {
 	getGamemodeManager().getGamemode().onPlayerLeave(this, player);
+	getActorManager().RemoveActor(player);
 }
 
 void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ attacker, u8 customData)

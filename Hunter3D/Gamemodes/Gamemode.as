@@ -14,18 +14,34 @@ shared class Gamemode
 
 	void onInit(CRules@ this) {}
 	void onRestart(CRules@ this) {}
-	void onTick(CRules@ this)
+	void onTick(CRules@ this) {}
+	void onNewPlayerJoin(CRules@ this, CPlayer@ player) {}
+	void onPlayerLeave(CRules@ this, CPlayer@ player) {}
+	void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ attacker, u8 customData) {}
+	void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
+	{
+		if (cmd == this.getCommandID("c_loaded"))
+		{
+			u16 playerID = params.read_u16();
+			CPlayer@ player = getPlayerByNetworkId(playerID);
+
+			if (player !is null)
+			{
+				onPlayerLoaded(this, player);
+			}
+		}
+	}
+	void onPlayerLoaded(CRules@ this, CPlayer@ player) {}
+	void onActorSpawn(CRules@ this, CPlayer@ player, Actor@ actor) {}
+
+	void GenerateMap()
 	{
 		Map@ map = getMap3D();
-		if (map is null || !map.loaded)
+		if (map is null || !map.isLoaded())
 		{
 			mapgen.GenerateMap();
 		}
 	}
-	void onNewPlayerJoin(CRules@ this, CPlayer@ player) {}
-	void onPlayerLeave(CRules@ this, CPlayer@ player) {}
-	void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ attacker, u8 customData) {}
-	void onCommand(CRules@ this, u8 cmd, CBitStream@ params) {}
 
 	Vec3f getRespawnPoint(CPlayer@ player)
 	{

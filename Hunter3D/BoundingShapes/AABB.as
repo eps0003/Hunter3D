@@ -28,14 +28,14 @@ shared class AABB : IBounds
 	//intersects any solid voxel at specified position
 	bool intersectsAt(Vec3f worldPos)
 	{
+		Map@ map = getMap3D();
+
 		for (int x = worldPos.x + min.x; x < worldPos.x + max.x; x++)
 		for (int y = worldPos.y + min.y; y < worldPos.y + max.y; y++)
 		for (int z = worldPos.z + min.z; z < worldPos.z + max.z; z++)
 		{
-			Vec3f pos(x, y, z);
-			Voxel@ voxel = getMap3D().getVoxel(pos);
-
-			if (voxel !is null && voxel.isSolid())
+			u8 block = map.getBlockSafe(x, y, z);
+			if (map.isBlockSolid(block))
 			{
 				return true;
 			}
@@ -46,6 +46,8 @@ shared class AABB : IBounds
 	//intersects any solid voxel at the specified position that isnt currently intersecting
 	bool intersectsNewAt(Vec3f currentPos, Vec3f worldPos)
 	{
+		Map@ map = getMap3D();
+
 		for (int x = worldPos.x + min.x; x < worldPos.x + max.x; x++)
 		for (int y = worldPos.y + min.y; y < worldPos.y + max.y; y++)
 		for (int z = worldPos.z + min.z; z < worldPos.z + max.z; z++)
@@ -62,10 +64,8 @@ shared class AABB : IBounds
 				continue;
 			}
 
-			Vec3f pos(x, y, z);
-			Voxel@ voxel = getMap3D().getVoxel(pos);
-
-			if (voxel !is null && voxel.isSolid())
+			u8 block = map.getBlockSafe(x, y, z);
+			if (map.isBlockSolid(block))
 			{
 				return true;
 			}
