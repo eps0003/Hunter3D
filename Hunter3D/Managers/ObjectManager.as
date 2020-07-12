@@ -21,6 +21,7 @@ shared ObjectManager@ getObjectManager()
 shared class ObjectManager
 {
 	private Object@[] objects;
+	private uint[] removedObjects;
 
 	void Interpolate()
 	{
@@ -66,6 +67,11 @@ shared class ObjectManager
 			Object@ obj = objects[i];
 			if (object == obj)
 			{
+				if (!isClient())
+				{
+					removedObjects.push_back(obj.id);
+				}
+
 				objects.removeAt(i);
 				return;
 			}
@@ -76,7 +82,27 @@ shared class ObjectManager
 	{
 		if (index < getObjectCount())
 		{
+			Object@ object = objects[index];
+
+			if (!isClient())
+			{
+				removedObjects.push_back(object.id);
+			}
+
 			objects.removeAt(index);
+		}
+	}
+
+	void RemoveObjectByID(uint id)
+	{
+		for (uint i = 0; i < objects.length; i++)
+		{
+			Object@ obj = objects[i];
+			if (obj.id == id)
+			{
+				RemoveObject(i);
+				return;
+			}
 		}
 	}
 
@@ -124,6 +150,31 @@ shared class ObjectManager
 	uint getObjectCount()
 	{
 		return objects.length;
+	}
+
+	void SerializeRemovedObjects(CBitStream@ bs)
+	{
+		bs.write_u32(removedObjects.length);
+
+		for (uint i = 0; i < removedObjects.length; i++)
+		{
+			uint id = removedObjects[i];
+			bs.write_u32(id);
+		}
+
+		removedObjects.clear();
+	}
+
+	void DeserializeRemovedObjects(CBitStream@ bs)
+	{
+		uint count = bs.read_u32();
+
+		for (uint i = 0; i < count; i++)
+		{
+			uint id = bs.read_u32();
+			print("id: " + id);
+			RemoveObjectByID(id);
+		}
 	}
 
 	private bool hasObject(Object@ object)

@@ -6,7 +6,9 @@
 
 void onTick(CRules@ this)
 {
-	Object@[] objects = getObjectManager().getNonActorObjects();
+	ObjectManager@ objectManager = getObjectManager();
+
+	Object@[] objects = objectManager.getNonActorObjects();
 	for (uint i = 0; i < objects.length; i++)
 	{
 		Object@ object = objects[i];
@@ -19,6 +21,7 @@ void onTick(CRules@ this)
 	CBitStream bs;
 	getActorManager().SerializeActors(bs);
 	getFlagManager().SerializeFlags(bs);
+	objectManager.SerializeRemovedObjects(bs);
 	this.SendCommand(this.getCommandID("s_sync_objects"), bs, true);
 }
 

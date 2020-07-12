@@ -151,6 +151,7 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 	{
 		getActorManager().DeserializeActors(params);
 		getFlagManager().DeserializeFlags(params);
+		getObjectManager().DeserializeRemovedObjects(params);
 	}
 	else if (cmd == this.getCommandID("s_remove_actor"))
 	{
