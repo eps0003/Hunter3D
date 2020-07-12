@@ -212,13 +212,5 @@ shared class ActorManager
 		{
 			getCamera3D().SetParent(null);
 		}
-
-		if (isServer())
-		{
-			CRules@ rules = getRules();
-			CBitStream bs;
-			actor.Serialize(bs);
-			rules.SendCommand(rules.getCommandID("s_remove_actor"), bs, true);
-		}
 	}
 }
