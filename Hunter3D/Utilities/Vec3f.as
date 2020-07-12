@@ -267,6 +267,15 @@ shared class Vec3f
 		return (x * vec.x) + (y * vec.y) + (z * vec.z);
 	}
 
+	Vec3f cross(Vec3f vec)
+	{
+		return Vec3f(
+			y * vec.z - z * vec.y,
+			z * vec.x - x * vec.z,
+			x * vec.y - y * vec.x
+		);
+	}
+
 	Vec3f lerp(Vec3f desired, float t)
 	{
 		return this + (desired - this) * t;
@@ -414,8 +423,8 @@ shared class Vec3f
 	{
 		Camera@ camera = getCamera3D();
 
-		Vec3f vec = multiply(camera.viewMatrix);
-		vec = vec.multiply(camera.projMatrix);
+		Vec3f vec = multiply(camera.getViewMatrix());
+		vec = vec.multiply(camera.getProjectionMatrix());
 
 		int x = ((vec.x / vec.z + 1.0f) / 2.0f) * getScreenWidth() + 0.5f;
 		int y = ((1.0f - vec.y / vec.z) / 2.0f) * getScreenHeight() + 0.5f;

@@ -1,4 +1,5 @@
 #include "IHasParent.as"
+#include "Frustum.as"
 
 shared Camera@ getCamera3D()
 {
@@ -18,12 +19,15 @@ shared Camera@ getCamera3D()
 shared class Camera : IHasParent
 {
 	private Object@ parent;
-	float fov;
-	float renderDistance;
+	private Frustum frustum;
 
-	float[] modelMatrix;
-	float[] viewMatrix;
-	float[] projMatrix;
+	private float fov;
+	private float renderDistance;
+
+	private float[] modelMatrix;
+	private float[] viewMatrix;
+	private float[] projectionMatrix;
+	private float[] rotationMatrix;
 
 	Camera(Object@ parent)
 	{
@@ -38,9 +42,13 @@ shared class Camera : IHasParent
 	{
 		if (hasParent())
 		{
-			viewMatrix = getViewMatrix(getPosition(), getRotation());
-			projMatrix = getProjectionMatrix();
-			Render::SetTransform(modelMatrix, viewMatrix, projMatrix);
+			UpdateViewMatrix();
+			UpdateRotationMatrix();
+			UpdateProjectionMatrix();
+
+			Render::SetTransform(modelMatrix, viewMatrix, projectionMatrix);
+
+			UpdateFrustum();
 		}
 	}
 
@@ -83,28 +91,52 @@ shared class Camera : IHasParent
 		}
 	}
 
-	private float[] getProjectionMatrix()
+	float[] getViewMatrix()
+	{
+		return viewMatrix;
+	}
+
+	float[] getProjectionMatrix()
+	{
+		return projectionMatrix;
+	}
+
+	Frustum getFrustum()
+	{
+		return frustum;
+	}
+
+	private void UpdateProjectionMatrix()
 	{
 		Vec2f screenDim = getDriver().getScreenDimensions();
 		float ratio = float(screenDim.x) / float(screenDim.y);
 
-		float[] matrix;
-		Matrix::MakePerspective(matrix,
+		Matrix::MakePerspective(projectionMatrix,
 			fov * Maths::Pi / 180,
 			ratio,
 			0.01f, renderDistance
 		);
-
-		return matrix;
 	}
 
-	private float[] getViewMatrix(Vec3f position, Vec3f rotation)
+	private void UpdateViewMatrix()
 	{
-		float[] matrix;
+		Vec3f position = getPosition();
 
 		float[] translation;
 		Matrix::MakeIdentity(translation);
 		Matrix::SetTranslation(translation, -position.x, -position.y, -position.z);
+
+		float[] thirdPerson;
+		Matrix::MakeIdentity(thirdPerson);
+		Matrix::SetTranslation(thirdPerson, 0, 0, 10);
+
+		Matrix::Multiply(rotationMatrix, translation, viewMatrix);
+		// Matrix::Multiply(thirdPerson, matrix, viewMatrix);
+	}
+
+	private void UpdateRotationMatrix()
+	{
+		Vec3f rotation = getRotation();
 
 		float[] tempX;
 		Matrix::MakeIdentity(tempX);
@@ -118,16 +150,17 @@ shared class Camera : IHasParent
 		Matrix::MakeIdentity(tempZ);
 		Matrix::SetRotationDegrees(tempZ, 0, 0, rotation.z);
 
-		float[] thirdPerson;
-		Matrix::MakeIdentity(thirdPerson);
-		Matrix::SetTranslation(thirdPerson, 0, 0, 2);
+		Matrix::Multiply(tempX, tempZ, rotationMatrix);
+		Matrix::Multiply(rotationMatrix, tempY, rotationMatrix);
+	}
 
-		Matrix::Multiply(tempX, tempZ, matrix);
-		Matrix::Multiply(matrix, tempY, matrix);
-		Matrix::Multiply(matrix, translation, matrix);
-		// Matrix::Multiply(thirdPerson, matrix, matrix);
+	private void UpdateFrustum()
+	{
+		float[] matrix;
+		Matrix::MakeIdentity(matrix);
+		Matrix::Multiply(projectionMatrix, rotationMatrix, matrix);
 
-		return matrix;
+		frustum.Update(matrix);
 	}
 
 	private void LoadPreferences()

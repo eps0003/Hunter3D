@@ -1,17 +1,24 @@
 shared class Chunk
 {
 	private Map@ map;
+
+	private uint index;
+	private bool rebuild = true;
+
 	private SMesh mesh;
 	private Vertex[] vertices;
 	private u16[] indices;
-	private uint index;
 
-	private bool rebuild = true;
+    private AABB box;
 
 	Chunk(Map@ map, uint index)
 	{
 		@this.map = map;
 		this.index = index;
+
+		Vec3f startWorldPos = map.to3DChunk(index) * CHUNK_SIZE;
+		Vec3f endWorldPos = startWorldPos + CHUNK_SIZE;
+        box = AABB(startWorldPos, endWorldPos);
 
 		GenerateMesh();
 	}
@@ -145,6 +152,16 @@ shared class Chunk
 		{
 			mesh.Clear();
 		}
+	}
+
+	bool hasVertices()
+	{
+		return !vertices.empty();
+	}
+
+	AABB getBounds()
+	{
+		return box;
 	}
 
 	void Render()

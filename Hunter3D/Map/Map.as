@@ -2,7 +2,7 @@
 #include "Chunk.as"
 #include "Camera.as"
 
-const u8 CHUNK_SIZE = 16;
+const u8 CHUNK_SIZE = 12;
 
 enum BlockType
 {
@@ -362,6 +362,7 @@ shared class Map
 		{
 			Chunk@ chunk = visibleChunks[i];
 			chunk.Render();
+			// chunk.getBounds().Render();
 		}
 	}
 
@@ -373,44 +374,21 @@ shared class Map
 
 	private void GetVisibleChunks()
 	{
+		visibleChunks.clear();
+
+		Camera@ camera = getCamera3D();
+		Frustum frustum = camera.getFrustum();
+		Vec3f camPos = camera.getPosition();
+
 		for (uint i = 0; i < chunks.length; i++)
 		{
 			Chunk@ chunk = chunks[i];
-			chunk.GenerateMesh();
+			AABB box = chunk.getBounds();
+			if (chunk.hasVertices() && frustum.containsSphere(box.center - camPos, box.radius * 2))
+			{
+				visibleChunks.push_back(chunk);
+				chunk.GenerateMesh();
+			}
 		}
-
-		visibleChunks = chunks;
-
-		// Vec3f camPos = getCamera3D().getPosition();
-		// Vec3f centerChunkPos = getChunkPos(camPos.x, camPos.y, camPos.z);
-
-		// uint minX = Maths::Clamp(centerChunkPos.x - renderDistance, 0, chunkDim.x);
-		// uint maxX = Maths::Clamp(centerChunkPos.x + renderDistance + 1, 0, chunkDim.x);
-		// uint minY = 0;
-		// uint maxY = chunkDim.y;
-		// uint minZ = Maths::Clamp(centerChunkPos.z - renderDistance, 0, chunkDim.z);
-		// uint maxZ = Maths::Clamp(centerChunkPos.z + renderDistance + 1, 0, chunkDim.z);
-
-		// uint w = maxX - minX;
-		// uint h = maxY - minY;
-		// uint d = maxZ - minZ;
-
-		// uint index = 0;
-		// uint chunkUpdates = 0;
-
-		// visibleChunks.clear();
-		// visibleChunks.set_length(w * h * d);
-
-		// for (uint x = minX; x < maxX; x++)
-		// for (uint y = minY; y < maxY; y++)
-		// for (uint z = minZ; z < maxZ; z++)
-		// {
-		// 	Vec3f chunkPos(x, y, z);
-		// 	Chunk@ chunk = getChunk(chunkPos);
-
-		// 	chunk.GenerateMesh(chunkPos);
-
-		// 	@visibleChunks[index++] = chunk;
-		// }
 	}
 }

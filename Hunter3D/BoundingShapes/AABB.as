@@ -5,24 +5,31 @@ shared class AABB : IBounds
 	Vec3f dim;
 	Vec3f min;
 	Vec3f max;
+	Vec3f center;
+	float radius; //radius of a sphere that is outside the box and collides with each corner
 
 	//origin is centered at bottom
-	AABB(Vec3f dim_)
+	AABB(Vec3f dim)
 	{
-		dim = dim_;
-		min = Vec3f(-dim.x / 2.0f, 0, -dim.z / 2.0f);
-		max = Vec3f(dim.x / 2.0f, dim.y, dim.z / 2.0f);
+		this.dim = dim;
+		this.min = Vec3f(-dim.x / 2.0f, 0, -dim.z / 2.0f);
+		this.max = Vec3f(dim.x / 2.0f, dim.y, dim.z / 2.0f);
+		UpdateAttributes();
 	}
 
 	//relative to parent position
-	AABB(Vec3f min_, Vec3f max_)
+	AABB(Vec3f min, Vec3f max)
 	{
-		min = min_;
-		max = max_;
+		this.min = min;
+		this.max = max;
+		this.dim = (max - min).abs();
+		UpdateAttributes();
+	}
 
-		dim.x = Maths::Abs(max.x - min.x);
-		dim.y = Maths::Abs(max.y - min.y);
-		dim.z = Maths::Abs(max.z - min.z);
+	private void UpdateAttributes()
+	{
+		center = min + dim / 2.0f;
+		radius = dim.mag() / 2.0f;
 	}
 
 	//intersects any solid voxel at specified position
@@ -125,7 +132,7 @@ shared class AABB : IBounds
 		);
 	}
 
-	void Render(Vec3f worldPos, SColor col = SColor(100, 100, 255, 100))
+	void Render(Vec3f worldPos = Vec3f(), SColor col = SColor(100, 100, 255, 100))
 	{
 		float[] matrix;
 		Matrix::MakeIdentity(matrix);
