@@ -73,6 +73,7 @@ shared class ObjectManager
 				}
 
 				objects.removeAt(i);
+				print("Removed object: " + object.name + object.id);
 				return;
 			}
 		}
@@ -90,7 +91,8 @@ shared class ObjectManager
 			}
 
 			objects.removeAt(index);
-		}
+			print("Removed object: " + object.name + object.id);
+	}
 	}
 
 	void RemoveObjectByID(uint id)
@@ -172,7 +174,6 @@ shared class ObjectManager
 		for (uint i = 0; i < count; i++)
 		{
 			uint id = bs.read_u32();
-			print("id: " + id);
 			RemoveObjectByID(id);
 		}
 	}
