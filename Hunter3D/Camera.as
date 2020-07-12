@@ -32,8 +32,12 @@ shared class Camera : IHasParent
 	Camera(Object@ parent)
 	{
 		SetParent(parent);
-		Matrix::MakeIdentity(modelMatrix);
 		LoadPreferences();
+
+		Matrix::MakeIdentity(modelMatrix);
+		Matrix::MakeIdentity(viewMatrix);
+		Matrix::MakeIdentity(projectionMatrix);
+		Matrix::MakeIdentity(rotationMatrix);
 
 		Render::SetFog(getSkyColor(), SMesh::LINEAR, renderDistance * 0.9f, renderDistance, 0, false, true);
 	}
