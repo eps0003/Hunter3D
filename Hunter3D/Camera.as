@@ -135,7 +135,7 @@ shared class Camera : IHasParent
 		Matrix::SetTranslation(thirdPerson, 0, 0, 10);
 
 		Matrix::Multiply(rotationMatrix, translation, viewMatrix);
-		// Matrix::Multiply(thirdPerson, matrix, viewMatrix);
+		// Matrix::Multiply(thirdPerson, viewMatrix, viewMatrix);
 	}
 
 	private void UpdateRotationMatrix()

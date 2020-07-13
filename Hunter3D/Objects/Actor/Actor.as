@@ -197,7 +197,8 @@ shared class Actor : PhysicsObject, IRenderable, IHasTeam, IHasConfig
 				map.SetBlock(worldPos.x, worldPos.y, worldPos.z, block);
 				print("Placed block at " + worldPos.toString());
 
-				Chunk@ chunk = map.getChunk(worldPos.x, worldPos.y, worldPos.z);
+				Vec3f chunkPos = map.getChunkPos(worldPos.x, worldPos.y, worldPos.z);
+				Chunk@ chunk = map.getChunk(chunkPos.x, chunkPos.y, chunkPos.z);
 				chunk.SetRebuild();
 			}
 		}

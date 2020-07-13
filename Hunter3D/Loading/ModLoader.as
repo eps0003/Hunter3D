@@ -20,6 +20,7 @@ enum LoadState
 	GenerateMap,
 	DeserializeMap,
 	GenerateChunks,
+	InitializeChunkTree,
 	PreloadModels,
 	Done
 }
@@ -103,6 +104,16 @@ shared class ModLoader
 						break;
 					}
 				}
+			}
+			break;
+
+			case LoadState::InitializeChunkTree:
+			{
+				message = "Organizing chunks...";
+				getMap3D().InitChunkTree();
+
+				print("Chunks organized", ConsoleColour::CRAZY);
+				NextState();
 			}
 			break;
 

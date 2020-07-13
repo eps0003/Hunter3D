@@ -1,6 +1,7 @@
 #include "Vec3f.as"
 #include "Chunk.as"
 #include "Camera.as"
+#include "Tree.as"
 
 const u8 CHUNK_SIZE = 12;
 
@@ -48,8 +49,8 @@ shared Map@ getMap3D()
 
 shared class Map
 {
-	u8[] map;
-	Chunk@[] chunks;
+	private u8[] map;
+	private Chunk@[] chunks;
 
 	private Vec3f mapDim;
 	private Vec3f chunkDim;
@@ -57,6 +58,7 @@ shared class Map
 	private string texture = "BlocksMC.png";
 	private SMaterial@ material = SMaterial();
 
+	private Tree@ chunkTree;
 	private Chunk@[] visibleChunks;
 	// private uint chunkUpdatesPerTick = 1;
 
@@ -85,6 +87,11 @@ shared class Map
 		material.SetFlag(SMaterial::LIGHTING, false);
 		material.SetFlag(SMaterial::BILINEAR_FILTER, false);
 		material.SetFlag(SMaterial::FOG_ENABLE, true);
+	}
+
+	void InitChunkTree()
+	{
+		@chunkTree = Tree(this, Vec3f(), nearestPower(chunkDim));
 	}
 
 	void InitChunks()
@@ -200,12 +207,11 @@ shared class Map
 		return map[index];
 	}
 
-	Chunk@ getChunkSafe(int worldX, int worldY, int worldZ)
+	Chunk@ getChunkSafe(int x, int y, int z)
 	{
-		if (isValidBlock(worldX, worldY, worldZ))
+		if (isValidChunk(x, y, z))
 		{
-			Vec3f chunkPos = (Vec3f(worldX, worldY, worldZ) / CHUNK_SIZE).floor();
-			int index = toIndexChunk(chunkPos.x, chunkPos.y, chunkPos.z);
+			int index = toIndexChunk(x, y, z);
 			return getChunk(index);
 		}
 		return null;
@@ -222,8 +228,7 @@ shared class Map
 
 	Chunk@ getChunk(int x, int y, int z)
 	{
-		Vec3f chunkPos = getChunkPos(x, y, z);
-		int index = toIndexChunk(chunkPos.x, chunkPos.y, chunkPos.z);
+		int index = toIndexChunk(x, y, z);
 		return chunks[index];
 	}
 
@@ -361,6 +366,7 @@ shared class Map
 		for (uint i = 0; i < visibleChunks.length; i++)
 		{
 			Chunk@ chunk = visibleChunks[i];
+			chunk.GenerateMesh();
 			chunk.Render();
 			// chunk.getBounds().Render();
 		}
@@ -375,20 +381,6 @@ shared class Map
 	private void GetVisibleChunks()
 	{
 		visibleChunks.clear();
-
-		Camera@ camera = getCamera3D();
-		Frustum frustum = camera.getFrustum();
-		Vec3f camPos = camera.getPosition();
-
-		for (uint i = 0; i < chunks.length; i++)
-		{
-			Chunk@ chunk = chunks[i];
-			AABB box = chunk.getBounds();
-			if (chunk.hasVertices() && frustum.containsSphere(box.center - camPos, box.radius * 2))
-			{
-				visibleChunks.push_back(chunk);
-				chunk.GenerateMesh();
-			}
-		}
+		chunkTree.GetVisibleChunks(visibleChunks);
 	}
 }
