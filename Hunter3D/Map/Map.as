@@ -354,14 +354,10 @@ shared class Map
 		return loaded;
 	}
 
-	void Update()
-	{
-		GetVisibleChunks();
-	}
-
 	void Render()
 	{
 		material.SetVideoMaterial();
+		GetVisibleChunks();
 
 		for (uint i = 0; i < visibleChunks.length; i++)
 		{
