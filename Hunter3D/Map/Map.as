@@ -346,9 +346,19 @@ shared class Map
 	}
 
 	//https://coderwall.com/p/fzni3g/bidirectional-translation-between-1d-and-3d-arrays
+	int toIndex(Vec3f position)
+	{
+		return toIndex(position.x, position.y, position.z);
+	}
+
 	int toIndex(int x, int y, int z)
 	{
 		return x + (y * mapDim.x) + (z * mapDim.z * mapDim.y);
+	}
+
+	int toIndexChunk(Vec3f position)
+	{
+		return toIndexChunk(position.x, position.y, position.z);
 	}
 
 	int toIndexChunk(int x, int y, int z)
