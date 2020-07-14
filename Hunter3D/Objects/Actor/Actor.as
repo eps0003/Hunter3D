@@ -192,13 +192,13 @@ shared class Actor : PhysicsObject, IRenderable, IHasTeam, IHasConfig
 			u8 block = BlockType::OakWood;
 			Vec3f worldPos = (position + Vec3f(0, cameraHeight, 0) + rotation.dir() * 2).floor();
 
-			if (map.isValidBlock(worldPos.x, worldPos.y, worldPos.z) && map.getBlock(worldPos.x, worldPos.y, worldPos.z) != block)
+			if (map.isValidBlock(worldPos) && map.getBlock(worldPos) != block)
 			{
-				map.SetBlock(worldPos.x, worldPos.y, worldPos.z, block);
+				map.SetBlock(worldPos, block);
 				print("Placed block at " + worldPos.toString());
 
-				Vec3f chunkPos = map.getChunkPos(worldPos.x, worldPos.y, worldPos.z);
-				Chunk@ chunk = map.getChunk(chunkPos.x, chunkPos.y, chunkPos.z);
+				Vec3f chunkPos = map.getChunkPos(worldPos);
+				Chunk@ chunk = map.getChunk(chunkPos);
 				chunk.SetRebuild();
 			}
 		}

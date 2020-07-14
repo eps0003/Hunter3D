@@ -153,6 +153,11 @@ shared class Map
 		seeThrough.push_back(_seeThrough);
 	}
 
+	void SetBlockSafe(Vec3f position, u8 block)
+	{
+		SetBlockSafe(position.x, position.y, position.z, block);
+	}
+
 	void SetBlockSafe(int x, int y, int z, u8 block)
 	{
 		if (isValidBlock(x, y, z))
@@ -169,6 +174,11 @@ shared class Map
 		}
 	}
 
+	void SetBlock(Vec3f position, u8 block)
+	{
+		SetBlock(position.x, position.y, position.z, block);
+	}
+
 	void SetBlock(int x, int y, int z, u8 block)
 	{
 		SetBlock(toIndex(x, y, z), block);
@@ -177,6 +187,11 @@ shared class Map
 	void SetBlock(int index, u8 block)
 	{
 		map[index] = block;
+	}
+
+	u8 getBlockSafe(Vec3f position)
+	{
+		return getBlockSafe(position.x, position.y, position.z);
 	}
 
 	u8 getBlockSafe(int x, int y, int z)
@@ -197,6 +212,11 @@ shared class Map
 		return 0;
 	}
 
+	u8 getBlock(Vec3f position)
+	{
+		return getBlock(position.x, position.y, position.z);
+	}
+
 	u8 getBlock(int x, int y, int z)
 	{
 		return getBlock(toIndex(x, y, z));
@@ -205,6 +225,11 @@ shared class Map
 	u8 getBlock(int index)
 	{
 		return map[index];
+	}
+
+	Chunk@ getChunkSafe(Vec3f position)
+	{
+		return getChunkSafe(position.x, position.y, position.z);
 	}
 
 	Chunk@ getChunkSafe(int x, int y, int z)
@@ -226,6 +251,11 @@ shared class Map
 		return null;
 	}
 
+	Chunk@ getChunk(Vec3f position)
+	{
+		return getChunk(position.x, position.y, position.z);
+	}
+
 	Chunk@ getChunk(int x, int y, int z)
 	{
 		int index = toIndexChunk(x, y, z);
@@ -242,6 +272,11 @@ shared class Map
 		@chunks[index] = chunk;
 	}
 
+	bool isValidBlock(Vec3f position)
+	{
+		return isValidBlock(position.x, position.y, position.z);
+	}
+
 	bool isValidBlock(int x, int y, int z)
 	{
 		return (
@@ -254,6 +289,11 @@ shared class Map
 	bool isValidBlock(int index)
 	{
 		return index >= 0 && index < map.length;
+	}
+
+	bool isValidChunk(Vec3f position)
+	{
+		return isValidChunk(position.x, position.y, position.z);
 	}
 
 	bool isValidChunk(int x, int y, int z)
@@ -293,6 +333,11 @@ shared class Map
 	bool isBlockSeeThrough(u8 block)
 	{
 		return seeThrough[block];
+	}
+
+	Vec3f getChunkPos(Vec3f position)
+	{
+		return getChunkPos(position.x, position.y, position.z);
 	}
 
 	Vec3f getChunkPos(int x, int y, int z)
