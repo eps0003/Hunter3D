@@ -2,7 +2,7 @@ shared class MapGenerator
 {
 	private Vec3f size;
 	private uint chunkIndex = 0;
-	private uint voxelsPerChunk = 10000;
+	private uint blocksPerChunk = 10000;
 
 	private Noise@ noise;
 
@@ -33,11 +33,11 @@ shared class MapGenerator
 		//dont load if map is already loaded
 		if (map.isLoaded()) return;
 
-		//get start and end voxel index
-		uint startIndex = chunkIndex * voxelsPerChunk;
-		uint endIndex = Maths::Min(startIndex + voxelsPerChunk, size.x * size.y * size.z);
+		//get start and end block index
+		uint startIndex = chunkIndex * blocksPerChunk;
+		uint endIndex = Maths::Min(startIndex + blocksPerChunk, size.x * size.y * size.z);
 
-		//loop through voxels in this chunk
+		//loop through blocks in this chunk
 		for (uint i = startIndex; i < endIndex; i++)
 		{
 			Vec3f pos = map.to3D(i);
@@ -96,7 +96,7 @@ shared class MapGenerator
 	// 	//return foliage type from enum
 	// }
 
-	uint getVoxelCount()
+	uint getBlockCount()
 	{
 		return size.x * size.y * size.z;
 	}
@@ -108,6 +108,6 @@ shared class MapGenerator
 
 	private uint getChunkCount()
 	{
-		return Maths::Ceil(float(getVoxelCount()) / float(voxelsPerChunk));
+		return Maths::Ceil(float(getBlockCount()) / float(blocksPerChunk));
 	}
 }

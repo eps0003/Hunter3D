@@ -166,7 +166,7 @@ shared class PhysicsObject : Object, IHasConfig
 		AABB@ collisionBox = getCollisionBox();
 		if (collisionBox !is null)
 		{
-			bool collideVoxels = hasCollisionFlags(CollisionFlag::Voxels);
+			bool collideBlocks = hasCollisionFlags(CollisionFlag::Blocks);
 			bool collideMapEdge = hasCollisionFlags(CollisionFlag::MapEdge);
 			Vec3f mapDim = getMap3D().getMapDimensions();
 
@@ -174,7 +174,7 @@ shared class PhysicsObject : Object, IHasConfig
 			collisionX = true;
 			Vec3f xPosition(position.x + velocity.x, position.y, position.z);
 
-			if (collideVoxels && collisionBox.intersectsNewAt(position, xPosition))
+			if (collideBlocks && collisionBox.intersectsNewAt(position, xPosition))
 			{
 				if (velocity.x > 0)
 				{
@@ -206,7 +206,7 @@ shared class PhysicsObject : Object, IHasConfig
 			collisionZ = true;
 			Vec3f zPosition(position.x, position.y, position.z + velocity.z);
 
-			if (collideVoxels && collisionBox.intersectsNewAt(position, zPosition))
+			if (collideBlocks && collisionBox.intersectsNewAt(position, zPosition))
 			{
 				if (velocity.z > 0)
 				{
@@ -238,7 +238,7 @@ shared class PhysicsObject : Object, IHasConfig
 			collisionY = true;
 			Vec3f yPosition(position.x, position.y + velocity.y, position.z);
 
-			if (collideVoxels && collisionBox.intersectsNewAt(position, yPosition))
+			if (collideBlocks && collisionBox.intersectsNewAt(position, yPosition))
 			{
 				if (velocity.y > 0)
 				{

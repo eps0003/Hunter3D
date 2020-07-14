@@ -112,7 +112,7 @@ void Render(int id)
 
 void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 {
-	if (cmd == this.getCommandID("s_sync_voxel"))
+	if (cmd == this.getCommandID("s_sync_block"))
 	{
 		// u16 playerID = params.read_u16();
 		// CPlayer@ player = getPlayerByNetworkId(playerID);

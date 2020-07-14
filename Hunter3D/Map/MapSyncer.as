@@ -34,7 +34,7 @@ shared class MapSyncer
 {
 	private MapRequest@[] mapRequests;
 	private CBitStream@[] mapPackets;
-	private uint voxelsPerPacket = 10000;
+	private uint blocksPerPacket = 10000;
 
 	void AddMapRequest(CPlayer@ player, uint packet = 0)
 	{
@@ -99,8 +99,8 @@ shared class MapSyncer
 			}
 
 			//get index of first and last chunk to sync
-			uint firstVoxel = index * voxelsPerPacket;
-			uint lastVoxel = firstVoxel + voxelsPerPacket;
+			uint firstBlock = index * blocksPerPacket;
+			uint lastBlock = firstBlock + blocksPerPacket;
 
 			//serialize index
 			CBitStream bs;
@@ -112,10 +112,10 @@ shared class MapSyncer
 				map.getMapDimensions().Serialize(bs);
 			}
 
-			//loop through these voxels and serialize
-			for (uint i = firstVoxel; i < lastVoxel; i++)
+			//loop through these blocks and serialize
+			for (uint i = firstBlock; i < lastBlock; i++)
 			{
-				if (i >= map.getVoxelCount()) break;
+				if (i >= map.getBlockCount()) break;
 
 				u8 block = map.getBlock(i);
 				bs.write_u8(block);
@@ -142,8 +142,8 @@ shared class MapSyncer
 
 			//get index of first and last chunk to sync
 			uint index = packet.read_u32();
-			uint firstVoxel = index * voxelsPerPacket;
-			uint lastVoxel = firstVoxel + voxelsPerPacket;
+			uint firstBlock = index * blocksPerPacket;
+			uint lastBlock = firstBlock + blocksPerPacket;
 
 			if (index == 0)
 			{
@@ -154,10 +154,10 @@ shared class MapSyncer
 
 			Map@ map = getMap3D();
 
-			//loop through these voxels and serialize
-			for (uint i = firstVoxel; i < lastVoxel; i++)
+			//loop through these blocks and serialize
+			for (uint i = firstBlock; i < lastBlock; i++)
 			{
-				if (i >= map.getVoxelCount()) break;
+				if (i >= map.getBlockCount()) break;
 
 				u8 block = packet.read_u8();
 				map.SetBlock(i, block);
@@ -179,7 +179,7 @@ shared class MapSyncer
 
 	private uint getTotalPacketCount()
 	{
-		return Maths::Ceil(float(getMap3D().getVoxelCount()) / float(voxelsPerPacket));
+		return Maths::Ceil(float(getMap3D().getBlockCount()) / float(blocksPerPacket));
 	}
 }
 

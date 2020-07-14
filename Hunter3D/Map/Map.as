@@ -334,7 +334,7 @@ shared class Map
 		return mapDim;
 	}
 
-	uint getVoxelCount()
+	uint getBlockCount()
 	{
 		return map.length;
 	}

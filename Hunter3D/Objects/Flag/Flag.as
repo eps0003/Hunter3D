@@ -14,7 +14,7 @@ shared class Flag : PhysicsObject, IRenderable, IHasTeam, IHasConfig
 
 		LoadConfig(openConfig("Flag.cfg"));
 		SetCollisionBox(AABB(Vec3f(0.6f, 1.6f, 0.6f)));
-		SetCollisionFlags(CollisionFlag::Voxels);
+		SetCollisionFlags(CollisionFlag::Blocks);
 	}
 
 	Flag(CBitStream@ bs)
@@ -25,7 +25,7 @@ shared class Flag : PhysicsObject, IRenderable, IHasTeam, IHasConfig
 		SetTeamNum(bs.read_u8());
 
 		SetCollisionBox(AABB(Vec3f(0.6f, 1.6f, 0.6f)));
-		SetCollisionFlags(CollisionFlag::Voxels);
+		SetCollisionFlags(CollisionFlag::Blocks);
 	}
 
 	bool opEquals(Flag flag)

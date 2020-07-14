@@ -31,7 +31,7 @@ shared class Actor : PhysicsObject, IRenderable, IHasTeam, IHasConfig
 		@player = getPlayerByNetworkId(playerID);
 
 		SetCollisionBox(AABB(Vec3f(0.6f, 1.6f, 0.6f)));
-		SetCollisionFlags(CollisionFlag::Voxels);
+		SetCollisionFlags(CollisionFlag::Blocks);
 
 		cameraHeight = 1.5f;
 		@model = ActorModel("KnightSkin.png");
@@ -57,7 +57,7 @@ shared class Actor : PhysicsObject, IRenderable, IHasTeam, IHasConfig
 			movementStrategy.Rotate(this);
 		}
 
-		PlaceVoxel();
+		PlaceBlock();
 	}
 
 	void PostUpdate()
@@ -182,7 +182,7 @@ shared class Actor : PhysicsObject, IRenderable, IHasTeam, IHasConfig
 		velocity.z += dir.y * acceleration - friction * velocity.z;
 	}
 
-	private void PlaceVoxel()
+	private void PlaceBlock()
 	{
 		CControls@ controls = player.getControls();
 		Mouse@ mouse = getMouse3D();
