@@ -251,6 +251,11 @@ shared class Map
 		);
 	}
 
+	bool isValidBlock(int index)
+	{
+		return index >= 0 && index < map.length;
+	}
+
 	bool isValidChunk(int x, int y, int z)
 	{
 		return (
@@ -258,11 +263,6 @@ shared class Map
 			y >= 0 && y < chunkDim.y &&
 			z >= 0 && z < chunkDim.z
 		);
-	}
-
-	bool isValidBlock(int index)
-	{
-		return index >= 0 && index < map.length;
 	}
 
 	bool isValidChunk(int index)
@@ -366,21 +366,40 @@ shared class Map
 		for (uint i = 0; i < visibleChunks.length; i++)
 		{
 			Chunk@ chunk = visibleChunks[i];
-			chunk.GenerateMesh();
 			chunk.Render();
 			// chunk.getBounds().Render();
 		}
 	}
 
-	void GenerateChunkMesh(uint index)
-	{
-		Chunk@ chunk = chunks[index];
-		chunk.GenerateMesh();
-	}
-
 	private void GetVisibleChunks()
 	{
 		visibleChunks.clear();
-		chunkTree.GetVisibleChunks(visibleChunks);
+		// chunkTree.GetVisibleChunks(getCamera3D(), visibleChunks);
+
+		Camera@ camera = getCamera3D();
+
+		Frustum frustum = camera.getFrustum();
+		AABB bounds = frustum.getBounds();
+
+		Vec3f min = (bounds.min.max(Vec3f()) / CHUNK_SIZE).floor();
+		Vec3f max = (bounds.max.min(mapDim) / CHUNK_SIZE).ceil();
+
+		//frustum bounds arent in map bounds
+		if (max.x <= min.x || max.y <= min.y || max.z <= min.z)
+		{
+			return;
+		}
+
+		for (uint x = min.x; x < max.x; x++)
+		for (uint y = min.y; y < max.y; y++)
+		for (uint z = min.z; z < max.z; z++)
+		{
+			Chunk@ chunk = getChunk(x, y, z);
+			chunk.GenerateMesh();
+			if (chunk.hasVertices())
+			{
+				visibleChunks.push_back(chunk);
+			}
+		}
 	}
 }

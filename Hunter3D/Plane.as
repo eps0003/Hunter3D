@@ -30,14 +30,6 @@ shared class Plane
 		return normal.dot(point) + distanceToOrigin;
 	}
 
-	void SetAndNormalize(Vec3f &in normal, float distanceToOrigin)
-	{
-		float mag = normal.mag();
-
-		this.normal = normal / mag;
-		this.distanceToOrigin = distanceToOrigin / mag;
-	}
-
 	void Normalize()
 	{
 		float mag = normal.mag();
