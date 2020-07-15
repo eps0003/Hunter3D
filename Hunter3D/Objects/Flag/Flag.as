@@ -8,11 +8,10 @@ shared class Flag : PhysicsObject, IRenderable, IHasTeam, IHasConfig
 	Flag(Vec3f position, u8 team)
 	{
 		super(position);
-		name = "Flag";
+		LoadConfig(openConfig("Flag.cfg"));
 
 		SetTeamNum(team);
 
-		LoadConfig(openConfig("Flag.cfg"));
 		SetCollisionBox(AABB(Vec3f(0.6f, 1.6f, 0.6f)));
 		SetCollisionFlags(CollisionFlag::Blocks);
 	}
@@ -20,7 +19,7 @@ shared class Flag : PhysicsObject, IRenderable, IHasTeam, IHasConfig
 	Flag(CBitStream@ bs)
 	{
 		super(bs);
-		name = "Flag";
+		LoadConfig(openConfig("Flag.cfg"));
 
 		SetTeamNum(bs.read_u8());
 

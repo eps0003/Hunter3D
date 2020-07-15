@@ -37,4 +37,9 @@ shared class Identifiable
 	{
 		bs.write_u32(id);
 	}
+
+	void LoadConfig(ConfigFile@ cfg)
+	{
+		name = cfg.read_string("name", "Object");
+	}
 }

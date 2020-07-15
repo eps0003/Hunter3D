@@ -134,6 +134,8 @@ shared class PhysicsObject : Object, IHasConfig
 
 	void LoadConfig(ConfigFile@ cfg)
 	{
+		Identifiable::LoadConfig(cfg);
+
 		gravity = cfg.read_f32("gravity", 0.03f);
 		friction = cfg.read_f32("friction", 0.01f);
 		airResitance = cfg.read_f32("air_resistance", 0.0f);

@@ -37,7 +37,6 @@ shared class Actor : PhysicsObject, IRenderable, IHasTeam, IHasConfig
 	private void Initialize()
 	{
 		LoadConfig(openConfig("Actor.cfg"));
-		name = "Actor";
 
 		SetCollisionBox(AABB(Vec3f(0.6f, 1.6f, 0.6f)));
 		SetCollisionFlags(CollisionFlag::All);
