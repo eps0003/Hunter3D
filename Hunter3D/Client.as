@@ -34,6 +34,8 @@ void onTick(CRules@ this)
 		Actor@ myActor = getActorManager().getActor(getLocalPlayer());
 		if (myActor !is null)
 		{
+			getMap3D().Update();
+
 			myActor.PreUpdate();
 			myActor.Update();
 			myActor.PostUpdate();
