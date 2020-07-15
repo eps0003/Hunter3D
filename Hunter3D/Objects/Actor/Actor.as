@@ -16,25 +16,31 @@ shared class Actor : PhysicsObject, IRenderable, IHasTeam, IHasConfig
 	Actor(CPlayer@ player, Vec3f position)
 	{
 		super(position);
-		name = "Actor";
-
 		@this.player = player;
+
+		Initialize();
 	}
 
 	Actor(CBitStream@ bs)
 	{
 		super(bs);
-		name = "Actor";
-		LoadConfig(openConfig("Actor.cfg"));
 
 		u16 playerID = bs.read_u16();
 		@player = getPlayerByNetworkId(playerID);
 
-		SetCollisionBox(AABB(Vec3f(0.6f, 1.6f, 0.6f)));
-		SetCollisionFlags(CollisionFlag::Blocks);
-
 		cameraHeight = 1.5f;
 		@model = ActorModel("KnightSkin.png");
+
+		Initialize();
+	}
+
+	private void Initialize()
+	{
+		LoadConfig(openConfig("Actor.cfg"));
+		name = "Actor";
+
+		SetCollisionBox(AABB(Vec3f(0.6f, 1.6f, 0.6f)));
+		SetCollisionFlags(CollisionFlag::All);
 	}
 
 	void opAssign(Actor actor)
@@ -58,6 +64,7 @@ shared class Actor : PhysicsObject, IRenderable, IHasTeam, IHasConfig
 		}
 
 		PlaceBlock();
+		RemoveBlock();
 	}
 
 	void PostUpdate()
@@ -192,7 +199,27 @@ shared class Actor : PhysicsObject, IRenderable, IHasTeam, IHasConfig
 			u8 block = BlockType::OakWood;
 			Vec3f worldPos = (position + Vec3f(0, cameraHeight, 0) + rotation.dir() * 2).floor();
 
-			if (map.isValidBlock(worldPos) && map.getBlock(worldPos) != block)
+			AABB actorBounds = getCollisionBox();
+			AABB blockBounds(worldPos, worldPos + 1);
+
+			bool notIntersectingObjects = true;
+			Object@[] objects = getObjectManager().getObjects();
+			for (uint i = 0; i < objects.length; i++)
+			{
+				PhysicsObject@ object = cast<PhysicsObject>(objects[i]);
+				if (object !is null)
+				{
+					AABB@ bounds = object.getCollisionBox();
+					AABB blockBounds(worldPos, worldPos + 1);
+					if (bounds !is null && bounds.intersects(object.position, blockBounds))
+					{
+						notIntersectingObjects = false;
+						break;
+					}
+				}
+			}
+
+			if (map.isValidBlock(worldPos) && map.getBlock(worldPos) != block && notIntersectingObjects)
 			{
 				map.SetBlock(worldPos, block);
 				print("Placed block at " + worldPos.toString());
@@ -200,6 +227,47 @@ shared class Actor : PhysicsObject, IRenderable, IHasTeam, IHasConfig
 				Vec3f chunkPos = map.getChunkPos(worldPos);
 				Chunk@ chunk = map.getChunk(chunkPos);
 				chunk.SetRebuild();
+
+				CBitStream params;
+				params.write_u16(player.getNetworkID());
+				params.write_u32(map.toIndex(worldPos));
+				params.write_u8(block);
+
+				CRules@ rules = getRules();
+				rules.SendCommand(rules.getCommandID("c_sync_block"), params, false);
+			}
+		}
+	}
+
+	private void RemoveBlock()
+	{
+		CControls@ controls = player.getControls();
+		Mouse@ mouse = getMouse3D();
+		if (controls.isKeyJustPressed(KEY_RBUTTON) && mouse.isInControl())
+		{
+			Map@ map = getMap3D();
+			u8 block = BlockType::Air;
+			Vec3f worldPos = (position + Vec3f(0, cameraHeight, 0) + rotation.dir() * 2).floor();
+
+			AABB actorBounds = getCollisionBox();
+			AABB blockBounds(worldPos, worldPos + 1);
+
+			if (map.isValidBlock(worldPos) && map.getBlock(worldPos) != block)
+			{
+				map.SetBlock(worldPos, block);
+				print("Removed block at " + worldPos.toString());
+
+				Vec3f chunkPos = map.getChunkPos(worldPos);
+				Chunk@ chunk = map.getChunk(chunkPos);
+				chunk.SetRebuild();
+
+				CBitStream params;
+				params.write_u16(player.getNetworkID());
+				params.write_u32(map.toIndex(worldPos));
+				params.write_u8(block);
+
+				CRules@ rules = getRules();
+				rules.SendCommand(rules.getCommandID("c_sync_block"), params, false);
 			}
 		}
 	}

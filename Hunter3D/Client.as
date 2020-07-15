@@ -34,11 +34,11 @@ void onTick(CRules@ this)
 		Actor@ myActor = getActorManager().getActor(getLocalPlayer());
 		if (myActor !is null)
 		{
-			getMap3D().Update();
-
 			myActor.PreUpdate();
 			myActor.Update();
 			myActor.PostUpdate();
+
+			getMap3D().Update();
 
 			if (getControls().isKeyJustPressed(KEY_KEY_L))
 			{
@@ -112,40 +112,38 @@ void Render(int id)
 
 void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 {
+	if (getModLoader().isLoading()) return;
+
 	if (cmd == this.getCommandID("s_sync_block"))
 	{
-		// u16 playerID = params.read_u16();
-		// CPlayer@ player = getPlayerByNetworkId(playerID);
-		// Vec3f worldPos(params);
-		// Voxel voxel(params);
+		uint index = params.read_u32();
+		u8 block = params.read_u8();
 
-		// if (player.isMyPlayer())
-		// {
-		// 	if (voxel.handPlaced)
-		// 	{
-		// 		if (voxel.isVisible())
-		// 		{
-		// 			//voxel successfully destroyed. poof particles
-		// 		}
-		// 		else
-		// 		{
-		// 			//voxel successfully placed. poof particles
-		// 		}
-		// 	}
-		// }
-		// else
-		// {
-		// 	Map@ map = getMap3D();
-		// 	map.SetVoxel(worldPos, voxel);
+		Map@ map = getMap3D();
 
-		// 	print("Received voxel from server at " + worldPos.toString());
+		if (block != map.getBlock(index))
+		{
+			map.SetBlock(index, block);
 
-		// 	Vec3f chunkPos = map.getChunkPos(worldPos);
-		// 	Chunk@ chunk = map.getChunk(chunkPos);
-		// 	chunk.GenerateMesh(chunkPos);
+			Vec3f worldPos = map.to3D(index);
+			Vec3f chunkPos = map.getChunkPos(worldPos);
+			Chunk@ chunk = map.getChunk(chunkPos);
+			chunk.SetRebuild();
+		}
+	}
+	else if (cmd == this.getCommandID("s_revert_block"))
+	{
+		uint index = params.read_u32();
+		u8 block = params.read_u8();
 
-		// 	//poof particles
-		// }
+		Map@ map = getMap3D();
+
+		map.SetBlock(index, block);
+
+		Vec3f worldPos = map.to3D(index);
+		Vec3f chunkPos = map.getChunkPos(worldPos);
+		Chunk@ chunk = map.getChunk(chunkPos);
+		chunk.SetRebuild();
 	}
 	else if (cmd == this.getCommandID("s_sync_objects"))
 	{

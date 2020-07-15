@@ -47,20 +47,53 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 {
 	if (cmd == this.getCommandID("c_sync_block"))
 	{
-		// u16 playerID = params.read_u16();
-		// CPlayer@ player = getPlayerByNetworkId(playerID);
-		// Vec3f worldPos(params);
-		// Voxel voxel(params);
+		Map@ map = getMap3D();
 
-		// if (!voxel.handPlaced || !voxel.isSolid() || true) // || not intersecting with object
-		// {
-		// 	getMap3D().SetVoxel(worldPos, voxel);
-		// 	voxel.server_Sync(worldPos, player);
-		// }
-		// else
-		// {
-		// 	//revert voxel
-		// }
+		u16 playerID = params.read_u16();
+		CPlayer@ player = getPlayerByNetworkId(playerID);
+		if (player is null) return;
+
+		uint index = params.read_u32();
+		Vec3f worldPos = map.to3D(index);
+		if (!map.isValidBlock(index)) return;
+
+		u8 block = params.read_u8();
+
+		CBitStream bs;
+		bs.write_u32(index);
+
+		bool notIntersectingObjects = true;
+		Object@[] objects = getObjectManager().getObjects();
+		for (uint i = 0; i < objects.length; i++)
+		{
+			PhysicsObject@ object = cast<PhysicsObject>(objects[i]);
+			if (object !is null)
+			{
+				AABB@ bounds = object.getCollisionBox();
+				AABB blockBounds(worldPos, worldPos + 1);
+				if (bounds !is null && bounds.intersects(object.position, blockBounds))
+				{
+					notIntersectingObjects = false;
+					break;
+				}
+			}
+		}
+
+		if (!map.isBlockSolid(block) || notIntersectingObjects)
+		{
+
+			map.SetBlock(index, block);
+
+			//sync block to all clients
+			bs.write_u8(block);
+			this.SendCommand(this.getCommandID("s_sync_block"), bs, true);
+		}
+		else
+		{
+			//revert voxel on client who placed the block
+			bs.write_u8(map.getBlock(index));
+			this.SendCommand(this.getCommandID("s_revert_block"), bs, player);
+		}
 	}
 	else if (cmd == this.getCommandID("c_sync_actor"))
 	{

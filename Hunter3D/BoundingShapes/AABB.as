@@ -32,6 +32,18 @@ shared class AABB : IBounds
 		radius = dim.mag() / 2.0f;
 	}
 
+	bool intersects(Vec3f position, AABB box)
+	{
+		for (uint i = 0; i < 3; i++)
+		{
+			if (position[i] + min[i] > box.max[i] || position[i] + max[i] < box.min[i])
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+
 	//intersects any solid voxel at specified position
 	bool intersectsAt(Vec3f worldPos)
 	{
