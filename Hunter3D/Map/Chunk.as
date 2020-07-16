@@ -8,6 +8,7 @@ shared class Chunk
 	private SMesh mesh;
 	private Vertex[] vertices;
 	private u16[] indices;
+	private bool noVertices = true;
 
     private AABB box;
 
@@ -19,6 +20,8 @@ shared class Chunk
 		Vec3f startWorldPos = map.to3DChunk(index) * CHUNK_SIZE;
 		Vec3f endWorldPos = startWorldPos + CHUNK_SIZE;
         box = AABB(startWorldPos, endWorldPos);
+
+        mesh.SetHardwareMapping(SMesh::STATIC);
 
 		GenerateMesh();
 	}
@@ -78,64 +81,61 @@ shared class Chunk
 					uint vertexCount = (num(leftVisible) + num(rightVisible) + num(downVisible) + num(upVisible) + num(frontVisible) + num(backVisible)) * 4;
 					uint indexCount = vertexCount * 1.5f;
 
-					uint vi = vertices.length;
-					uint ii = indices.length;
-
-					vertices.set_length(vertices.length + vertexCount);
-					indices.set_length(indices.length + indexCount);
+					vertices.reserve(vertices.length + vertexCount);
+					indices.reserve(indices.length + indexCount);
 
 					if (leftVisible)
 					{
-						vertices[vi++] = Vertex(p.x, p.y + w, p.z + w, x1, y1, col);
-						vertices[vi++] = Vertex(p.x, p.y + w, p.z    , x2, y1, col);
-						vertices[vi++] = Vertex(p.x, p.y    , p.z    , x2, y2, col);
-						vertices[vi++] = Vertex(p.x, p.y    , p.z + w, x1, y2, col);
-						ii = AddIndices(ii, vi);
+						vertices.push_back(Vertex(p.x, p.y + w, p.z + w, x1, y1, col));
+						vertices.push_back(Vertex(p.x, p.y + w, p.z    , x2, y1, col));
+						vertices.push_back(Vertex(p.x, p.y    , p.z    , x2, y2, col));
+						vertices.push_back(Vertex(p.x, p.y    , p.z + w, x1, y2, col));
+						AddIndices();
 					}
 
 					if (rightVisible)
 					{
-						vertices[vi++] = Vertex(p.x + w, p.y + w, p.z    , x1, y1, col);
-						vertices[vi++] = Vertex(p.x + w, p.y + w, p.z + w, x2, y1, col);
-						vertices[vi++] = Vertex(p.x + w, p.y    , p.z + w, x2, y2, col);
-						vertices[vi++] = Vertex(p.x + w, p.y    , p.z    , x1, y2, col);
-						ii = AddIndices(ii, vi);
+						vertices.push_back(Vertex(p.x + w, p.y + w, p.z    , x1, y1, col));
+						vertices.push_back(Vertex(p.x + w, p.y + w, p.z + w, x2, y1, col));
+						vertices.push_back(Vertex(p.x + w, p.y    , p.z + w, x2, y2, col));
+						vertices.push_back(Vertex(p.x + w, p.y    , p.z    , x1, y2, col));
+						AddIndices();
 					}
 
 					if (downVisible)
 					{
-						vertices[vi++] = Vertex(p.x + w, p.y, p.z + w, x1, y1, col);
-						vertices[vi++] = Vertex(p.x    , p.y, p.z + w, x2, y1, col);
-						vertices[vi++] = Vertex(p.x    , p.y, p.z    , x2, y2, col);
-						vertices[vi++] = Vertex(p.x + w, p.y, p.z    , x1, y2, col);
-						ii = AddIndices(ii, vi);
+						vertices.push_back(Vertex(p.x + w, p.y, p.z + w, x1, y1, col));
+						vertices.push_back(Vertex(p.x    , p.y, p.z + w, x2, y1, col));
+						vertices.push_back(Vertex(p.x    , p.y, p.z    , x2, y2, col));
+						vertices.push_back(Vertex(p.x + w, p.y, p.z    , x1, y2, col));
+						AddIndices();
 					}
 
 					if (upVisible)
 					{
-						vertices[vi++] = Vertex(p.x    , p.y + w, p.z + w, x1, y1, col);
-						vertices[vi++] = Vertex(p.x + w, p.y + w, p.z + w, x2, y1, col);
-						vertices[vi++] = Vertex(p.x + w, p.y + w, p.z    , x2, y2, col);
-						vertices[vi++] = Vertex(p.x    , p.y + w, p.z    , x1, y2, col);
-						ii = AddIndices(ii, vi);
+						vertices.push_back(Vertex(p.x    , p.y + w, p.z + w, x1, y1, col));
+						vertices.push_back(Vertex(p.x + w, p.y + w, p.z + w, x2, y1, col));
+						vertices.push_back(Vertex(p.x + w, p.y + w, p.z    , x2, y2, col));
+						vertices.push_back(Vertex(p.x    , p.y + w, p.z    , x1, y2, col));
+						AddIndices();
 					}
 
 					if (frontVisible)
 					{
-						vertices[vi++] = Vertex(p.x    , p.y + w, p.z, x1, y1, col);
-						vertices[vi++] = Vertex(p.x + w, p.y + w, p.z, x2, y1, col);
-						vertices[vi++] = Vertex(p.x + w, p.y    , p.z, x2, y2, col);
-						vertices[vi++] = Vertex(p.x    , p.y    , p.z, x1, y2, col);
-						ii = AddIndices(ii, vi);
+						vertices.push_back(Vertex(p.x    , p.y + w, p.z, x1, y1, col));
+						vertices.push_back(Vertex(p.x + w, p.y + w, p.z, x2, y1, col));
+						vertices.push_back(Vertex(p.x + w, p.y    , p.z, x2, y2, col));
+						vertices.push_back(Vertex(p.x    , p.y    , p.z, x1, y2, col));
+						AddIndices();
 					}
 
 					if (backVisible)
 					{
-						vertices[vi++] = Vertex(p.x + w, p.y + w, p.z + w, x1, y1, col);
-						vertices[vi++] = Vertex(p.x    , p.y + w, p.z + w, x2, y1, col);
-						vertices[vi++] = Vertex(p.x    , p.y    , p.z + w, x2, y2, col);
-						vertices[vi++] = Vertex(p.x + w, p.y    , p.z + w, x1, y2, col);
-						ii = AddIndices(ii, vi);
+						vertices.push_back(Vertex(p.x + w, p.y + w, p.z + w, x1, y1, col));
+						vertices.push_back(Vertex(p.x    , p.y + w, p.z + w, x2, y1, col));
+						vertices.push_back(Vertex(p.x    , p.y    , p.z + w, x2, y2, col));
+						vertices.push_back(Vertex(p.x + w, p.y    , p.z + w, x1, y2, col));
+						AddIndices();
 					}
 				}
 			}
@@ -143,6 +143,7 @@ shared class Chunk
 
 		if (!vertices.empty())
 		{
+			noVertices = false;
             mesh.SetVertex(vertices);
             mesh.SetIndices(indices);
             mesh.SetDirty(SMesh::VERTEX_INDEX);
@@ -150,13 +151,14 @@ shared class Chunk
 		}
 		else
 		{
+			noVertices = true;
 			mesh.Clear();
 		}
 	}
 
 	bool hasVertices()
 	{
-		return !vertices.empty();
+		return !noVertices;
 	}
 
 	AABB getBounds()
@@ -169,10 +171,14 @@ shared class Chunk
 		mesh.RenderMesh();
 	}
 
-	private uint AddIndices(uint ii, uint vi)
+	private void AddIndices()
 	{
-		indices[ii++] = vi-4; indices[ii++] = vi-3; indices[ii++] = vi-1;
-		indices[ii++] = vi-3; indices[ii++] = vi-2; indices[ii++] = vi-1;
-		return ii;
+		uint n = vertices.length;
+		indices.push_back(n - 4);
+		indices.push_back(n - 3);
+		indices.push_back(n - 1);
+		indices.push_back(n - 3);
+		indices.push_back(n - 2);
+		indices.push_back(n - 1);
 	}
 }

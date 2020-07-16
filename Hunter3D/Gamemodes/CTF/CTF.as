@@ -1,5 +1,5 @@
 #include "Gamemode.as"
-#include "TestMapGenerator.as"
+#include "MapGenerator.as"
 #include "RespawnManager.as"
 
 shared class CTF : Gamemode
@@ -8,7 +8,7 @@ shared class CTF : Gamemode
 
 	CTF()
 	{
-		super(TestMapGenerator(Vec3f(36, 12, 36)));
+		super(MapGenerator(Vec3f(128, 32, 128)));
 		LoadConfig(openConfig("CTF.cfg"));
 	}
 

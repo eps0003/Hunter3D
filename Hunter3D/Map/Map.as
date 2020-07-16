@@ -3,7 +3,7 @@
 #include "Camera.as"
 #include "Tree.as"
 
-const u8 CHUNK_SIZE = 12;
+const u8 CHUNK_SIZE = 16;
 
 enum BlockType
 {
@@ -91,7 +91,7 @@ shared class Map
 
 	void InitChunkTree()
 	{
-		@chunkTree = Tree(this, Vec3f(), nearestPower(chunkDim));
+		@chunkTree = Tree(this);
 	}
 
 	void InitChunks()
@@ -428,33 +428,6 @@ shared class Map
 
 	private void GetVisibleChunks()
 	{
-		visibleChunks.clear();
-		// chunkTree.GetVisibleChunks(getCamera3D(), visibleChunks);
-
-		Camera@ camera = getCamera3D();
-
-		Frustum frustum = camera.getFrustum();
-		AABB bounds = frustum.getBounds();
-
-		Vec3f min = (bounds.min.max(Vec3f()) / CHUNK_SIZE).floor();
-		Vec3f max = (bounds.max.min(mapDim) / CHUNK_SIZE).ceil();
-
-		//frustum bounds arent in map bounds
-		if (max.x <= min.x || max.y <= min.y || max.z <= min.z)
-		{
-			return;
-		}
-
-		for (uint x = min.x; x < max.x; x++)
-		for (uint y = min.y; y < max.y; y++)
-		for (uint z = min.z; z < max.z; z++)
-		{
-			Chunk@ chunk = getChunk(x, y, z);
-			chunk.GenerateMesh();
-			if (chunk.hasVertices())
-			{
-				visibleChunks.push_back(chunk);
-			}
-		}
+		chunkTree.GetVisibleChunks(visibleChunks);
 	}
 }

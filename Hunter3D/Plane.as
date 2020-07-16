@@ -41,9 +41,9 @@ shared class Plane
 	//stolen from irrlicht
 	bool getIntersectionWithPlane(Plane &in other, Vec3f &out LinePoint, Vec3f &out LineVect)
 	{
-		float fn00 = normal.mag();
+		float fn00 = normal.magSquared();
 		float fn01 = normal.dot(other.normal);
-		float fn11 = other.normal.mag();
+		float fn11 = other.normal.magSquared();
 		float det = fn00 * fn11 - fn01 * fn01;
 
 		if (Maths::Abs(det) < 0.0000001f)
@@ -70,7 +70,7 @@ shared class Plane
 		return false;
 	}
 
-	bool getIntersectionWithLine(Vec3f linePoint, Vec3f lineVect, Vec3f &out Intersection)
+	bool getIntersectionWithLine(Vec3f &in linePoint, Vec3f &in lineVect, Vec3f &out Intersection)
 	{
 		float t2 = normal.dot(lineVect);
 
