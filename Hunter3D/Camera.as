@@ -39,7 +39,7 @@ shared class Camera : IHasParent
 		Matrix::MakeIdentity(projectionMatrix);
 		Matrix::MakeIdentity(rotationMatrix);
 
-		Render::SetFog(getSkyColor(), SMesh::LINEAR, renderDistance * 0.9f, renderDistance, 0, false, true);
+		Render::SetFog(getSkyColor(), SMesh::LINEAR, renderDistance - 10, renderDistance, 0, false, true);
 	}
 
 	void Render()
