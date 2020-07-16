@@ -170,7 +170,7 @@ shared class Vec3f
 		z /= vec.z;
 	}
 
-	float opIndex(int index)
+	float opIndex(const int &in index)
 	{
 		switch (index)
 		{
@@ -237,7 +237,7 @@ shared class Vec3f
 		);
 	}
 
-	Vec3f rotate(Vec3f rotation)
+	Vec3f rotate(const Vec3f &in rotation)
 	{
 		float[] tempX;
 		Matrix::MakeIdentity(tempX);
@@ -262,12 +262,12 @@ shared class Vec3f
 		);
 	}
 
-	float dot(Vec3f vec)
+	float dot(Vec3f &in vec)
 	{
 		return (x * vec.x) + (y * vec.y) + (z * vec.z);
 	}
 
-	Vec3f cross(Vec3f vec)
+	Vec3f cross(Vec3f &in vec)
 	{
 		return Vec3f(
 			y * vec.z - z * vec.y,
@@ -290,7 +290,7 @@ shared class Vec3f
 		);
 	}
 
-	Vec3f clamp(Vec3f low, Vec3f high)
+	Vec3f clamp(const Vec3f &in low, const Vec3f &in high)
 	{
 		return Vec3f(
 			Maths::Clamp2(x, low.x, high.x),
@@ -299,7 +299,7 @@ shared class Vec3f
 		);
 	}
 
-	Vec3f min(Vec3f vec)
+	Vec3f min(const Vec3f &in vec)
 	{
 		return Vec3f(
 			Maths::Min(x, vec.x),
@@ -308,7 +308,7 @@ shared class Vec3f
 		);
 	}
 
-	Vec3f max(Vec3f vec)
+	Vec3f max(const Vec3f &in vec)
 	{
 		return Vec3f(
 			Maths::Max(x, vec.x),
@@ -332,6 +332,15 @@ shared class Vec3f
 			Maths::Ceil(x),
 			Maths::Ceil(y),
 			Maths::Ceil(z)
+		);
+	}
+
+	Vec3f round()
+	{
+		return Vec3f(
+			Maths::Round(x),
+			Maths::Round(y),
+			Maths::Round(z)
 		);
 	}
 
