@@ -16,10 +16,13 @@ shared class Object : Identifiable
 
 	float cameraHeight = 0;
 
+	private uint createTime = 0;
+
 	Object(Vec3f position, Vec3f rotation = Vec3f(0, 0, 0))
 	{
 		this.position = position;
 		this.rotation = rotation;
+		this.createTime =  getGameTime();
 	}
 
 	Object(CBitStream@ bs)
@@ -28,6 +31,8 @@ shared class Object : Identifiable
 
 		position = Vec3f(bs);
 		rotation = Vec3f(bs);
+
+		createTime = getGameTime();
 	}
 
 	void opAssign(Object object)
@@ -58,6 +63,16 @@ shared class Object : Identifiable
 	void PostUpdate()
 	{
 
+	}
+
+	uint getCreateTime()
+	{
+		return createTime;
+	}
+
+	bool isStatic()
+	{
+		return position == oldPosition && rotation == oldRotation;
 	}
 
 	void Interpolate()

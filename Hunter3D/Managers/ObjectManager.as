@@ -156,7 +156,7 @@ shared class ObjectManager
 
 	void SerializeRemovedObjects(CBitStream@ bs)
 	{
-		bs.write_u32(removedObjects.length);
+		bs.write_u16(removedObjects.length);
 
 		for (uint i = 0; i < removedObjects.length; i++)
 		{
@@ -169,7 +169,7 @@ shared class ObjectManager
 
 	void DeserializeRemovedObjects(CBitStream@ bs)
 	{
-		uint count = bs.read_u32();
+		u16 count = bs.read_u16();
 
 		for (uint i = 0; i < count; i++)
 		{

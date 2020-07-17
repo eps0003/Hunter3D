@@ -105,7 +105,7 @@ shared class FlagManager
 	{
 		Flag@[] flags = getFlags();
 
-		bs.write_u32(flags.length);
+		bs.write_u16(flags.length);
 
 		for (uint i = 0; i < flags.length; i++)
 		{
@@ -118,7 +118,7 @@ shared class FlagManager
 	{
 		ObjectManager@ objectManager = getObjectManager();
 
-		uint count = bs.read_u32();
+		u16 count = bs.read_u16();
 
 		for (uint i = 0; i < count; i++)
 		{

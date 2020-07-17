@@ -98,6 +98,26 @@ shared class ActorManager
 		return actors;
 	}
 
+	Actor@[] getNonStaticActors()
+	{
+		ObjectManager@ objectManager = getObjectManager();
+		Object@[] objects = objectManager.getObjects();
+		Actor@[] actors;
+
+		for (uint i = 0; i < objects.length; i++)
+		{
+			Object@ object = objects[i];
+			Actor@ actor = cast<Actor>(object);
+
+			if (actor !is null && !actor.isStatic())
+			{
+				actors.push_back(actor);
+			}
+		}
+
+		return actors;
+	}
+
 	void RemoveActor(Actor@ actor)
 	{
 		ObjectManager@ objectManager = getObjectManager();
@@ -163,9 +183,9 @@ shared class ActorManager
 
 	void SerializeActors(CBitStream@ bs)
 	{
-		Actor@[] actors = getActors();
+		Actor@[] actors = getNonStaticActors();
 
-		bs.write_u32(actors.length);
+		bs.write_u16(actors.length);
 
 		for (uint i = 0; i < actors.length; i++)
 		{
@@ -176,7 +196,7 @@ shared class ActorManager
 
 	void DeserializeActors(CBitStream@ bs)
 	{
-		uint count = bs.read_u32();
+		u16 count = bs.read_u16();
 
 		for (uint i = 0; i < count; i++)
 		{

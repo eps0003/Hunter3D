@@ -143,6 +143,11 @@ shared class PhysicsObject : Object, IHasConfig
 		elasticity = cfg.read_f32("elasticity", 0.0f);
 	}
 
+	bool isStatic()
+	{
+		return Object::isStatic() && velocity == oldVelocity;
+	}
+
 	void SetCollisionBox(AABB@ aabb)
 	{
 		@collisionBox = aabb;
