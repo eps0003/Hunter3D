@@ -49,7 +49,10 @@ shared class ModLoader
 				Map@ map = getMap3D();
 				if (map !is null && (!isServer() || map.isLoaded()))
 				{
-					print("Map generated", ConsoleColour::CRAZY);
+					if (!isServer())
+					{
+						print("Map generated", ConsoleColour::CRAZY);
+					}
 					NextState();
 				}
 			}

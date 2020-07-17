@@ -1,8 +1,10 @@
+#include "MapSyncer.as"
+
 shared class MapGenerator
 {
 	private Vec3f size;
 	private uint chunkIndex = 0;
-	private uint blocksPerChunk = 10000;
+	private uint blocksPerChunk = 5000;
 
 	private Noise@ noise;
 
@@ -63,6 +65,12 @@ shared class MapGenerator
 		{
 			//map generation complete
 			map.SetLoaded();
+
+			if (isServer())
+			{
+				print("Map generated", ConsoleColour::CRAZY);
+				getMapSyncer().AddMapRequestForEveryone();
+			}
 		}
 	}
 

@@ -318,7 +318,7 @@ namespace Text
 
 	shared void addTextToTeamChat(string text, u8 team)
 	{
-		uint count = getPlayersCount();
+		uint count = getPlayerCount();
 		for (uint i = 0; i < count; i++)
 		{
 			CPlayer@ player = getPlayer(i);
@@ -331,7 +331,7 @@ namespace Text
 
 	shared void addTextToTeamChat(string text, SColor color, u8 team)
 	{
-		uint count = getPlayersCount();
+		uint count = getPlayerCount();
 		for (uint i = 0; i < count; i++)
 		{
 			CPlayer@ player = getPlayer(i);

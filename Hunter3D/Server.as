@@ -1,28 +1,55 @@
 #include "Vec3f.as"
 #include "Map.as"
 #include "ObjectManager.as"
+#include "MapSyncer.as"
 
 #define SERVER_ONLY
 
+void onInit(CRules@ this)
+{
+	onRestart(this);
+}
+
+void onRestart(CRules@ this)
+{
+	for (uint i = 0; i < getPlayerCount(); i++)
+	{
+		CPlayer@ player = getPlayer(i);
+		if (player !is null)
+		{
+			CBlob@ blob = server_CreateBlob("husk");
+			if (blob !is null)
+			{
+				blob.server_SetPlayer(player);
+			}
+		}
+	}
+}
+
 void onTick(CRules@ this)
 {
-	ObjectManager@ objectManager = getObjectManager();
-
-	Object@[] objects = objectManager.getNonActorObjects();
-	for (uint i = 0; i < objects.length; i++)
+	if (!isClient())
 	{
-		Object@ object = objects[i];
+		ObjectManager@ objectManager = getObjectManager();
 
-		object.PreUpdate();
-		object.Update();
-		object.PostUpdate();
+		Object@[] objects = objectManager.getNonActorObjects();
+		for (uint i = 0; i < objects.length; i++)
+		{
+			Object@ object = objects[i];
+
+			object.PreUpdate();
+			object.Update();
+			object.PostUpdate();
+		}
+
+		CBitStream bs;
+		getActorManager().SerializeActors(bs);
+		getFlagManager().SerializeFlags(bs);
+		objectManager.SerializeRemovedObjects(bs);
+		this.SendCommand(this.getCommandID("s_sync_objects"), bs, true);
+
+		getMapSyncer().server_Sync();
 	}
-
-	CBitStream bs;
-	getActorManager().SerializeActors(bs);
-	getFlagManager().SerializeFlags(bs);
-	objectManager.SerializeRemovedObjects(bs);
-	this.SendCommand(this.getCommandID("s_sync_objects"), bs, true);
 }
 
 void onNewPlayerJoin(CRules@ this, CPlayer@ player)
@@ -32,6 +59,8 @@ void onNewPlayerJoin(CRules@ this, CPlayer@ player)
 	{
 		blob.server_SetPlayer(player);
 	}
+
+	getMapSyncer().AddMapRequest(player);
 }
 
 void onPlayerLeave(CRules@ this, CPlayer@ player)

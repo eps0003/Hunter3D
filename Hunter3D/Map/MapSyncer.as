@@ -38,18 +38,15 @@ shared class MapSyncer
 
 	void AddMapRequest(CPlayer@ player, uint packet = 0)
 	{
-		if (packet < getTotalPacketCount())
-		{
-			MapRequest request(player, packet);
-			mapRequests.push_back(request);
-		}
+		MapRequest request(player, packet);
+		mapRequests.push_back(request);
 	}
 
 	void AddMapRequestForEveryone()
 	{
 		mapRequests.clear();
 
-		for (uint i = 0; i < getPlayersCount(); i++)
+		for (uint i = 0; i < getPlayerCount(); i++)
 		{
 			CPlayer@ player = getPlayer(i);
 			if (player !is null)
@@ -83,7 +80,7 @@ shared class MapSyncer
 	void server_Sync()
 	{
 		Map@ map = getMap3D();
-		if (map is null || !map.isLoaded() || isClient()) return;
+		if (map is null || !map.isLoaded()) return;
 
 		MapRequest@ request = getNextMapRequest();
 		if (request !is null)
@@ -129,7 +126,11 @@ shared class MapSyncer
 			// print("Synced map packet " + (index + 1) + "/" + getTotalPacketCount() + " to " + player.getUsername());
 
 			//request next packet
-			AddMapRequest(player, ++index);
+			index++;
+			if (index < getTotalPacketCount())
+			{
+				AddMapRequest(player, index);
+			}
 		}
 	}
 
@@ -180,53 +181,5 @@ shared class MapSyncer
 	private uint getTotalPacketCount()
 	{
 		return Maths::Ceil(float(getMap3D().getBlockCount()) / float(blocksPerPacket));
-	}
-}
-
-void onInit(CRules@ this)
-{
-	onRestart(this);
-}
-
-void onRestart(CRules@ this)
-{
-	if (!isServer()) return;
-
-	getMapSyncer().AddMapRequestForEveryone();
-}
-
-void onNewPlayerJoin(CRules@ this, CPlayer@ player)
-{
-	if (!isServer()) return;
-
-	getMapSyncer().AddMapRequest(player);
-}
-
-void onTick(CRules@ this)
-{
-	if (Network::isMultiplayer())
-	{
-		MapSyncer@ mapSyncer = getMapSyncer();
-		if (isServer())
-		{
-			mapSyncer.server_Sync();
-		}
-		else
-		{
-			mapSyncer.client_Deserialize();
-		}
-	}
-}
-
-void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
-{
-	if (cmd == this.getCommandID("s_map_data"))
-	{
-		if (isClient())
-		{
-			CBitStream bs = params;
-			bs.SetBitIndex(params.getBitIndex());
-			getMapSyncer().AddMapPacket(bs);
-		}
 	}
 }

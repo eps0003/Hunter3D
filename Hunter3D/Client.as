@@ -5,6 +5,7 @@
 #include "ObjectManager.as"
 #include "ModLoader.as"
 #include "Utilities.as"
+#include "MapSyncer.as"
 
 #define CLIENT_ONLY
 
@@ -26,6 +27,7 @@ void onTick(CRules@ this)
 	this.set_f32("inter_game_time", getGameTime());
 
 	getMouse3D().Update();
+	getMapSyncer().client_Deserialize();
 
 	if (getModLoader().isLoading()) return;
 
@@ -112,6 +114,13 @@ void Render(int id)
 
 void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 {
+	if (cmd == this.getCommandID("s_map_data"))
+	{
+		CBitStream bs = params;
+		bs.SetBitIndex(params.getBitIndex());
+		getMapSyncer().AddMapPacket(bs);
+	}
+
 	if (getModLoader().isLoading()) return;
 
 	if (cmd == this.getCommandID("s_sync_block"))
