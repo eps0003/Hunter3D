@@ -74,6 +74,26 @@ shared class FlagManager
 		return flags;
 	}
 
+	Flag@[] getNonStaticFlags()
+	{
+		ObjectManager@ objectManager = getObjectManager();
+		Object@[] objects = objectManager.getObjects();
+		Flag@[] flags;
+
+		for (uint i = 0; i < objects.length; i++)
+		{
+			Object@ object = objects[i];
+			Flag@ flag = cast<Flag>(object);
+
+			if (flag !is null && !flag.isStatic())
+			{
+				flags.push_back(flag);
+			}
+		}
+
+		return flags;
+	}
+
 	void ClearFlags()
 	{
 		ObjectManager@ objectManager = getObjectManager();
@@ -103,7 +123,7 @@ shared class FlagManager
 
 	void SerializeFlags(CBitStream@ bs)
 	{
-		Flag@[] flags = getFlags();
+		Flag@[] flags = getNonStaticFlags();
 
 		bs.write_u16(flags.length);
 
