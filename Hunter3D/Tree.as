@@ -143,90 +143,106 @@ shared class Branch
 			if (leaf)
 			{
 				if (chunk0 !is null)
-				if (chunk0.hasVertices())
 				{
-					// chunk0.GenerateMesh();
-					AABB chunkBounds = chunk0.getBounds();
-					if (frustum.containsSphere(chunkBounds.center - camPos, chunkBounds.radius))
+					chunk0.GenerateMesh();
+					if (chunk0.hasVertices())
 					{
-						visibleChunks.push_back(chunk0);
+						AABB chunkBounds = chunk0.getBounds();
+						if (frustum.containsSphere(chunkBounds.center - camPos, chunkBounds.radius))
+						{
+							visibleChunks.push_back(chunk0);
+						}
 					}
 				}
 
 				if (chunk1 !is null)
-				if (chunk1.hasVertices())
 				{
-					//chunk1.GenerateMesh();
-					AABB chunkBounds = chunk1.getBounds();
-					if (frustum.containsSphere(chunkBounds.center - camPos, chunkBounds.radius))
+					chunk1.GenerateMesh();
+					if (chunk1.hasVertices())
 					{
-						visibleChunks.push_back(chunk1);
+						AABB chunkBounds = chunk1.getBounds();
+						if (frustum.containsSphere(chunkBounds.center - camPos, chunkBounds.radius))
+						{
+							visibleChunks.push_back(chunk1);
+						}
 					}
 				}
 
 				if (chunk2 !is null)
-				if (chunk2.hasVertices())
 				{
-					//chunk2.GenerateMesh();
-					AABB chunkBounds = chunk2.getBounds();
-					if (frustum.containsSphere(chunkBounds.center - camPos, chunkBounds.radius))
+					chunk2.GenerateMesh();
+					if (chunk2.hasVertices())
 					{
-						visibleChunks.push_back(chunk2);
+						AABB chunkBounds = chunk2.getBounds();
+						if (frustum.containsSphere(chunkBounds.center - camPos, chunkBounds.radius))
+						{
+							visibleChunks.push_back(chunk2);
+						}
 					}
 				}
 
 				if (chunk3 !is null)
-				if (chunk3.hasVertices())
 				{
-					//chunk3.GenerateMesh();
-					AABB chunkBounds = chunk3.getBounds();
-					if (frustum.containsSphere(chunkBounds.center - camPos, chunkBounds.radius))
+					chunk3.GenerateMesh();
+					if (chunk3.hasVertices())
 					{
-						visibleChunks.push_back(chunk3);
+						AABB chunkBounds = chunk3.getBounds();
+						if (frustum.containsSphere(chunkBounds.center - camPos, chunkBounds.radius))
+						{
+							visibleChunks.push_back(chunk3);
+						}
 					}
 				}
 
 				if (chunk4 !is null)
-				if (chunk4.hasVertices())
 				{
-					//chunk4.GenerateMesh();
-					AABB chunkBounds = chunk4.getBounds();
-					if (frustum.containsSphere(chunkBounds.center - camPos, chunkBounds.radius))
+					chunk4.GenerateMesh();
+					if (chunk4.hasVertices())
 					{
-						visibleChunks.push_back(chunk4);
+						AABB chunkBounds = chunk4.getBounds();
+						if (frustum.containsSphere(chunkBounds.center - camPos, chunkBounds.radius))
+						{
+							visibleChunks.push_back(chunk4);
+						}
 					}
 				}
 
 				if (chunk5 !is null)
-				if (chunk5.hasVertices())
 				{
-					//chunk5.GenerateMesh();
-					AABB chunkBounds = chunk5.getBounds();
-					if (frustum.containsSphere(chunkBounds.center - camPos, chunkBounds.radius))
+					chunk5.GenerateMesh();
+					if (chunk5.hasVertices())
 					{
-						visibleChunks.push_back(chunk5);
+						AABB chunkBounds = chunk5.getBounds();
+						if (frustum.containsSphere(chunkBounds.center - camPos, chunkBounds.radius))
+						{
+							visibleChunks.push_back(chunk5);
+						}
 					}
 				}
 
 				if (chunk6 !is null)
-				if (chunk6.hasVertices())
 				{
-					//chunk6.GenerateMesh();
-					AABB chunkBounds = chunk6.getBounds();
-					if (frustum.containsSphere(chunkBounds.center - camPos, chunkBounds.radius))
+					chunk6.GenerateMesh();
+					if (chunk6.hasVertices())
 					{
-						visibleChunks.push_back(chunk6);
+						AABB chunkBounds = chunk6.getBounds();
+						if (frustum.containsSphere(chunkBounds.center - camPos, chunkBounds.radius))
+						{
+							visibleChunks.push_back(chunk6);
+						}
 					}
 				}
 
 				if (chunk7 !is null)
-				if (chunk7.hasVertices())
 				{
-					//chunk7.GenerateMesh();
-					AABB chunkBounds = chunk7.getBounds();
-					if (frustum.containsSphere(chunkBounds.center - camPos, chunkBounds.radius))
+					chunk7.GenerateMesh();
+					if (chunk7.hasVertices())
 					{
-						visibleChunks.push_back(chunk7);
+						AABB chunkBounds = chunk7.getBounds();
+						if (frustum.containsSphere(chunkBounds.center - camPos, chunkBounds.radius))
+						{
+							visibleChunks.push_back(chunk7);
+						}
 					}
 				}
 			}
