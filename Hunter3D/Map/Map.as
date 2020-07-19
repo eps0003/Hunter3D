@@ -28,6 +28,7 @@ enum BlockType
 	YellowWool,
 	LimeWool,
 	CyanWool,
+	LightBlueWool,
 	BlueWool,
 	PurpleWool,
 	WhiteWool,
@@ -112,38 +113,39 @@ shared class Map
 		collapsable.clear();
 		seeThrough.clear();
 
-		//							visible solid destroy collapse seethr
-		AddBlockType("Air",			false,	false,	false,	false,	true);
-		AddBlockType("Grass",		true,	true,	true,	false,	false);
-		AddBlockType("Dirt", 		true,	true,	true,	false,	false);
-		AddBlockType("Stone",		true,	true,	true,	false,	false);
-		AddBlockType("Gravel",		true,	true,	true,	false,	false);
-		AddBlockType("Cobblestone",	true,	true,	true,	true,	false);
-		AddBlockType("Gold",		true,	true,	true,	true,	false);
-		AddBlockType("Crate",		true,	true,	true,	true,	false);
-		AddBlockType("Birch Log",	true,	true,	true,	true,	false);
-		AddBlockType("Oak Log",		true,	true,	true,	true,	false);
-		AddBlockType("Leaves",		true,	false,	true,	true,	true);
-		AddBlockType("Birch Wood",	true,	true,	true,	true,	false);
-		AddBlockType("Oak Wood",	true,	true,	true,	true,	false);
-		AddBlockType("Bricks",		true,	true,	true,	true,	false);
-		AddBlockType("Glass",		true,	true,	true,	true,	true);
-		AddBlockType("Red Wool",	true,	true,	true,	true,	false);
-		AddBlockType("Orange Wool",	true,	true,	true,	true,	false);
-		AddBlockType("Yellow Wool",	true,	true,	true,	true,	false);
-		AddBlockType("Lime Wool",	true,	true,	true,	true,	false);
-		AddBlockType("Cyan Wool",	true,	true,	true,	true,	false);
-		AddBlockType("Blue Wool",	true,	true,	true,	true,	false);
-		AddBlockType("Purple Wool",	true,	true,	true,	true,	false);
-		AddBlockType("White Wool",	true,	true,	true,	true,	false);
-		AddBlockType("Gray Wool",	true,	true,	true,	true,	false);
-		AddBlockType("Black Wool",	true,	true,	true,	true,	false);
-		AddBlockType("Brown Wool",	true,	true,	true,	true,	false);
-		AddBlockType("Pink Wool",	true,	true,	true,	true,	false);
-		AddBlockType("Iron",		true,	true,	true,	true,	false);
-		AddBlockType("Steel",		true,	true,	true,	true,	false);
-		AddBlockType("Gears",		true,	true,	true,	true,	false);
-		AddBlockType("Bedrock",		true,	true,	false,	false,	false);
+		//								visible solid destroy collapse seethr
+		AddBlockType("Air",				false,	false,	false,	false,	true);
+		AddBlockType("Grass",			true,	true,	true,	false,	false);
+		AddBlockType("Dirt", 			true,	true,	true,	false,	false);
+		AddBlockType("Stone",			true,	true,	true,	false,	false);
+		AddBlockType("Gravel",			true,	true,	true,	false,	false);
+		AddBlockType("Cobblestone",		true,	true,	true,	true,	false);
+		AddBlockType("Gold",			true,	true,	true,	true,	false);
+		AddBlockType("Crate",			true,	true,	true,	true,	false);
+		AddBlockType("Birch Log",		true,	true,	true,	true,	false);
+		AddBlockType("Oak Log",			true,	true,	true,	true,	false);
+		AddBlockType("Leaves",			true,	false,	true,	true,	true);
+		AddBlockType("Birch Wood",		true,	true,	true,	true,	false);
+		AddBlockType("Oak Wood",		true,	true,	true,	true,	false);
+		AddBlockType("Bricks",			true,	true,	true,	true,	false);
+		AddBlockType("Glass",			true,	true,	true,	true,	true);
+		AddBlockType("Red Wool",		true,	true,	true,	true,	false);
+		AddBlockType("Orange Wool",		true,	true,	true,	true,	false);
+		AddBlockType("Yellow Wool",		true,	true,	true,	true,	false);
+		AddBlockType("Lime Wool",		true,	true,	true,	true,	false);
+		AddBlockType("Cyan Wool",		true,	true,	true,	true,	false);
+		AddBlockType("Dark Blue Wool",	true,	true,	true,	true,	false);
+		AddBlockType("Blue Wool",		true,	true,	true,	true,	false);
+		AddBlockType("Purple Wool",		true,	true,	true,	true,	false);
+		AddBlockType("White Wool",		true,	true,	true,	true,	false);
+		AddBlockType("Gray Wool",		true,	true,	true,	true,	false);
+		AddBlockType("Black Wool",		true,	true,	true,	true,	false);
+		AddBlockType("Brown Wool",		true,	true,	true,	true,	false);
+		AddBlockType("Pink Wool",		true,	true,	true,	true,	false);
+		AddBlockType("Iron",			true,	true,	true,	true,	false);
+		AddBlockType("Steel",			true,	true,	true,	true,	false);
+		AddBlockType("Gears",			true,	true,	true,	true,	false);
+		AddBlockType("Bedrock",			true,	true,	false,	false,	false);
 	}
 
 	void AddBlockType(string _name, bool _visible, bool _solid, bool _destructable, bool _collapsable, bool _seeThrough)
