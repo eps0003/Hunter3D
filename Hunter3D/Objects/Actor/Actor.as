@@ -190,9 +190,9 @@ shared class Actor : PhysicsObject, IRenderable, IHasTeam, IHasConfig
 
 	private void PlaceBlock()
 	{
-		CControls@ controls = player.getControls();
+		CBlob@ blob = player.getBlob();
 		Mouse@ mouse = getMouse3D();
-		if (controls.isKeyJustPressed(KEY_LBUTTON) && mouse.isInControl())
+		if (blob.isKeyJustPressed(key_action1) && mouse.isInControl())
 		{
 			Map@ map = getMap3D();
 			u8 block = BlockType::OakWood;
@@ -240,9 +240,9 @@ shared class Actor : PhysicsObject, IRenderable, IHasTeam, IHasConfig
 
 	private void RemoveBlock()
 	{
-		CControls@ controls = player.getControls();
+		CBlob@ blob = player.getBlob();
 		Mouse@ mouse = getMouse3D();
-		if (controls.isKeyJustPressed(KEY_RBUTTON) && mouse.isInControl())
+		if (blob.isKeyJustPressed(key_action2) && mouse.isInControl())
 		{
 			Map@ map = getMap3D();
 			u8 block = BlockType::Air;
