@@ -3,6 +3,7 @@
 #include "ObjectManager.as"
 #include "ActorModel.as"
 #include "MovementStrategy.as"
+#include "Ray.as"
 
 shared class Actor : PhysicsObject, IRenderable, IHasTeam, IHasConfig
 {
@@ -194,46 +195,51 @@ shared class Actor : PhysicsObject, IRenderable, IHasTeam, IHasConfig
 		Mouse@ mouse = getMouse3D();
 		if (blob.isKeyJustPressed(key_action1) && mouse.isInControl())
 		{
-			Map@ map = getMap3D();
-			u8 block = BlockType::OakWood;
-			Vec3f worldPos = (position + Vec3f(0, cameraHeight, 0) + rotation.dir() * 2).floor();
-
-			AABB actorBounds = getCollisionBox();
-			AABB blockBounds(worldPos, worldPos + 1);
-
-			bool notIntersectingObjects = true;
-			Object@[] objects = getObjectManager().getObjects();
-			for (uint i = 0; i < objects.length; i++)
+			Ray ray(getCamera3D().getPosition(), rotation.dir());
+			RaycastInfo raycastInfo;
+			if (ray.raycastBlock(5, false, raycastInfo))
 			{
-				PhysicsObject@ object = cast<PhysicsObject>(objects[i]);
-				if (object !is null)
+				Map@ map = getMap3D();
+				u8 block = BlockType::OakWood;
+				Vec3f worldPos = raycastInfo.hitWorldPos + raycastInfo.normal;
+
+				AABB actorBounds = getCollisionBox();
+				AABB blockBounds(worldPos, worldPos + 1);
+
+				bool notIntersectingObjects = true;
+				Object@[] objects = getObjectManager().getObjects();
+				for (uint i = 0; i < objects.length; i++)
 				{
-					AABB@ bounds = object.getCollisionBox();
-					AABB blockBounds(worldPos, worldPos + 1);
-					if (bounds !is null && bounds.intersects(object.position, blockBounds))
+					PhysicsObject@ object = cast<PhysicsObject>(objects[i]);
+					if (object !is null)
 					{
-						notIntersectingObjects = false;
-						break;
+						AABB@ bounds = object.getCollisionBox();
+						AABB blockBounds(worldPos, worldPos + 1);
+						if (bounds !is null && bounds.intersects(object.position, blockBounds))
+						{
+							notIntersectingObjects = false;
+							break;
+						}
 					}
 				}
-			}
 
-			if (map.isValidBlock(worldPos) && map.getBlock(worldPos) != block && notIntersectingObjects)
-			{
-				map.SetBlock(worldPos, block);
-				print("Placed block at " + worldPos.toString());
+				if (map.isValidBlock(worldPos) && map.getBlock(worldPos) != block && notIntersectingObjects)
+				{
+					map.SetBlock(worldPos, block);
+					print("Placed block at " + worldPos.toString());
 
-				Vec3f chunkPos = map.getChunkPos(worldPos);
-				Chunk@ chunk = map.getChunk(chunkPos);
-				chunk.SetRebuild();
+					Vec3f chunkPos = map.getChunkPos(worldPos);
+					Chunk@ chunk = map.getChunk(chunkPos);
+					chunk.SetRebuild();
 
-				CBitStream params;
-				params.write_u16(player.getNetworkID());
-				params.write_u32(map.toIndex(worldPos));
-				params.write_u8(block);
+					CBitStream params;
+					params.write_u16(player.getNetworkID());
+					params.write_u32(map.toIndex(worldPos));
+					params.write_u8(block);
 
-				CRules@ rules = getRules();
-				rules.SendCommand(rules.getCommandID("c_sync_block"), params, false);
+					CRules@ rules = getRules();
+					rules.SendCommand(rules.getCommandID("c_sync_block"), params, false);
+				}
 			}
 		}
 	}
@@ -244,29 +250,34 @@ shared class Actor : PhysicsObject, IRenderable, IHasTeam, IHasConfig
 		Mouse@ mouse = getMouse3D();
 		if (blob.isKeyJustPressed(key_action2) && mouse.isInControl())
 		{
-			Map@ map = getMap3D();
-			u8 block = BlockType::Air;
-			Vec3f worldPos = (position + Vec3f(0, cameraHeight, 0) + rotation.dir() * 2).floor();
-
-			AABB actorBounds = getCollisionBox();
-			AABB blockBounds(worldPos, worldPos + 1);
-
-			if (map.isValidBlock(worldPos) && map.getBlock(worldPos) != block)
+			Ray ray(getCamera3D().getPosition(), rotation.dir());
+			RaycastInfo raycastInfo;
+			if (ray.raycastBlock(5, false, raycastInfo))
 			{
-				map.SetBlock(worldPos, block);
-				print("Removed block at " + worldPos.toString());
+				Map@ map = getMap3D();
+				u8 block = BlockType::Air;
+				Vec3f worldPos = raycastInfo.hitWorldPos;
 
-				Vec3f chunkPos = map.getChunkPos(worldPos);
-				Chunk@ chunk = map.getChunk(chunkPos);
-				chunk.SetRebuild();
+				AABB actorBounds = getCollisionBox();
+				AABB blockBounds(worldPos, worldPos + 1);
 
-				CBitStream params;
-				params.write_u16(player.getNetworkID());
-				params.write_u32(map.toIndex(worldPos));
-				params.write_u8(block);
+				if (map.isValidBlock(worldPos) && map.getBlock(worldPos) != block)
+				{
+					map.SetBlock(worldPos, block);
+					print("Removed block at " + worldPos.toString());
 
-				CRules@ rules = getRules();
-				rules.SendCommand(rules.getCommandID("c_sync_block"), params, false);
+					Vec3f chunkPos = map.getChunkPos(worldPos);
+					Chunk@ chunk = map.getChunk(chunkPos);
+					chunk.SetRebuild();
+
+					CBitStream params;
+					params.write_u16(player.getNetworkID());
+					params.write_u32(map.toIndex(worldPos));
+					params.write_u8(block);
+
+					CRules@ rules = getRules();
+					rules.SendCommand(rules.getCommandID("c_sync_block"), params, false);
+				}
 			}
 		}
 	}
