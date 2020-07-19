@@ -67,6 +67,7 @@ void onRender(CRules@ this)
 
 	if (camera.hasParent())
 	{
+		DrawCrosshair(0, 8, 1, color_white);
 		actorManager.RenderHUD();
 	}
 
