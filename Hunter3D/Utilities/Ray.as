@@ -62,12 +62,6 @@ shared class Ray
 
 		while (distance > 0 && dist < distance)
 		{
-			//out of map bounds
-			if (!map.isValidBlock(worldPos))
-			{
-				break;
-			}
-
 			u8 block = map.getBlock(worldPos);
 
 			//hit a block
