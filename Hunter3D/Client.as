@@ -135,15 +135,7 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 		else if (block != map.getBlock(index))
 		{
 			map.SetBlock(index, block);
-
-			Vec3f worldPos = map.to3D(index);
-			Vec3f chunkPos = map.getChunkPos(worldPos);
-			Chunk@ chunk = map.getChunkSafe(chunkPos);
-
-			if (chunk !is null)
-			{
-				chunk.SetRebuild();
-			}
+			map.RebuildChunks(index);
 		}
 	}
 	else if (cmd == this.getCommandID("s_revert_block"))
@@ -154,11 +146,7 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 		Map@ map = getMap3D();
 
 		map.SetBlock(index, block);
-
-		Vec3f worldPos = map.to3D(index);
-		Vec3f chunkPos = map.getChunkPos(worldPos);
-		Chunk@ chunk = map.getChunk(chunkPos);
-		chunk.SetRebuild();
+		map.RebuildChunks(index);
 	}
 
 	if (getModLoader().isLoading()) return;

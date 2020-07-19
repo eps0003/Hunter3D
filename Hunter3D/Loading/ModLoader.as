@@ -20,6 +20,7 @@ enum LoadState
 	GenerateMap,
 	DeserializeMap,
 	PlaceExtraBlocks,
+	InitializeBlockFaces,
 	GenerateChunks,
 	InitializeChunkTree,
 	PreloadModels,
@@ -100,6 +101,30 @@ shared class ModLoader
 				}
 			}
 
+			case LoadState::InitializeBlockFaces:
+			{
+				Map@ map = getMap3D();
+				Vec3f mapDim = map.getMapDimensions();
+				uint n = mapDim.x * mapDim.y * mapDim.z;
+
+				message = "Initializing block faces...";
+				SetProgress(float(index) / float(n));
+
+				for (uint i = 0; i < 4000; i++)
+				{
+					map.UpdateBlockFaces(index);
+					index++;
+
+					if (index >= n)
+					{
+						print("Block faces initialized", ConsoleColour::CRAZY);
+						NextState();
+						break;
+					}
+				}
+			}
+			break;
+
 			case LoadState::GenerateChunks:
 			{
 				Map@ map = getMap3D();
@@ -114,7 +139,7 @@ shared class ModLoader
 				SetProgress(float(index) / float(chunkCount));
 				// print("Generating chunk: " + (index + 1) + "/" + chunkCount);
 
-				for (uint i = 0; i < 4; i++)
+				for (uint i = 0; i < 16; i++)
 				{
 					Chunk chunk(map, index);
 					map.SetChunk(index, chunk);

@@ -226,11 +226,8 @@ shared class Actor : PhysicsObject, IRenderable, IHasTeam, IHasConfig
 				if (map.isValidBlock(worldPos) && map.getBlock(worldPos) != block && notIntersectingObjects)
 				{
 					map.SetBlock(worldPos, block);
+					map.RebuildChunks(worldPos);
 					print("Placed block at " + worldPos.toString());
-
-					Vec3f chunkPos = map.getChunkPos(worldPos);
-					Chunk@ chunk = map.getChunk(chunkPos);
-					chunk.SetRebuild();
 
 					CBitStream params;
 					params.write_u16(player.getNetworkID());
@@ -264,11 +261,8 @@ shared class Actor : PhysicsObject, IRenderable, IHasTeam, IHasConfig
 				if (map.isValidBlock(worldPos) && map.getBlock(worldPos) != block)
 				{
 					map.SetBlock(worldPos, block);
+					map.RebuildChunks(worldPos);
 					print("Removed block at " + worldPos.toString());
-
-					Vec3f chunkPos = map.getChunkPos(worldPos);
-					Chunk@ chunk = map.getChunk(chunkPos);
-					chunk.SetRebuild();
 
 					CBitStream params;
 					params.write_u16(player.getNetworkID());

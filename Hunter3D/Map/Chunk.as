@@ -49,10 +49,13 @@ shared class Chunk
 			for (uint y = startWorldPos.y; y < endWorldPos.y; y++)
 			for (uint z = startWorldPos.z; z < endWorldPos.z; z++)
 			{
-				u8 block = map.getBlock(x, y, z);
+				int index = map.toIndex(x, y, z);
+				u8 faces = map.getFaceFlags(index);
 
-				if (map.isBlockVisible(block))
+				if (faces != FaceFlag::None)
 				{
+					u8 block = map.getBlock(index);
+
 					float x1 = block / 8.0f;
 					float y1 = Maths::Floor(x1) / 32.0f;
 					float x2 = x1 + (1.0f / 32.0f);
@@ -64,27 +67,7 @@ shared class Chunk
 					Vec3f p = Vec3f(x, y, z) - overlap;
 					float w = 1 + overlap * 2;
 
-					u8 left  = map.getBlockSafe(x - 1, y, z);
-					u8 right = map.getBlockSafe(x + 1, y, z);
-					u8 down  = map.getBlockSafe(x, y - 1, z);
-					u8 up    = map.getBlockSafe(x, y + 1, z);
-					u8 front = map.getBlockSafe(x, y, z - 1);
-					u8 back  = map.getBlockSafe(x, y, z + 1);
-
-					bool leftVisible  = map.isBlockSeeThrough(left);
-					bool rightVisible = map.isBlockSeeThrough(right);
-					bool downVisible  = map.isBlockSeeThrough(down);
-					bool upVisible    = map.isBlockSeeThrough(up);
-					bool frontVisible = map.isBlockSeeThrough(front);
-					bool backVisible  = map.isBlockSeeThrough(back);
-
-					uint vertexCount = (num(leftVisible) + num(rightVisible) + num(downVisible) + num(upVisible) + num(frontVisible) + num(backVisible)) * 4;
-					uint indexCount = vertexCount * 1.5f;
-
-					vertices.reserve(vertices.length + vertexCount);
-					indices.reserve(indices.length + indexCount);
-
-					if (leftVisible)
+					if (blockHasFace(faces, FaceFlag::Left))
 					{
 						vertices.push_back(Vertex(p.x, p.y + w, p.z + w, x1, y1, col));
 						vertices.push_back(Vertex(p.x, p.y + w, p.z    , x2, y1, col));
@@ -93,7 +76,7 @@ shared class Chunk
 						AddIndices();
 					}
 
-					if (rightVisible)
+					if (blockHasFace(faces, FaceFlag::Right))
 					{
 						vertices.push_back(Vertex(p.x + w, p.y + w, p.z    , x1, y1, col));
 						vertices.push_back(Vertex(p.x + w, p.y + w, p.z + w, x2, y1, col));
@@ -102,7 +85,7 @@ shared class Chunk
 						AddIndices();
 					}
 
-					if (downVisible)
+					if (blockHasFace(faces, FaceFlag::Down))
 					{
 						vertices.push_back(Vertex(p.x + w, p.y, p.z + w, x1, y1, col));
 						vertices.push_back(Vertex(p.x    , p.y, p.z + w, x2, y1, col));
@@ -111,7 +94,7 @@ shared class Chunk
 						AddIndices();
 					}
 
-					if (upVisible)
+					if (blockHasFace(faces, FaceFlag::Up))
 					{
 						vertices.push_back(Vertex(p.x    , p.y + w, p.z + w, x1, y1, col));
 						vertices.push_back(Vertex(p.x + w, p.y + w, p.z + w, x2, y1, col));
@@ -120,7 +103,7 @@ shared class Chunk
 						AddIndices();
 					}
 
-					if (frontVisible)
+					if (blockHasFace(faces, FaceFlag::Front))
 					{
 						vertices.push_back(Vertex(p.x    , p.y + w, p.z, x1, y1, col));
 						vertices.push_back(Vertex(p.x + w, p.y + w, p.z, x2, y1, col));
@@ -129,7 +112,7 @@ shared class Chunk
 						AddIndices();
 					}
 
-					if (backVisible)
+					if (blockHasFace(faces, FaceFlag::Back))
 					{
 						vertices.push_back(Vertex(p.x + w, p.y + w, p.z + w, x1, y1, col));
 						vertices.push_back(Vertex(p.x    , p.y + w, p.z + w, x2, y1, col));
@@ -139,20 +122,20 @@ shared class Chunk
 					}
 				}
 			}
-		}
 
-		if (!vertices.empty())
-		{
-			noVertices = false;
-            mesh.SetVertex(vertices);
-            mesh.SetIndices(indices);
-            mesh.SetDirty(SMesh::VERTEX_INDEX);
-            mesh.BuildMesh();
-		}
-		else
-		{
-			noVertices = true;
-			mesh.Clear();
+			if (!vertices.empty())
+			{
+				noVertices = false;
+				mesh.SetVertex(vertices);
+				mesh.SetIndices(indices);
+				mesh.SetDirty(SMesh::VERTEX_INDEX);
+				mesh.BuildMesh();
+			}
+			else
+			{
+				noVertices = true;
+				mesh.Clear();
+			}
 		}
 	}
 
@@ -180,5 +163,10 @@ shared class Chunk
 		indices.push_back(n - 3);
 		indices.push_back(n - 2);
 		indices.push_back(n - 1);
+	}
+
+	private bool blockHasFace(u8 flags, u8 face)
+	{
+		return (flags & face) == face;
 	}
 }

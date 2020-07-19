@@ -2,8 +2,9 @@
 #include "Chunk.as"
 #include "Camera.as"
 #include "Tree.as"
+#include "FaceFlags.as"
 
-const u8 CHUNK_SIZE = 16;
+const u8 CHUNK_SIZE = 12;
 
 enum BlockType
 {
@@ -51,6 +52,7 @@ shared class Map
 {
 	private u8[] map;
 	private Chunk@[] chunks;
+	private u8[] faceFlags;
 
 	private Vec3f mapDim;
 	private Vec3f chunkDim;
@@ -76,6 +78,7 @@ shared class Map
 	{
 		this.mapDim = mapDim;
 		map.set_length(mapDim.x * mapDim.y * mapDim.z);
+		faceFlags.set_length(map.length);
 
 		InitMaterial();
 		InitBlocksTypes();
@@ -423,6 +426,111 @@ shared class Map
 			Chunk@ chunk = visibleChunks[i];
 			chunk.Render();
 			// chunk.getBounds().Render();
+		}
+	}
+
+	void UpdateBlockFaces(int index)
+	{
+		UpdateBlockFaces(to3D(index));
+	}
+
+	void UpdateBlockFaces(Vec3f worldPos)
+	{
+		UpdateBlockFaces(worldPos.x, worldPos.y, worldPos.z);
+	}
+
+	void UpdateBlockFaces(int x, int y, int z)
+	{
+		int index = toIndex(x, y, z);
+		u8 block = getBlock(index);
+
+		u8 faces = FaceFlag::None;
+
+		if (!isBlockSeeThrough(block))
+		{
+			if (x == 0 || isBlockSeeThrough(getBlock(x - 1, y, z)))
+			{
+				faces |= FaceFlag::Left;
+			}
+			if (x == mapDim.x - 1 || isBlockSeeThrough(getBlock(x + 1, y, z)))
+			{
+				faces |= FaceFlag::Right;
+			}
+			if (y == 0 || isBlockSeeThrough(getBlock(x, y - 1, z)))
+			{
+				faces |= FaceFlag::Down;
+			}
+			if (y == mapDim.y - 1 || isBlockSeeThrough(getBlock(x, y + 1, z)))
+			{
+				faces |= FaceFlag::Up;
+			}
+			if (z == 0 || isBlockSeeThrough(getBlock(x, y, z - 1)))
+			{
+				faces |= FaceFlag::Front;
+			}
+			if (z == mapDim.z - 1 || isBlockSeeThrough(getBlock(x, y, z + 1)))
+			{
+				faces |= FaceFlag::Back;
+			}
+		}
+
+		faceFlags[index] = faces;
+	}
+
+	u8 getFaceFlags(int index)
+	{
+		return faceFlags[index];
+	}
+
+	void RebuildChunks(int index)
+	{
+		RebuildChunks(to3D(index));
+	}
+
+	void RebuildChunks(Vec3f worldPos)
+	{
+		if (isValidBlock(worldPos))
+		{
+			int x = worldPos.x;
+			int y = worldPos.y;
+			int z = worldPos.z;
+
+			//update block faces
+			UpdateBlockFaces(x, y, z);
+
+			if (x > 0)
+				UpdateBlockFaces(x - 1, y, z);
+			if (x + 1 < mapDim.x)
+				UpdateBlockFaces(x + 1, y, z);
+			if (y > 0)
+				UpdateBlockFaces(x, y - 1, z);
+			if (y + 1 < mapDim.y)
+				UpdateBlockFaces(x, y + 1, z);
+			if (z > 0)
+				UpdateBlockFaces(x, y, z - 1);
+			if (y + 1 < mapDim.z)
+				UpdateBlockFaces(x, y, z + 1);
+
+			//rebuild chunks
+			Vec3f chunkPos = getChunkPos(worldPos);
+			int cx = chunkPos.x;
+			int cy = chunkPos.y;
+			int cz = chunkPos.z;
+
+			getChunk(cx, cy, cz).SetRebuild();
+
+			if (cx > 0 && x % CHUNK_SIZE == 0)
+				getChunk(cx - 1, cy, cz).SetRebuild();
+			if (cx + 1 < chunkDim.x && x % CHUNK_SIZE == CHUNK_SIZE - 1)
+				getChunk(cx + 1, cy, cz).SetRebuild();
+			if (cy > 0 && y % CHUNK_SIZE == 0)
+				getChunk(cx, cy - 1, cz).SetRebuild();
+			if (cy + 1 < chunkDim.y && y % CHUNK_SIZE == CHUNK_SIZE - 1)
+				getChunk(cx, cy + 1, cz).SetRebuild();
+			if (cz > 0 && z % CHUNK_SIZE == 0)
+				getChunk(cx, cy, cz - 1).SetRebuild();
+			if (cz + 1 < chunkDim.z && z % CHUNK_SIZE == CHUNK_SIZE - 1)
+				getChunk(cx, cy, cz + 1).SetRebuild();
 		}
 	}
 
