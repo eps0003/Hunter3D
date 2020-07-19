@@ -9,10 +9,12 @@ shared class Actor : PhysicsObject, IRenderable, IHasTeam, IHasConfig
 {
 	CPlayer@ player;
 	private Model@ model;
-	private MovementStrategy@ movementStrategy = SmoothFly();
+	private MovementStrategy@ movementStrategy = Walking();
 
 	float acceleration;
 	float jumpForce;
+
+	u8 blockType = BlockType::OakWood;
 
 	Actor(CPlayer@ player, Vec3f position)
 	{
@@ -65,6 +67,7 @@ shared class Actor : PhysicsObject, IRenderable, IHasTeam, IHasConfig
 
 		PlaceBlock();
 		RemoveBlock();
+		PickBlock();
 	}
 
 	void PostUpdate()
@@ -200,7 +203,7 @@ shared class Actor : PhysicsObject, IRenderable, IHasTeam, IHasConfig
 			if (ray.raycastBlock(5, false, raycastInfo))
 			{
 				Map@ map = getMap3D();
-				u8 block = BlockType::OakWood;
+				u8 block = blockType;
 				Vec3f worldPos = raycastInfo.hitWorldPos + raycastInfo.normal;
 
 				AABB actorBounds = getCollisionBox();
@@ -252,13 +255,14 @@ shared class Actor : PhysicsObject, IRenderable, IHasTeam, IHasConfig
 			if (ray.raycastBlock(5, false, raycastInfo))
 			{
 				Map@ map = getMap3D();
-				u8 block = BlockType::Air;
 				Vec3f worldPos = raycastInfo.hitWorldPos;
+				u8 block = BlockType::Air;
+				u8 existingBlock = map.getBlock(worldPos);
 
 				AABB actorBounds = getCollisionBox();
 				AABB blockBounds(worldPos, worldPos + 1);
 
-				if (map.isValidBlock(worldPos) && map.getBlock(worldPos) != block)
+				if (map.isValidBlock(worldPos) && map.isBlockDestructable(existingBlock) && existingBlock != block)
 				{
 					map.SetBlock(worldPos, block);
 					map.RebuildChunks(worldPos);
@@ -272,6 +276,41 @@ shared class Actor : PhysicsObject, IRenderable, IHasTeam, IHasConfig
 					CRules@ rules = getRules();
 					rules.SendCommand(rules.getCommandID("c_sync_block"), params, false);
 				}
+			}
+		}
+	}
+
+	private void PickBlock()
+	{
+		CControls@ controls = player.getControls();
+		Mouse@ mouse = getMouse3D();
+		if (controls.isKeyJustPressed(KEY_MBUTTON) && mouse.isInControl())
+		{
+			Ray ray(getCamera3D().getPosition(), rotation.dir());
+			RaycastInfo raycastInfo;
+			if (ray.raycastBlock(5, false, raycastInfo))
+			{
+				Map@ map = getMap3D();
+				Vec3f worldPos = raycastInfo.hitWorldPos;
+				blockType = map.getBlock(worldPos);
+			}
+		}
+
+		if (controls.isKeyPressed(MOUSE_SCROLL_UP))
+		{
+			blockType--;
+			if (blockType <= 0)
+			{
+				blockType += BlockType::Total - 2;
+			}
+		}
+
+		if (controls.isKeyPressed(MOUSE_SCROLL_DOWN))
+		{
+			blockType++;
+			if (blockType >= BlockType::Total - 2)
+			{
+				blockType = 1;
 			}
 		}
 	}

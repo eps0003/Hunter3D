@@ -74,16 +74,21 @@ void onRender(CRules@ this)
 	Actor@ myActor = actorManager.getActor(getLocalPlayer());
 	if (myActor !is null)
 	{
-		GUI::DrawText("position: " + myActor.position.toString(), Vec2f(10, 40), color_black);
-		GUI::DrawText("rotation: " + myActor.rotation.toString(), Vec2f(10, 60), color_black);
-		GUI::DrawText("velocity: " + myActor.velocity.toString(), Vec2f(10, 80), color_black);
-		GUI::DrawText("vellen: " + Vec2f(myActor.interVelocity.x, myActor.interVelocity.z).Length(), Vec2f(10, 100), color_black);
+		Map@ map = getMap3D();
 
-		GUI::DrawText("interPosition: " + myActor.interPosition.toString(), Vec2f(10, 130), color_black);
-		GUI::DrawText("interRotation: " + myActor.interRotation.toString(), Vec2f(10, 150), color_black);
-		GUI::DrawText("interVelocity: " + myActor.interVelocity.toString(), Vec2f(10, 170), color_black);
+		// GUI::DrawText("block: " + map.getBlockName(myActor.blockType), Vec2f(10, 40), color_black);
+		GUI::DrawIcon(map.texture, myActor.blockType * 4, Vec2f(16, 16), Vec2f(10, 10), 3);
 
-		GUI::DrawText("mouseVelocity: " + getMouse3D().velocity.toString(), Vec2f(10, 200), color_black);
+		// GUI::DrawText("position: " + myActor.position.toString(), Vec2f(10, 40), color_black);
+		// GUI::DrawText("rotation: " + myActor.rotation.toString(), Vec2f(10, 60), color_black);
+		// GUI::DrawText("velocity: " + myActor.velocity.toString(), Vec2f(10, 80), color_black);
+		// GUI::DrawText("vellen: " + Vec2f(myActor.interVelocity.x, myActor.interVelocity.z).Length(), Vec2f(10, 100), color_black);
+
+		// GUI::DrawText("interPosition: " + myActor.interPosition.toString(), Vec2f(10, 130), color_black);
+		// GUI::DrawText("interRotation: " + myActor.interRotation.toString(), Vec2f(10, 150), color_black);
+		// GUI::DrawText("interVelocity: " + myActor.interVelocity.toString(), Vec2f(10, 170), color_black);
+
+		// GUI::DrawText("mouseVelocity: " + getMouse3D().velocity.toString(), Vec2f(10, 200), color_black);
 	}
 }
 

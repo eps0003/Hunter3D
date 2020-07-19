@@ -79,7 +79,7 @@ shared class MapGenerator
 		Vec3f mapDim = getMapDimensions();
 
 		uint centerLine = mapDim.y / 2.0f;
-		float amplitude = mapDim.y / 2.0f;
+		float amplitude = mapDim.y / 4.0f;
 		float frequency = 0.05f;
 		uint h = centerLine + noise.Sample(x * frequency, z * frequency) * amplitude;
 

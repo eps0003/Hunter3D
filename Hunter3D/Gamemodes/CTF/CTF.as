@@ -8,7 +8,7 @@ shared class CTF : Gamemode
 
 	CTF()
 	{
-		super(MapGenerator(Vec3f(128, 32, 128)));
+		super(MapGenerator(Vec3f(192, 48, 192)));
 		LoadConfig(openConfig("CTF.cfg"));
 	}
 
@@ -35,6 +35,7 @@ shared class CTF : Gamemode
 		{
 			Actor actor(params);
 			getRespawnManager().AddToQueue(actor.player, respawnTime);
+			// getObjectManager().AddObject(Flag(getMap3D().getMapDimensions() * Vec3f(0.5f, 1, 0.5f), 0));
 		}
 	}
 

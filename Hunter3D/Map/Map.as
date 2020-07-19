@@ -39,7 +39,8 @@ enum BlockType
 	Iron,
 	Steel,
 	Gears,
-	Bedrock
+	Bedrock,
+	Total
 }
 
 shared Map@ getMap3D()
@@ -58,7 +59,7 @@ shared class Map
 	private Vec3f mapDim;
 	private Vec3f chunkDim;
 
-	private string texture = "BlocksMC.png";
+	string texture = "BlocksMC.png";
 	private SMaterial@ material = SMaterial();
 
 	private Tree@ chunkTree;
@@ -91,6 +92,7 @@ shared class Map
 		material.SetFlag(SMaterial::LIGHTING, false);
 		material.SetFlag(SMaterial::BILINEAR_FILTER, false);
 		material.SetFlag(SMaterial::FOG_ENABLE, true);
+        material.SetMaterialType(SMaterial::TRANSPARENT_ALPHA_CHANNEL_REF);
 	}
 
 	void InitChunkTree()
@@ -148,14 +150,14 @@ shared class Map
 		AddBlockType("Bedrock",			true,	true,	false,	false,	false);
 	}
 
-	void AddBlockType(string _name, bool _visible, bool _solid, bool _destructable, bool _collapsable, bool _seeThrough)
+	void AddBlockType(string name, bool visible, bool solid, bool destructable, bool collapsable, bool seeThrough)
 	{
-		name.push_back(_name);
-		visible.push_back(_visible);
-		solid.push_back(_solid);
-		destructable.push_back(_destructable);
-		collapsable.push_back(_collapsable);
-		seeThrough.push_back(_seeThrough);
+		this.name.push_back(name);
+		this.visible.push_back(visible);
+		this.solid.push_back(solid);
+		this.destructable.push_back(destructable);
+		this.collapsable.push_back(collapsable);
+		this.seeThrough.push_back(seeThrough);
 	}
 
 	void SetBlockSafe(Vec3f position, u8 block)
@@ -315,6 +317,11 @@ shared class Map
 		return index >= 0 && index < chunks.length;
 	}
 
+	string getBlockName(u8 block)
+	{
+		return name[block];
+	}
+
 	bool isBlockVisible(u8 block)
 	{
 		return visible[block];
@@ -448,7 +455,7 @@ shared class Map
 
 		u8 faces = FaceFlag::None;
 
-		if (!isBlockSeeThrough(block))
+		if (isBlockVisible(block))
 		{
 			if (x == 0 || isBlockSeeThrough(getBlock(x - 1, y, z)))
 			{
