@@ -194,15 +194,17 @@ shared class Vec3f
 
 	Vec3f normalized()
 	{
-		float length = mag();
-		if (length > 0)
+		float lengthSq = magSquared();
+		if (lengthSq == 1)
 		{
-			return this / length;
+			return this;
 		}
-		else
+		else if (lengthSq == 0)
 		{
 			return Vec3f();
 		}
+
+		return this / mag();
 	}
 
 	float mag()
