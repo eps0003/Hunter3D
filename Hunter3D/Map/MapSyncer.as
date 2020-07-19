@@ -168,12 +168,14 @@ shared class MapSyncer
 
 			// print("Deserialized map packet " + (index + 1) + "/" + getTotalPacketCount());
 
+			ModLoader@ modLoader = getModLoader();
+
 			if (index == getTotalPacketCount() - 1)
 			{
-				map.SetLoaded();
+				print("Map received", ConsoleColour::CRAZY);
+				modLoader.NextState();
 			}
 
-			ModLoader@ modLoader = getModLoader();
 			modLoader.SetProgress(float(index + 1) / float(getTotalPacketCount()));
 		}
 	}

@@ -19,6 +19,7 @@ enum LoadState
 {
 	GenerateMap,
 	DeserializeMap,
+	PlaceExtraBlocks,
 	GenerateChunks,
 	InitializeChunkTree,
 	PreloadModels,
@@ -27,10 +28,11 @@ enum LoadState
 
 shared class ModLoader
 {
-	uint state = 0;
-	uint index = 0;
-	float progress = 0;
-	string message;
+	private uint state = 0;
+	private uint index = 0;
+	private float progress = 0;
+	private string message;
+	private BlockToPlace[] blocksToPlace;
 
 	string[] models = {
 		"Models/ActorModel.cfg"
@@ -62,20 +64,38 @@ shared class ModLoader
 			{
 				message = "Receiving map...";
 
-				Map@ map = getMap3D();
-				if (map !is null && map.isLoaded())
+				if (!isServer())
 				{
-					print("Map received", ConsoleColour::CRAZY);
-					NextState();
-
-					//immediately skip to next state if running localhost
-					if (!isServer())
-					{
-						break;
-					}
+					break;
 				}
 				else
 				{
+					//immediately skip to next state if running localhost
+					NextState();
+				}
+			}
+
+			case LoadState::PlaceExtraBlocks:
+			{
+				message = "Finalizing map...";
+
+				Map@ map = getMap3D();
+				map.SetLoaded();
+
+				NextState();
+
+				if (!blocksToPlace.empty())
+				{
+					for (uint i = 0; i < blocksToPlace.length; i++)
+					{
+						BlockToPlace btp = blocksToPlace[i];
+
+						uint index = btp.index;
+						u8 block = btp.block;
+
+						map.SetBlock(index, block);
+					}
+
 					break;
 				}
 			}
@@ -181,5 +201,23 @@ shared class ModLoader
 	void SetProgress(float progress)
 	{
 		this.progress = progress;
+	}
+
+	void AddBlockToPlace(uint index, u8 block)
+	{
+		blocksToPlace.push_back(BlockToPlace(index, block));
+	}
+}
+
+
+shared class BlockToPlace
+{
+	uint index;
+	u8 block;
+
+	BlockToPlace(uint index, u8 block)
+	{
+		this.index = index;
+		this.block = block;
 	}
 }

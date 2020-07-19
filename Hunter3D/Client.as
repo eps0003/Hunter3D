@@ -120,24 +120,29 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 		bs.SetBitIndex(params.getBitIndex());
 		getMapSyncer().AddMapPacket(bs);
 	}
-
-	if (getModLoader().isLoading()) return;
-
-	if (cmd == this.getCommandID("s_sync_block"))
+	else if (cmd == this.getCommandID("s_sync_block"))
 	{
 		uint index = params.read_u32();
 		u8 block = params.read_u8();
 
 		Map@ map = getMap3D();
 
-		if (block != map.getBlock(index))
+		if (map is null || !map.isLoaded())
+		{
+			getModLoader().AddBlockToPlace(index, block);
+		}
+		else if (block != map.getBlock(index))
 		{
 			map.SetBlock(index, block);
 
 			Vec3f worldPos = map.to3D(index);
 			Vec3f chunkPos = map.getChunkPos(worldPos);
-			Chunk@ chunk = map.getChunk(chunkPos);
-			chunk.SetRebuild();
+			Chunk@ chunk = map.getChunkSafe(chunkPos);
+
+			if (chunk !is null)
+			{
+				chunk.SetRebuild();
+			}
 		}
 	}
 	else if (cmd == this.getCommandID("s_revert_block"))
@@ -154,7 +159,10 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 		Chunk@ chunk = map.getChunk(chunkPos);
 		chunk.SetRebuild();
 	}
-	else if (cmd == this.getCommandID("s_sync_objects"))
+
+	if (getModLoader().isLoading()) return;
+
+	if (cmd == this.getCommandID("s_sync_objects"))
 	{
 		getActorManager().DeserializeActors(params);
 		getFlagManager().DeserializeFlags(params);
