@@ -63,7 +63,7 @@ shared class Chunk
 
 					SColor col = color_white;
 
-					float overlap = 0.001f; //so faint lines dont appear between planes
+					float overlap = 0.0f; //so faint lines dont appear between planes
 					Vec3f p = Vec3f(x, y, z) - overlap;
 					float w = 1 + overlap * 2;
 
@@ -118,6 +118,53 @@ shared class Chunk
 						vertices.push_back(Vertex(p.x    , p.y + w, p.z + w, x2, y1, col));
 						vertices.push_back(Vertex(p.x    , p.y    , p.z + w, x2, y2, col));
 						vertices.push_back(Vertex(p.x + w, p.y    , p.z + w, x1, y2, col));
+						AddIndices();
+					}
+
+					if (map.isBlockSeeThrough(block))
+					{
+						float o = 0.005f;
+
+						//left
+						vertices.push_back(Vertex(p.x + w - o, p.y + w, p.z + w, x1, y1, col));
+						vertices.push_back(Vertex(p.x + w - o, p.y + w, p.z    , x2, y1, col));
+						vertices.push_back(Vertex(p.x + w - o, p.y    , p.z    , x2, y2, col));
+						vertices.push_back(Vertex(p.x + w - o, p.y    , p.z + w, x1, y2, col));
+						AddIndices();
+
+						//right
+						vertices.push_back(Vertex(p.x + o, p.y + w, p.z    , x1, y1, col));
+						vertices.push_back(Vertex(p.x + o, p.y + w, p.z + w, x2, y1, col));
+						vertices.push_back(Vertex(p.x + o, p.y    , p.z + w, x2, y2, col));
+						vertices.push_back(Vertex(p.x + o, p.y    , p.z    , x1, y2, col));
+						AddIndices();
+
+						//down
+						vertices.push_back(Vertex(p.x + w, p.y + w - o, p.z + w, x1, y1, col));
+						vertices.push_back(Vertex(p.x    , p.y + w - o, p.z + w, x2, y1, col));
+						vertices.push_back(Vertex(p.x    , p.y + w - o, p.z    , x2, y2, col));
+						vertices.push_back(Vertex(p.x + w, p.y + w - o, p.z    , x1, y2, col));
+						AddIndices();
+
+						//up
+						vertices.push_back(Vertex(p.x    , p.y + o, p.z + w, x1, y1, col));
+						vertices.push_back(Vertex(p.x + w, p.y + o, p.z + w, x2, y1, col));
+						vertices.push_back(Vertex(p.x + w, p.y + o, p.z    , x2, y2, col));
+						vertices.push_back(Vertex(p.x    , p.y + o, p.z    , x1, y2, col));
+						AddIndices();
+
+						//front
+						vertices.push_back(Vertex(p.x    , p.y + w, p.z + w - o, x1, y1, col));
+						vertices.push_back(Vertex(p.x + w, p.y + w, p.z + w - o, x2, y1, col));
+						vertices.push_back(Vertex(p.x + w, p.y    , p.z + w - o, x2, y2, col));
+						vertices.push_back(Vertex(p.x    , p.y    , p.z + w - o, x1, y2, col));
+						AddIndices();
+
+						//back
+						vertices.push_back(Vertex(p.x + w, p.y + w, p.z + o, x1, y1, col));
+						vertices.push_back(Vertex(p.x    , p.y + w, p.z + o, x2, y1, col));
+						vertices.push_back(Vertex(p.x    , p.y    , p.z + o, x2, y2, col));
+						vertices.push_back(Vertex(p.x + w, p.y    , p.z + o, x1, y2, col));
 						AddIndices();
 					}
 				}
