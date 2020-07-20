@@ -62,7 +62,7 @@ shared class Ray
 
 		while (distance > 0 && dist < distance)
 		{
-			u8 block = map.getBlock(worldPos);
+			u8 block = map.getBlockSafe(worldPos);
 
 			//hit a block
 			bool hit = solidOnly ? map.isBlockSolid(block) : map.isBlockVisible(block);
