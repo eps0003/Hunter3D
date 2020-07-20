@@ -36,7 +36,7 @@ shared class AABB : IBounds
 	{
 		for (uint i = 0; i < 3; i++)
 		{
-			if (position[i] + min[i] > box.max[i] || position[i] + max[i] < box.min[i])
+			if (position[i] + min[i] >= box.max[i] || position[i] + max[i] <= box.min[i])
 			{
 				return false;
 			}
