@@ -88,9 +88,6 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 
 		u8 block = params.read_u8();
 
-		CBitStream bs;
-		bs.write_u32(index);
-
 		bool notIntersectingObjects = true;
 		Object@[] objects = getObjectManager().getObjects();
 		for (uint i = 0; i < objects.length; i++)
@@ -112,10 +109,6 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 		{
 			map.SetBlock(index, block);
 
-			//sync block to all clients
-			bs.write_u8(block);
-			this.SendCommand(this.getCommandID("s_sync_block"), bs, true);
-
 			if (!map.isBlockSeeThrough(block))
 			{
 				//check if block below is grass
@@ -126,18 +119,14 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 				{
 					//change grass to dirt
 					map.SetBlock(posBelow, BlockType::Dirt);
-
-					//sync block to all clients
-					bs = CBitStream();
-					bs.write_u32(map.toIndex(posBelow));
-					bs.write_u8(BlockType::Dirt);
-					this.SendCommand(this.getCommandID("s_sync_block"), bs, true);
 				}
 			}
 		}
 		else
 		{
 			//revert voxel on client who placed the block
+			CBitStream bs;
+			bs.write_u32(index);
 			bs.write_u8(map.getBlock(index));
 			this.SendCommand(this.getCommandID("s_revert_block"), bs, player);
 		}

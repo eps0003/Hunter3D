@@ -194,6 +194,11 @@ shared class Map
 	void SetBlock(int index, u8 block)
 	{
 		map[index] = block;
+
+		if (isServer() && !isClient() && isLoaded())
+		{
+			SyncBlock(index, block);
+		}
 	}
 
 	u8 getBlockSafe(Vec3f position)
@@ -561,5 +566,15 @@ shared class Map
 	private void GetVisibleChunks()
 	{
 		chunkTree.GetVisibleChunks(visibleChunks);
+	}
+
+	private void SyncBlock(int index, u8 block)
+	{
+		CBitStream bs;
+		bs.write_u32(index);
+		bs.write_u8(block);
+
+		CRules@ rules = getRules();
+		rules.SendCommand(rules.getCommandID("s_sync_block"), bs, true);
 	}
 }
