@@ -110,12 +110,30 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 
 		if (!map.isBlockSolid(block) || notIntersectingObjects)
 		{
-
 			map.SetBlock(index, block);
 
 			//sync block to all clients
 			bs.write_u8(block);
 			this.SendCommand(this.getCommandID("s_sync_block"), bs, true);
+
+			if (!map.isBlockSeeThrough(block))
+			{
+				//check if block below is grass
+				Vec3f posBelow = worldPos + Vec3f(0, -1, 0);
+				u8 blockBelow = map.getBlockSafe(posBelow);
+
+				if (blockBelow == BlockType::Grass)
+				{
+					//change grass to dirt
+					map.SetBlock(posBelow, BlockType::Dirt);
+
+					//sync block to all clients
+					bs = CBitStream();
+					bs.write_u32(map.toIndex(posBelow));
+					bs.write_u8(BlockType::Dirt);
+					this.SendCommand(this.getCommandID("s_sync_block"), bs, true);
+				}
+			}
 		}
 		else
 		{
