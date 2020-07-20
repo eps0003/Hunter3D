@@ -526,20 +526,35 @@ shared class Map
 			int cy = chunkPos.y;
 			int cz = chunkPos.z;
 
-			getChunk(cx, cy, cz).SetRebuild();
+			Chunk@ chunk;
 
-			if (cx > 0 && x % CHUNK_SIZE == 0)
-				getChunk(cx - 1, cy, cz).SetRebuild();
-			if (cx + 1 < chunkDim.x && x % CHUNK_SIZE == CHUNK_SIZE - 1)
-				getChunk(cx + 1, cy, cz).SetRebuild();
-			if (cy > 0 && y % CHUNK_SIZE == 0)
-				getChunk(cx, cy - 1, cz).SetRebuild();
-			if (cy + 1 < chunkDim.y && y % CHUNK_SIZE == CHUNK_SIZE - 1)
-				getChunk(cx, cy + 1, cz).SetRebuild();
-			if (cz > 0 && z % CHUNK_SIZE == 0)
-				getChunk(cx, cy, cz - 1).SetRebuild();
-			if (cz + 1 < chunkDim.z && z % CHUNK_SIZE == CHUNK_SIZE - 1)
-				getChunk(cx, cy, cz + 1).SetRebuild();
+			//this chunk
+			@chunk = getChunkSafe(cx, cy, cz);
+			if (chunk !is null) chunk.SetRebuild();
+
+			//left chunk
+			@chunk = getChunkSafe(cx - 1, cy, cz);
+			if (chunk !is null) chunk.SetRebuild();
+
+			//right chunk
+			@chunk = getChunkSafe(cx + 1, cy, cz);
+			if (chunk !is null) chunk.SetRebuild();
+
+			//down chunk
+			@chunk = getChunkSafe(cx, cy - 1, cz);
+			if (chunk !is null) chunk.SetRebuild();
+
+			//up chunk
+			@chunk = getChunkSafe(cx, cy + 1, cz);
+			if (chunk !is null) chunk.SetRebuild();
+
+			//front chunk
+			@chunk = getChunkSafe(cx, cy, cz - 1);
+			if (chunk !is null) chunk.SetRebuild();
+
+			//back chunk
+			@chunk = getChunkSafe(cx, cy, cz + 1);
+			if (chunk !is null) chunk.SetRebuild();
 		}
 	}
 
