@@ -18,11 +18,15 @@ shared class Object : Identifiable
 
 	private uint createTime = 0;
 
+	private bool sync = true;
+	private bool wasStatic;
+
 	Object(Vec3f position, Vec3f rotation = Vec3f(0, 0, 0))
 	{
 		this.position = position;
 		this.rotation = rotation;
-		this.createTime =  getGameTime();
+
+		createTime = getGameTime();
 	}
 
 	Object(CBitStream@ bs)
@@ -42,6 +46,8 @@ shared class Object : Identifiable
 
 		position = object.position;
 		rotation = object.rotation;
+
+		sync = true;
 	}
 
 	bool opEquals(Object@ object)
@@ -62,12 +68,23 @@ shared class Object : Identifiable
 
 	void PostUpdate()
 	{
-
+		sync = !wasStatic || !isStatic();
+		wasStatic = isStatic();
 	}
 
 	uint getCreateTime()
 	{
 		return createTime;
+	}
+
+	void Synced()
+	{
+		sync = false;
+	}
+
+	bool shouldSync()
+	{
+		return sync;
 	}
 
 	bool isStatic()

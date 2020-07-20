@@ -98,7 +98,7 @@ shared class ActorManager
 		return actors;
 	}
 
-	Actor@[] getNonStaticActors()
+	Actor@[] getActorsToSync()
 	{
 		ObjectManager@ objectManager = getObjectManager();
 		Object@[] objects = objectManager.getObjects();
@@ -109,7 +109,7 @@ shared class ActorManager
 			Object@ object = objects[i];
 			Actor@ actor = cast<Actor>(object);
 
-			if (actor !is null && !actor.isStatic())
+			if (actor !is null && actor.shouldSync())
 			{
 				actors.push_back(actor);
 			}
@@ -183,7 +183,7 @@ shared class ActorManager
 
 	void SerializeActors(CBitStream@ bs)
 	{
-		Actor@[] actors = getNonStaticActors();
+		Actor@[] actors = getActorsToSync();
 
 		bs.write_u16(actors.length);
 
@@ -191,6 +191,7 @@ shared class ActorManager
 		{
 			Actor@ actor = actors[i];
 			actor.Serialize(bs);
+			actor.Synced();
 		}
 	}
 

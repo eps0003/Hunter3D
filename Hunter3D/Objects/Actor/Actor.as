@@ -75,10 +75,15 @@ shared class Actor : PhysicsObject, IRenderable, IHasTeam, IHasConfig
 		PhysicsObject::PostUpdate();
 
 		//sync to server
-		CBitStream bs;
-		Serialize(bs);
-		CRules@ rules = getRules();
-		rules.SendCommand(rules.getCommandID("c_sync_actor"), bs, false);
+		if (Network::isMultiplayer() && shouldSync())
+		{
+			CBitStream bs;
+			Serialize(bs);
+			CRules@ rules = getRules();
+			rules.SendCommand(rules.getCommandID("c_sync_actor"), bs, false);
+
+			Synced();
+		}
 	}
 
 	bool isVisible()

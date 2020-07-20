@@ -102,14 +102,14 @@ shared class PhysicsObject : Object, IHasConfig
 
 	void PostUpdate()
 	{
-		Object::PostUpdate();
-
 		//set velocity to zero if low enough
 		if (Maths::Abs(velocity.x) < 0.001f) velocity.x = 0;
 		if (Maths::Abs(velocity.y) < 0.001f) velocity.y = 0;
 		if (Maths::Abs(velocity.z) < 0.001f) velocity.z = 0;
 
 		CollisionResponse();
+
+		Object::PostUpdate();
 	}
 
 	void Interpolate()
