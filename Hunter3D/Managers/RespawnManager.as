@@ -80,7 +80,7 @@ shared class RespawnManager
 
 	void RemoveFromQueue(CPlayer@ player)
 	{
-		if (player !is null)
+		if (isRespawning(player))
 		{
 			queue.RemovePlayer(player);
 			print("Removed " + player.getUsername() + " from the respawn queue");
