@@ -193,6 +193,9 @@ shared class Map
 
 	void SetBlock(int index, u8 block)
 	{
+		//call gamemode event
+		getGamemodeManager().getGamemode().onBlockSet(getRules(), this, index, map[index], block);
+
 		map[index] = block;
 
 		if (isServer() && !isClient() && isLoaded())

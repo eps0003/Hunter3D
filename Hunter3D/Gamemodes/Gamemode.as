@@ -32,7 +32,24 @@ shared class Gamemode
 		}
 	}
 	void onPlayerLoaded(CRules@ this, CPlayer@ player) {}
-	void onActorSpawn(CRules@ this, CPlayer@ player, Actor@ actor) {}
+	void onActorSpawn(CRules@ this, CPlayer@ player, Vec3f worldPos, Actor@ actor) {}
+	void onBlockPlaced(CRules@ this, Map@ map, CPlayer@ player, int index, u8 oldBlock, u8 newblock) {}
+	void onBlockSet(CRules@ this, Map@ map, int index, u8 oldBlock, u8 newblock)
+	{
+		if (!map.isBlockSeeThrough(newblock))
+		{
+			//check if block below is grass
+			Vec3f worldPos = map.to3D(index);
+			Vec3f posBelow = worldPos + Vec3f(0, -1, 0);
+			u8 blockBelow = map.getBlockSafe(posBelow);
+
+			if (blockBelow == BlockType::Grass)
+			{
+				//change grass to dirt
+				map.SetBlock(posBelow, BlockType::Dirt);
+			}
+		}
+	}
 
 	void GenerateMap()
 	{

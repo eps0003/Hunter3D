@@ -73,7 +73,7 @@ shared class RespawnManager
 			RemoveFromQueue(player);
 			Actor@ actor = Actor(player, position);
 			getObjectManager().AddObject(actor);
-			getGamemodeManager().getGamemode().onActorSpawn(getRules(), player, actor);
+			getGamemodeManager().getGamemode().onActorSpawn(getRules(), player, position, actor);
 			print("Respawned " + player.getUsername() + " at " + position.toString());
 		}
 	}

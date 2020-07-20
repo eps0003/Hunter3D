@@ -2,6 +2,7 @@
 #include "Map.as"
 #include "ObjectManager.as"
 #include "MapSyncer.as"
+#include "GamemodeManager.as"
 
 #define SERVER_ONLY
 
@@ -87,6 +88,7 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 		if (!map.isValidBlock(index)) return;
 
 		u8 block = params.read_u8();
+		u8 existingBlock = map.getBlock(index);
 
 		bool notIntersectingObjects = true;
 		Object@[] objects = getObjectManager().getObjects();
@@ -107,27 +109,18 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 
 		if (!map.isBlockSolid(block) || notIntersectingObjects)
 		{
+			//call gamemode event
+			getGamemodeManager().getGamemode().onBlockPlaced(getRules(), map, player, index, existingBlock, block);
+
+			//set block
 			map.SetBlock(index, block);
-
-			if (!map.isBlockSeeThrough(block))
-			{
-				//check if block below is grass
-				Vec3f posBelow = worldPos + Vec3f(0, -1, 0);
-				u8 blockBelow = map.getBlockSafe(posBelow);
-
-				if (blockBelow == BlockType::Grass)
-				{
-					//change grass to dirt
-					map.SetBlock(posBelow, BlockType::Dirt);
-				}
-			}
 		}
 		else
 		{
 			//revert voxel on client who placed the block
 			CBitStream bs;
 			bs.write_u32(index);
-			bs.write_u8(map.getBlock(index));
+			bs.write_u8(existingBlock);
 			this.SendCommand(this.getCommandID("s_revert_block"), bs, player);
 		}
 	}
