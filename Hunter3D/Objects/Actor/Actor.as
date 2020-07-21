@@ -220,7 +220,7 @@ shared class Actor : PhysicsObject, IRenderable, IHasTeam, IHasConfig
 				{
 					//check if object intersects block
 					Object@[] objects = getObjectManager().getObjects();
-					for (uint i = 0; i < objects.length; i++)
+					for (uint i = 0; i < objects.size(); i++)
 					{
 						PhysicsObject@ object = cast<PhysicsObject>(objects[i]);
 						if (object !is null)

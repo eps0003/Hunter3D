@@ -25,7 +25,7 @@ shared class ObjectManager
 
 	void Interpolate()
 	{
-		for (uint i = 0; i < objects.length; i++)
+		for (uint i = 0; i < objects.size(); i++)
 		{
 			Object@ object = objects[i];
 			if (!object.isStatic())
@@ -37,7 +37,7 @@ shared class ObjectManager
 
 	void Render()
 	{
-		for (uint i = 0; i < objects.length; i++)
+		for (uint i = 0; i < objects.size(); i++)
 		{
 			Object@ object = objects[i];
 
@@ -71,7 +71,7 @@ shared class ObjectManager
 
 	void RemoveObject(Object@ object)
 	{
-		for (uint i = 0; i < objects.length; i++)
+		for (uint i = 0; i < objects.size(); i++)
 		{
 			Object@ obj = objects[i];
 			if (object == obj)
@@ -112,7 +112,7 @@ shared class ObjectManager
 
 	void RemoveObjectByID(uint id)
 	{
-		for (uint i = 0; i < objects.length; i++)
+		for (uint i = 0; i < objects.size(); i++)
 		{
 			Object@ obj = objects[i];
 			if (obj.id == id)
@@ -132,7 +132,7 @@ shared class ObjectManager
 	{
 		Object@[] nonActorObjects;
 
-		for (uint i = 0; i < objects.length; i++)
+		for (uint i = 0; i < objects.size(); i++)
 		{
 			Object@ object = objects[i];
 			Actor@ actor = cast<Actor>(object);
@@ -148,7 +148,7 @@ shared class ObjectManager
 
 	Object@ getObjectByID(uint id)
 	{
-		for (uint i = 0; i < objects.length; i++)
+		for (uint i = 0; i < objects.size(); i++)
 		{
 			Object@ obj = objects[i];
 			if (obj.id == id)
@@ -166,14 +166,14 @@ shared class ObjectManager
 
 	uint getObjectCount()
 	{
-		return objects.length;
+		return objects.size();
 	}
 
 	void SerializeRemovedObjects(CBitStream@ bs)
 	{
-		bs.write_u16(removedObjects.length);
+		bs.write_u16(removedObjects.size());
 
-		for (uint i = 0; i < removedObjects.length; i++)
+		for (uint i = 0; i < removedObjects.size(); i++)
 		{
 			uint id = removedObjects[i];
 			bs.write_u32(id);
@@ -195,7 +195,7 @@ shared class ObjectManager
 
 	private bool hasObject(Object@ object)
 	{
-		for (uint i = 0; i < objects.length; i++)
+		for (uint i = 0; i < objects.size(); i++)
 		{
 			Object@ obj = objects[i];
 			if (object == obj)

@@ -33,7 +33,7 @@ shared class Vec3f
 	Vec3f(string serialized)
 	{
 		string[] values = serialized.split(" ");
-		if (values.length == 3)
+		if (values.size() == 3)
 		{
 			x = parseFloat(values[0]);
 			y = parseFloat(values[1]);
@@ -47,7 +47,7 @@ shared class Vec3f
 
 	Vec3f(float[] arr)
 	{
-		if (arr.length == 3)
+		if (arr.size() == 3)
 		{
 			x = arr[0];
 			y = arr[1];

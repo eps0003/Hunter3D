@@ -19,7 +19,7 @@ shared class SegmentChildren
 
 	void RemoveChild(string name)
 	{
-		for (uint i = 0; i < children.length; i++)
+		for (uint i = 0; i < children.size(); i++)
 		{
 			Segment@ child = children[i];
 			if (child.name == name)
@@ -32,7 +32,7 @@ shared class SegmentChildren
 
 	void RemoveDescendant(string name)
 	{
-		for (uint i = 0; i < children.length; i++)
+		for (uint i = 0; i < children.size(); i++)
 		{
 			Segment@ child = children[i];
 			if (child.name == name)
@@ -49,14 +49,14 @@ shared class SegmentChildren
 	}
 	uint getChildCount()
 	{
-		return children.length;
+		return children.size();
 	}
 
 	uint getDescendantCount()
 	{
 		uint total = getChildCount();
 
-		for (uint i = 0; i < children.length; i++)
+		for (uint i = 0; i < children.size(); i++)
 		{
 			Segment@ child = children[i];
 			total += child.getDescendantCount();
@@ -86,7 +86,7 @@ shared class SegmentChildren
 
 	private void getDescendants(Segment@[]@ segments)
 	{
-		for (uint i = 0; i < children.length; i++)
+		for (uint i = 0; i < children.size(); i++)
 		{
 			Segment@ child = children[i];
 			segments.push_back(child);
@@ -96,7 +96,7 @@ shared class SegmentChildren
 
 	Segment@ getChild(string name)
 	{
-		for (uint i = 0; i < children.length; i++)
+		for (uint i = 0; i < children.size(); i++)
 		{
 			Segment@ child = children[i];
 			if (child.name == name)
@@ -109,7 +109,7 @@ shared class SegmentChildren
 
 	Segment@ getParent(string name)
 	{
-		for (uint i = 0; i < children.length; i++)
+		for (uint i = 0; i < children.size(); i++)
 		{
 			Segment@ segment = children[i];
 			Segment@ child = segment.getChild(name);
@@ -133,7 +133,7 @@ shared class SegmentChildren
 
 	Segment@ getDescendant(string name)
 	{
-		for (uint i = 0; i < children.length; i++)
+		for (uint i = 0; i < children.size(); i++)
 		{
 			Segment@ child = children[i];
 			if (child.name == name)
@@ -159,7 +159,7 @@ shared class SegmentChildren
 
 	bool hasChild(string name)
 	{
-		for (uint i = 0; i < children.length; i++)
+		for (uint i = 0; i < children.size(); i++)
 		{
 			Segment@ child = children[i];
 			if (child.name == name)
@@ -172,7 +172,7 @@ shared class SegmentChildren
 
 	bool hasDescendant(string name)
 	{
-		for (uint i = 0; i < children.length; i++)
+		for (uint i = 0; i < children.size(); i++)
 		{
 			Segment@ child = children[i];
 			if (child.name == name || child.hasDescendant(name))
@@ -188,7 +188,7 @@ shared class SegmentChildren
 		if (hasChildren())
 		{
 			string[] childrenNames;
-			for (uint i = 0; i < children.length; i++)
+			for (uint i = 0; i < children.size(); i++)
 			{
 				Segment@ child = children[i];
 				childrenNames.push_back(child.name);
@@ -203,7 +203,7 @@ shared class SegmentChildren
 		string[] childrenNames;
 		if (cfg.readIntoArray_string(childrenNames, name + "_children"))
 		{
-			for (uint i = 0; i < childrenNames.length; i++)
+			for (uint i = 0; i < childrenNames.size(); i++)
 			{
 				string name = childrenNames[i];
 				Segment segment(name, cfg);

@@ -87,7 +87,7 @@ shared class ModLoader
 
 				if (!blocksToPlace.empty())
 				{
-					for (uint i = 0; i < blocksToPlace.length; i++)
+					for (uint i = 0; i < blocksToPlace.size(); i++)
 					{
 						BlockToPlace btp = blocksToPlace[i];
 
@@ -168,11 +168,11 @@ shared class ModLoader
 			case LoadState::PreloadModels:
 			{
 				message = "Loading models...";
-				SetProgress(float(index) / float(models.length));
+				SetProgress(float(index) / float(models.size()));
 
 				Model(models[index++]);
 
-				if (index >= models.length)
+				if (index >= models.size())
 				{
 					print("Models loaded", ConsoleColour::CRAZY);
 					NextState();

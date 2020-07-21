@@ -46,7 +46,7 @@ shared class Segment : SegmentChildren
 		string[] uvArr;
 		if (cfg.readIntoArray_string(uvArr, name + "_uv"))
 		{
-			for (uint i = 0; i < uvArr.length; i++)
+			for (uint i = 0; i < uvArr.size(); i++)
 			{
 				string serialized = uvArr[i];
 				@UVs[i] = ImageUV(serialized);
@@ -67,7 +67,7 @@ shared class Segment : SegmentChildren
 		}
 
 		//render children
-		for (uint i = 0; i < children.length; i++)
+		for (uint i = 0; i < children.size(); i++)
 		{
 			Segment@ child = children[i];
 			child.Render(matrix);
@@ -204,7 +204,7 @@ shared class Segment : SegmentChildren
 
 		//uv
 		string[] uvArr;
-		for (uint i = 0; i < UVs.length; i++)
+		for (uint i = 0; i < UVs.size(); i++)
 		{
 			ImageUV@ uv = getUV(i);
 			uvArr.push_back(uv.serializeString());

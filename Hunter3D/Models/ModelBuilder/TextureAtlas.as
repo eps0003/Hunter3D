@@ -15,7 +15,7 @@ shared class TextureAtlas
 		GUI::DrawRectangle(tl, br, color_white);
 		GUI::DrawIcon(texture, tl, scale / 2.0f);
 
-		for (uint i = 0; i < UVs.length; i++)
+		for (uint i = 0; i < UVs.size(); i++)
 		{
 			ImageUV@ uv = UVs[i];
 			Vec2f min = tl + Vec2f(dim.x * uv.min.x, dim.y * uv.min.y);

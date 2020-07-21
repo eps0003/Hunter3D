@@ -34,7 +34,7 @@ void onTick(CRules@ this)
 		ObjectManager@ objectManager = getObjectManager();
 
 		Object@[] objects = objectManager.getNonActorObjects();
-		for (uint i = 0; i < objects.length; i++)
+		for (uint i = 0; i < objects.size(); i++)
 		{
 			Object@ object = objects[i];
 
@@ -105,7 +105,7 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 		{
 			//check if object intersects block
 			Object@[] objects = getObjectManager().getObjects();
-			for (uint i = 0; i < objects.length; i++)
+			for (uint i = 0; i < objects.size(); i++)
 			{
 				PhysicsObject@ object = cast<PhysicsObject>(objects[i]);
 				if (object !is null)

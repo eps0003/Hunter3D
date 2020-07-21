@@ -22,7 +22,7 @@ shared class FlagManager
 	{
 		Flag@[] flags = getFlags();
 
-		for (uint i = 0; i < flags.length; i++)
+		for (uint i = 0; i < flags.size(); i++)
 		{
 			Flag@ f = flags[i];
 			if (f == flag)
@@ -40,7 +40,7 @@ shared class FlagManager
 		Object@[] objects = objectManager.getObjects();
 		Flag@[] flags;
 
-		for (uint i = 0; i < objects.length; i++)
+		for (uint i = 0; i < objects.size(); i++)
 		{
 			Object@ object = objects[i];
 			Flag@ flag = cast<Flag>(object);
@@ -60,7 +60,7 @@ shared class FlagManager
 		Object@[] objects = objectManager.getObjects();
 		Flag@[] flags;
 
-		for (uint i = 0; i < objects.length; i++)
+		for (uint i = 0; i < objects.size(); i++)
 		{
 			Object@ object = objects[i];
 			Flag@ flag = cast<Flag>(object);
@@ -80,7 +80,7 @@ shared class FlagManager
 		Object@[] objects = objectManager.getObjects();
 		Flag@[] flags;
 
-		for (uint i = 0; i < objects.length; i++)
+		for (uint i = 0; i < objects.size(); i++)
 		{
 			Object@ object = objects[i];
 			Flag@ flag = cast<Flag>(object);
@@ -99,7 +99,7 @@ shared class FlagManager
 		ObjectManager@ objectManager = getObjectManager();
 		Object@[] objects = objectManager.getObjects();
 
-		for (uint i = 0; i < objects.length; i++)
+		for (uint i = 0; i < objects.size(); i++)
 		{
 			Object@ object = objects[i];
 			Flag@ flag = cast<Flag>(object);
@@ -113,21 +113,21 @@ shared class FlagManager
 
 	uint getFlagCount()
 	{
-		return getFlags().length;
+		return getFlags().size();
 	}
 
 	uint getFlagCount(u8 team)
 	{
-		return getFlags(team).length;
+		return getFlags(team).size();
 	}
 
 	void SerializeFlags(CBitStream@ bs)
 	{
 		Flag@[] flags = getNonStaticFlags();
 
-		bs.write_u16(flags.length);
+		bs.write_u16(flags.size());
 
-		for (uint i = 0; i < flags.length; i++)
+		for (uint i = 0; i < flags.size(); i++)
 		{
 			Flag@ flag = flags[i];
 			flag.Serialize(bs);

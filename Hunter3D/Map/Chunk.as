@@ -224,7 +224,7 @@ shared class Chunk
 
 	private void AddIndices()
 	{
-		uint n = vertices.length;
+		uint n = vertices.size();
 		indices.push_back(n - 4);
 		indices.push_back(n - 3);
 		indices.push_back(n - 1);

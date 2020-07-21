@@ -194,15 +194,15 @@ namespace String
 	shared string join(string[] strings)
 	{
 		string text;
-		for (uint i = 0; i < strings.length; i++)
+		for (uint i = 0; i < strings.size(); i++)
 		{
 			text += strings[i];
 
-			if (i < int(strings.length - 2))
+			if (i < int(strings.size() - 2))
 			{
 				text += ", ";
 			}
-			else if (i < strings.length - 1)
+			else if (i < strings.size() - 1)
 			{
 				text += " and ";
 			}
@@ -226,7 +226,7 @@ namespace Array
 	shared float sum(float[] arr)
 	{
 		float sum = 0;
-		for (uint i = 0; i < arr.length; i++)
+		for (uint i = 0; i < arr.size(); i++)
 		{
 			sum += arr[i];
 		}
@@ -235,16 +235,16 @@ namespace Array
 
 	shared float mean(float[] arr)
 	{
-		if (arr.length == 0) return 0;
-		return sum(arr) / arr.length;
+		if (arr.size() == 0) return 0;
+		return sum(arr) / arr.size();
 	}
 
 	shared float median(float[] arr)
 	{
-		if (arr.length == 0) return 0;
+		if (arr.size() == 0) return 0;
 		arr.sortAsc();
-		uint i = int(arr.length / 2.0f);
-		if (Maths::isOdd(arr.length)) return arr[i];
+		uint i = int(arr.size() / 2.0f);
+		if (Maths::isOdd(arr.size())) return arr[i];
 		return (arr[i - 1] + arr[i]) / 2.0f;
 	}
 }

@@ -29,7 +29,7 @@ shared class ModelBuilder
 				bool pressingKey = false;
 				Vec3f@[] properties = { segment.dim, segment.origin, segment.offset, segment.orbit, segment.rotation };
 
-				if (selectedProperty < properties.length)
+				if (selectedProperty < properties.size())
 				{
 					float[] preciseIncrement = { 0.01f, 0.01f, 0.01f, 1.0f, 1.0f };
 					float[] fastIncrement = { 0.2f, 0.2f, 0.2f, 10.0f, 10.0f };
@@ -78,7 +78,7 @@ shared class ModelBuilder
 				else
 				{
 					ImageUV@[] UVs = segment.getUVs();
-					uint index = selectedProperty - properties.length;
+					uint index = selectedProperty - properties.size();
 
 					Vec2f dim;
 					GUI::GetImageDimensions(model.getTexture(), dim);
@@ -329,7 +329,7 @@ shared class ModelBuilder
 	{
 		string[] vals = str.split("/");
 
-		if (vals.length == 1)
+		if (vals.size() == 1)
 		{
 			return parseFloat(str);
 		}
@@ -363,7 +363,7 @@ shared class ModelBuilder
 
 		if (cmd == "select")
 		{
-			if (args.length < 1) return;
+			if (args.size() < 1) return;
 
 			string name = args[0];
 			SelectSegment(name);
@@ -374,21 +374,21 @@ shared class ModelBuilder
 		}
 		else if (cmd == "create")
 		{
-			if (args.length < 1) return;
+			if (args.size() < 1) return;
 
 			string name = args[0];
 			CreateSegment(name);
 		}
 		else if (cmd == "remove")
 		{
-			if (args.length < 1) return;
+			if (args.size() < 1) return;
 
 			string name = args[0];
 			RemoveSegment(name);
 		}
 		else if (cmd == "attach")
 		{
-			if (args.length < 2) return;
+			if (args.size() < 2) return;
 
 			string child = args[0];
 			string parent = args[1];
@@ -396,7 +396,7 @@ shared class ModelBuilder
 		}
 		else if (cmd == "rename")
 		{
-			if (args.length < 2) return;
+			if (args.size() < 2) return;
 
 			string name = args[0];
 			string newName = args[1];
@@ -404,7 +404,7 @@ shared class ModelBuilder
 		}
 		else if (cmd == "origin")
 		{
-			if (args.length < 3) return;
+			if (args.size() < 3) return;
 
 			string name = args[0];
 			string axis = args[1].toLower();
@@ -420,7 +420,7 @@ shared class ModelBuilder
 		}
 		else if (cmd == "orbit")
 		{
-			if (args.length < 3) return;
+			if (args.size() < 3) return;
 
 			string name = args[0];
 			string axis = args[1].toLower();
@@ -435,7 +435,7 @@ shared class ModelBuilder
 		}
 		else if (cmd == "offset")
 		{
-			if (args.length < 3) return;
+			if (args.size() < 3) return;
 
 			string name = args[0];
 			string axis = args[1].toLower();
@@ -450,7 +450,7 @@ shared class ModelBuilder
 		}
 		else if (cmd == "rotation" || cmd == "rotate")
 		{
-			if (args.length < 3) return;
+			if (args.size() < 3) return;
 
 			string name = args[0];
 			string axis = args[1].toLower();
@@ -465,7 +465,7 @@ shared class ModelBuilder
 		}
 		else if (cmd == "dim")
 		{
-			if (args.length < 3) return;
+			if (args.size() < 3) return;
 
 			string name = args[0];
 			string axis = args[1].toLower();
@@ -481,7 +481,7 @@ shared class ModelBuilder
 		}
 		else if (cmd == "uv")
 		{
-			if (args.length < 6) return;
+			if (args.size() < 6) return;
 
 			string name = args[0];
 			int side = getDirectionNames().find(args[1]);
@@ -497,19 +497,19 @@ shared class ModelBuilder
 		}
 		else if (cmd == "texture" || cmd == "skin")
 		{
-			if (args.length < 1) return;
+			if (args.size() < 1) return;
 
 			SetTexture(args[0]);
 		}
 		else if (cmd == "save")
 		{
-			if (args.length < 1) return;
+			if (args.size() < 1) return;
 
 			SaveModel(args[0]);
 		}
 		else if (cmd == "load")
 		{
-			if (args.length < 1) return;
+			if (args.size() < 1) return;
 
 			LoadModel(args[0]);
 		}

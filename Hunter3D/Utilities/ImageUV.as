@@ -14,7 +14,7 @@ shared class ImageUV
 	ImageUV(string serialized)
 	{
 		string[] values = serialized.split(" ");
-		if (values.length == 4)
+		if (values.size() == 4)
 		{
 			min.x = parseFloat(values[0]);
 			min.y = parseFloat(values[1]);

@@ -188,8 +188,8 @@ class SpriteProtruder
 				bool down = protrusion > getProtrusion(x, y + 1);
 
 				uint n = num(back) + num(front) + num(up) + num(down) + 2;
-				vertices.set_length(vertices.length + 4 * n);
-				indices.set_length(indices.length + 6 * n);
+				vertices.set_length(vertices.size() + 4 * n);
+				indices.set_length(indices.size() + 6 * n);
 
 				//back
 				if (back)

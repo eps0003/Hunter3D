@@ -80,7 +80,7 @@ shared class Map
 	{
 		this.mapDim = mapDim;
 		map.set_length(mapDim.x * mapDim.y * mapDim.z);
-		faceFlags.set_length(map.length);
+		faceFlags.set_length(map.size());
 
 		InitMaterial();
 		InitBlocksTypes();
@@ -308,7 +308,7 @@ shared class Map
 
 	bool isValidBlock(int index)
 	{
-		return index >= 0 && index < map.length;
+		return index >= 0 && index < map.size();
 	}
 
 	bool isValidChunk(Vec3f position)
@@ -327,7 +327,7 @@ shared class Map
 
 	bool isValidChunk(int index)
 	{
-		return index >= 0 && index < chunks.length;
+		return index >= 0 && index < chunks.size();
 	}
 
 	string getBlockName(u8 block)
@@ -416,12 +416,12 @@ shared class Map
 
 	uint getBlockCount()
 	{
-		return map.length;
+		return map.size();
 	}
 
 	uint getChunkCount()
 	{
-		return chunks.length;
+		return chunks.size();
 	}
 
 	void SetLoaded()
@@ -443,7 +443,7 @@ shared class Map
 	{
 		material.SetVideoMaterial();
 
-		for (uint i = 0; i < visibleChunks.length; i++)
+		for (uint i = 0; i < visibleChunks.size(); i++)
 		{
 			Chunk@ chunk = visibleChunks[i];
 			chunk.Render();

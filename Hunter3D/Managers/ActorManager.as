@@ -22,7 +22,7 @@ shared class ActorManager
 	{
 		Actor@[] actors = getActors();
 
-		for (uint i = 0; i < actors.length; i++)
+		for (uint i = 0; i < actors.size(); i++)
 		{
 			Actor@ actor = actors[i];
 			actor.RenderNameplate();
@@ -34,7 +34,7 @@ shared class ActorManager
 	{
 		Actor@[] actors = getActors();
 
-		for (uint i = 0; i < actors.length; i++)
+		for (uint i = 0; i < actors.size(); i++)
 		{
 			Actor@ a = actors[i];
 			if (a == actor)
@@ -50,7 +50,7 @@ shared class ActorManager
 	{
 		Actor@[] actors = getActors();
 
-		for (uint i = 0; i < actors.length; i++)
+		for (uint i = 0; i < actors.size(); i++)
 		{
 			Actor@ actor = actors[i];
 			if (actor.player.getUsername() == username)
@@ -66,7 +66,7 @@ shared class ActorManager
 	{
 		Actor@[] actors = getActors();
 
-		for (uint i = 0; i < actors.length; i++)
+		for (uint i = 0; i < actors.size(); i++)
 		{
 			Actor@ actor = actors[i];
 			if (actor.player is player)
@@ -84,7 +84,7 @@ shared class ActorManager
 		Object@[] objects = objectManager.getObjects();
 		Actor@[] actors;
 
-		for (uint i = 0; i < objects.length; i++)
+		for (uint i = 0; i < objects.size(); i++)
 		{
 			Object@ object = objects[i];
 			Actor@ actor = cast<Actor>(object);
@@ -104,7 +104,7 @@ shared class ActorManager
 		Object@[] objects = objectManager.getObjects();
 		Actor@[] actors;
 
-		for (uint i = 0; i < objects.length; i++)
+		for (uint i = 0; i < objects.size(); i++)
 		{
 			Object@ object = objects[i];
 			Actor@ actor = cast<Actor>(object);
@@ -123,7 +123,7 @@ shared class ActorManager
 		ObjectManager@ objectManager = getObjectManager();
 		Object@[] objects = objectManager.getObjects();
 
-		for (uint i = 0; i < objects.length; i++)
+		for (uint i = 0; i < objects.size(); i++)
 		{
 			Object@ object = objects[i];
 			Actor@ actor2 = cast<Actor>(object);
@@ -141,7 +141,7 @@ shared class ActorManager
 		ObjectManager@ objectManager = getObjectManager();
 		Object@[] objects = objectManager.getObjects();
 
-		for (uint i = 0; i < objects.length; i++)
+		for (uint i = 0; i < objects.size(); i++)
 		{
 			Object@ object = objects[i];
 			Actor@ actor = cast<Actor>(object);
@@ -159,7 +159,7 @@ shared class ActorManager
 		ObjectManager@ objectManager = getObjectManager();
 		Object@[] objects = objectManager.getObjects();
 
-		for (uint i = 0; i < objects.length; i++)
+		for (uint i = 0; i < objects.size(); i++)
 		{
 			Object@ object = objects[i];
 			Actor@ actor = cast<Actor>(object);
@@ -173,7 +173,7 @@ shared class ActorManager
 
 	uint getActorCount()
 	{
-		return getActors().length;
+		return getActors().size();
 	}
 
 	bool playerHasActor(CPlayer@ player)
@@ -185,9 +185,9 @@ shared class ActorManager
 	{
 		Actor@[] actors = getActorsToSync();
 
-		bs.write_u16(actors.length);
+		bs.write_u16(actors.size());
 
-		for (uint i = 0; i < actors.length; i++)
+		for (uint i = 0; i < actors.size(); i++)
 		{
 			Actor@ actor = actors[i];
 			actor.Serialize(bs);

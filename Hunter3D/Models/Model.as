@@ -55,7 +55,7 @@ shared class Model : SegmentChildren
 			Update(parent);
 
 			Segment@[] segments = getChildren();
-			for (uint i = 0; i < segments.length; i++)
+			for (uint i = 0; i < segments.size(); i++)
 			{
 				Segment@ segment = segments[i];
 				Matrix::SetTranslation(matrix, parent.interPosition.x, parent.interPosition.y, parent.interPosition.z);
@@ -99,7 +99,7 @@ shared class Model : SegmentChildren
 
 		//apply material to all segments
 		Segment@[] segments = getDescendants();
-		for (uint i = 0; i < segments.length; i++)
+		for (uint i = 0; i < segments.size(); i++)
 		{
 			Segment@ segment = segments[i];
 			segment.SetMaterial(material);

@@ -12,7 +12,7 @@ shared class PlayerList
 
 	void AddPlayers(CPlayer@[] players)
 	{
-		for (uint i = 0; i < players.length; i++)
+		for (uint i = 0; i < players.size(); i++)
 		{
 			CPlayer@ player = players[i];
 			if (player !is null && !hasPlayer(player))
@@ -36,7 +36,7 @@ shared class PlayerList
 
 	void RemovePlayer(CPlayer@ player)
 	{
-		for (uint i = 0; i < players.length; i++)
+		for (uint i = 0; i < players.size(); i++)
 		{
 			CPlayer@ p = players[i];
 			if (p is null || p is player)
@@ -65,7 +65,7 @@ shared class PlayerList
 
 	uint getPlayerCount()
 	{
-		return players.length;
+		return players.size();
 	}
 
 	void ClearPlayers()
@@ -82,7 +82,7 @@ shared class PlayerList
 	{
 		if (player !is null)
 		{
-			for (uint i = 0; i < players.length; i++)
+			for (uint i = 0; i < players.size(); i++)
 			{
 				CPlayer@ p = players[i];
 				if (p is player)

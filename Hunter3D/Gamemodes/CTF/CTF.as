@@ -8,7 +8,7 @@ shared class CTF : Gamemode
 
 	CTF()
 	{
-		super(MapGenerator(Vec3f(192, 48, 192)));
+		super(MapGenerator(Vec3f(96, 24, 96)));
 		LoadConfig(openConfig("CTF.cfg"));
 	}
 
