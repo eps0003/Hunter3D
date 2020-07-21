@@ -61,14 +61,24 @@ shared class Chunk
 					float x2 = x1 + (1.0f / 32.0f);
 					float y2 = y1 + (1.0f / 32.0f);
 
-					SColor col = color_white;
-
 					float overlap = 0.0f; //so faint lines dont appear between planes
 					Vec3f p = Vec3f(x, y, z) - overlap;
 					float w = 1 + overlap * 2;
 
+					SColor col;
+					float shade = 12;
+					SColor[] colors = {
+						SColor(255, 255 - shade * 2, 255 - shade * 2, 255 - shade * 2),
+						SColor(255, 255 - shade * 3, 255 - shade * 3, 255 - shade * 3),
+						SColor(255, 255 - shade * 5, 255 - shade * 5, 255 - shade * 5),
+						SColor(255, 255 - shade * 0, 255 - shade * 0, 255 - shade * 0),
+						SColor(255, 255 - shade * 1, 255 - shade * 1, 255 - shade * 1),
+						SColor(255, 255 - shade * 4, 255 - shade * 4, 255 - shade * 4),
+					};
+
 					if (blockHasFace(faces, FaceFlag::Left))
 					{
+						col = colors[Direction::Left];
 						vertices.push_back(Vertex(p.x, p.y + w, p.z + w, x1, y1, col));
 						vertices.push_back(Vertex(p.x, p.y + w, p.z    , x2, y1, col));
 						vertices.push_back(Vertex(p.x, p.y    , p.z    , x2, y2, col));
@@ -78,6 +88,7 @@ shared class Chunk
 
 					if (blockHasFace(faces, FaceFlag::Right))
 					{
+						col = colors[Direction::Right];
 						vertices.push_back(Vertex(p.x + w, p.y + w, p.z    , x1, y1, col));
 						vertices.push_back(Vertex(p.x + w, p.y + w, p.z + w, x2, y1, col));
 						vertices.push_back(Vertex(p.x + w, p.y    , p.z + w, x2, y2, col));
@@ -87,6 +98,7 @@ shared class Chunk
 
 					if (blockHasFace(faces, FaceFlag::Down))
 					{
+						col = colors[Direction::Down];
 						vertices.push_back(Vertex(p.x + w, p.y, p.z + w, x1, y1, col));
 						vertices.push_back(Vertex(p.x    , p.y, p.z + w, x2, y1, col));
 						vertices.push_back(Vertex(p.x    , p.y, p.z    , x2, y2, col));
@@ -96,6 +108,7 @@ shared class Chunk
 
 					if (blockHasFace(faces, FaceFlag::Up))
 					{
+						col = colors[Direction::Up];
 						vertices.push_back(Vertex(p.x    , p.y + w, p.z + w, x1, y1, col));
 						vertices.push_back(Vertex(p.x + w, p.y + w, p.z + w, x2, y1, col));
 						vertices.push_back(Vertex(p.x + w, p.y + w, p.z    , x2, y2, col));
@@ -105,6 +118,7 @@ shared class Chunk
 
 					if (blockHasFace(faces, FaceFlag::Front))
 					{
+						col = colors[Direction::Front];
 						vertices.push_back(Vertex(p.x    , p.y + w, p.z, x1, y1, col));
 						vertices.push_back(Vertex(p.x + w, p.y + w, p.z, x2, y1, col));
 						vertices.push_back(Vertex(p.x + w, p.y    , p.z, x2, y2, col));
@@ -114,6 +128,7 @@ shared class Chunk
 
 					if (blockHasFace(faces, FaceFlag::Back))
 					{
+						col = colors[Direction::Back];
 						vertices.push_back(Vertex(p.x + w, p.y + w, p.z + w, x1, y1, col));
 						vertices.push_back(Vertex(p.x    , p.y + w, p.z + w, x2, y1, col));
 						vertices.push_back(Vertex(p.x    , p.y    , p.z + w, x2, y2, col));
@@ -125,42 +140,48 @@ shared class Chunk
 					{
 						float o = 0.005f;
 
-						//left
+						//right inner
+						col = colors[Direction::Left];
 						vertices.push_back(Vertex(p.x + w - o, p.y + w, p.z + w, x1, y1, col));
 						vertices.push_back(Vertex(p.x + w - o, p.y + w, p.z    , x2, y1, col));
 						vertices.push_back(Vertex(p.x + w - o, p.y    , p.z    , x2, y2, col));
 						vertices.push_back(Vertex(p.x + w - o, p.y    , p.z + w, x1, y2, col));
 						AddIndices();
 
-						//right
+						//left inner
+						col = colors[Direction::Right];
 						vertices.push_back(Vertex(p.x + o, p.y + w, p.z    , x1, y1, col));
 						vertices.push_back(Vertex(p.x + o, p.y + w, p.z + w, x2, y1, col));
 						vertices.push_back(Vertex(p.x + o, p.y    , p.z + w, x2, y2, col));
 						vertices.push_back(Vertex(p.x + o, p.y    , p.z    , x1, y2, col));
 						AddIndices();
 
-						//down
+						//up inner
+						col = colors[Direction::Down];
 						vertices.push_back(Vertex(p.x + w, p.y + w - o, p.z + w, x1, y1, col));
 						vertices.push_back(Vertex(p.x    , p.y + w - o, p.z + w, x2, y1, col));
 						vertices.push_back(Vertex(p.x    , p.y + w - o, p.z    , x2, y2, col));
 						vertices.push_back(Vertex(p.x + w, p.y + w - o, p.z    , x1, y2, col));
 						AddIndices();
 
-						//up
+						//down inner
+						col = colors[Direction::Up];
 						vertices.push_back(Vertex(p.x    , p.y + o, p.z + w, x1, y1, col));
 						vertices.push_back(Vertex(p.x + w, p.y + o, p.z + w, x2, y1, col));
 						vertices.push_back(Vertex(p.x + w, p.y + o, p.z    , x2, y2, col));
 						vertices.push_back(Vertex(p.x    , p.y + o, p.z    , x1, y2, col));
 						AddIndices();
 
-						//front
+						//back inner
+						col = colors[Direction::Front];
 						vertices.push_back(Vertex(p.x    , p.y + w, p.z + w - o, x1, y1, col));
 						vertices.push_back(Vertex(p.x + w, p.y + w, p.z + w - o, x2, y1, col));
 						vertices.push_back(Vertex(p.x + w, p.y    , p.z + w - o, x2, y2, col));
 						vertices.push_back(Vertex(p.x    , p.y    , p.z + w - o, x1, y2, col));
 						AddIndices();
 
-						//back
+						//front inner
+						col = colors[Direction::Back];
 						vertices.push_back(Vertex(p.x + w, p.y + w, p.z + o, x1, y1, col));
 						vertices.push_back(Vertex(p.x    , p.y + w, p.z + o, x2, y1, col));
 						vertices.push_back(Vertex(p.x    , p.y    , p.z + o, x2, y2, col));
