@@ -73,6 +73,15 @@ void onPlayerLeave(CRules@ this, CPlayer@ player)
 	}
 }
 
+void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ attacker, u8 customData)
+{
+	CBlob@ blob = server_CreateBlob("husk");
+	if (blob !is null)
+	{
+		blob.server_SetPlayer(victim);
+	}
+}
+
 void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 {
 	if (cmd == this.getCommandID("c_sync_block"))
