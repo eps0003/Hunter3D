@@ -32,8 +32,8 @@ shared class Gamemode
 		}
 	}
 	void onPlayerLoaded(CRules@ this, CPlayer@ player) {}
-	void onActorSpawn(CRules@ this, CPlayer@ player, Vec3f worldPos, Actor@ actor) {}
-	void onBlockPlaced(CRules@ this, Map@ map, CPlayer@ player, int index, u8 oldBlock, u8 newblock) {}
+	void onActorSpawned(CRules@ this, CPlayer@ player, Vec3f worldPos, Actor@ actor) {}
+	void onBlockSetByPlayer(CRules@ this, Map@ map, CPlayer@ player, int index, u8 oldBlock, u8 newblock) {}
 	void onBlockSet(CRules@ this, Map@ map, int index, u8 oldBlock, u8 newblock)
 	{
 		if (!map.isBlockSeeThrough(newblock))
@@ -50,6 +50,8 @@ shared class Gamemode
 			}
 		}
 	}
+	void onObjectCreated(CRules@ this, Object@ object) {}
+	void onObjectRemoved(CRules@ this, Object@ object) {}
 
 	void GenerateMap()
 	{

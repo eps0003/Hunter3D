@@ -55,8 +55,14 @@ shared class ObjectManager
 				object.AssignUniqueID();
 			}
 
+			//call object event
+			object.onCreate();
+
 			objects.push_back(object);
 			print("Added object: " + object.name + object.id);
+
+			//call gamemode event
+			getGamemodeManager().getGamemode().onObjectCreated(getRules(), object);
 		}
 	}
 
@@ -71,6 +77,12 @@ shared class ObjectManager
 				{
 					removedObjects.push_back(obj.id);
 				}
+
+				//call object event
+				object.onRemove();
+
+				//call gamemode event
+				getGamemodeManager().getGamemode().onObjectRemoved(getRules(), object);
 
 				objects.removeAt(i);
 				print("Removed object: " + object.name + object.id);

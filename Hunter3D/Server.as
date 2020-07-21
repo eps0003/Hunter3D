@@ -124,7 +124,7 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 		if (canSetBlock)
 		{
 			//call gamemode event
-			getGamemodeManager().getGamemode().onBlockPlaced(getRules(), map, player, index, existingBlock, block);
+			getGamemodeManager().getGamemode().onBlockSetByPlayer(getRules(), map, player, index, existingBlock, block);
 
 			//set block
 			map.SetBlock(index, block);

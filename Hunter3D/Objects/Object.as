@@ -72,6 +72,16 @@ shared class Object : Identifiable
 		wasStatic = isStatic();
 	}
 
+	void onCreate()
+	{
+
+	}
+
+	void onRemove()
+	{
+
+	}
+
 	uint getCreateTime()
 	{
 		return createTime;
