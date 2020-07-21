@@ -99,24 +99,29 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 		u8 block = params.read_u8();
 		u8 existingBlock = map.getBlock(index);
 
-		bool notIntersectingObjects = true;
-		Object@[] objects = getObjectManager().getObjects();
-		for (uint i = 0; i < objects.length; i++)
+		bool canSetBlock = true;
+
+		if (map.isBlockSolid(block))
 		{
-			PhysicsObject@ object = cast<PhysicsObject>(objects[i]);
-			if (object !is null)
+			//check if object intersects block
+			Object@[] objects = getObjectManager().getObjects();
+			for (uint i = 0; i < objects.length; i++)
 			{
-				AABB@ bounds = object.getCollisionBox();
-				AABB blockBounds(worldPos, worldPos + 1);
-				if (bounds !is null && bounds.intersects(object.position, blockBounds))
+				PhysicsObject@ object = cast<PhysicsObject>(objects[i]);
+				if (object !is null)
 				{
-					notIntersectingObjects = false;
-					break;
+					AABB@ bounds = object.getCollisionBox();
+					AABB blockBounds(worldPos, worldPos + 1);
+					if (bounds !is null && bounds.intersects(object.position, blockBounds))
+					{
+						canSetBlock = false;
+						break;
+					}
 				}
 			}
 		}
 
-		if (!map.isBlockSolid(block) || notIntersectingObjects)
+		if (canSetBlock)
 		{
 			//call gamemode event
 			getGamemodeManager().getGamemode().onBlockPlaced(getRules(), map, player, index, existingBlock, block);
