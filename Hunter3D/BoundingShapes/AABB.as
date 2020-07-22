@@ -1,5 +1,3 @@
-#include "IBounds.as"
-
 shared class AABB : IBounds
 {
 	Vec3f dim;
@@ -32,11 +30,11 @@ shared class AABB : IBounds
 		radius = dim.mag() / 2.0f;
 	}
 
-	bool intersects(Vec3f position, AABB box)
+	bool intersectsAABB(Vec3f thisPos, AABB other, Vec3f otherPos)
 	{
 		for (uint i = 0; i < 3; i++)
 		{
-			if (position[i] + min[i] >= box.max[i] || position[i] + max[i] <= box.min[i])
+			if (thisPos[i] + min[i] >= otherPos[i] + other.max[i] || thisPos[i] + max[i] <= otherPos[i] + other.min[i])
 			{
 				return false;
 			}
@@ -44,8 +42,7 @@ shared class AABB : IBounds
 		return true;
 	}
 
-	//intersects any solid voxel at specified position
-	bool intersectsAt(Vec3f worldPos)
+	bool intersectsSolid(Vec3f worldPos)
 	{
 		Map@ map = getMap3D();
 
@@ -62,8 +59,7 @@ shared class AABB : IBounds
 		return false;
 	}
 
-	//intersects any solid voxel at the specified position that isnt currently intersecting
-	bool intersectsNewAt(Vec3f currentPos, Vec3f worldPos)
+	bool intersectsNewSolid(Vec3f currentPos, Vec3f worldPos)
 	{
 		Map@ map = getMap3D();
 
@@ -93,21 +89,19 @@ shared class AABB : IBounds
 		return false;
 	}
 
-	// //intersects point at specified position
-	// bool intersectsAt(Vec3f worldPos, Vec3f pointPos)
-	// {
-	// 	return (
-	// 		pointPos.x > worldPos.x + min.x &&
-	// 		pointPos.x < worldPos.x + max.x &&
-	// 		pointPos.y > worldPos.y + min.y &&
-	// 		pointPos.y < worldPos.y + max.y &&
-	// 		pointPos.z > worldPos.z + min.z &&
-	// 		pointPos.z < worldPos.z + max.z
-	// 	);
-	// }
+	bool intersectsPoint(Vec3f worldPos, Vec3f point)
+	{
+		return (
+			point.x > worldPos.x + min.x &&
+			point.x < worldPos.x + max.x &&
+			point.y > worldPos.y + min.y &&
+			point.y < worldPos.y + max.y &&
+			point.z > worldPos.z + min.z &&
+			point.z < worldPos.z + max.z
+		);
+	}
 
-	//intersects specific voxel at specific position
-	bool intersectsAt(Vec3f worldPos, Vec3f voxelWorldPos)
+	bool intersectsVoxel(Vec3f worldPos, Vec3f voxelWorldPos)
 	{
 		for (int x = worldPos.x + min.x; x < worldPos.x + max.x; x++)
 		for (int y = worldPos.y + min.y; y < worldPos.y + max.y; y++)
@@ -121,8 +115,7 @@ shared class AABB : IBounds
 		return false;
 	}
 
-	//intersects map edge at specific position
-	bool intersectsMapEdgeAt(Vec3f worldPos)
+	bool intersectsMapEdge(Vec3f worldPos)
 	{
 		Vec3f dim = getMap3D().getMapDimensions();
 		return (
@@ -133,7 +126,6 @@ shared class AABB : IBounds
 		);
 	}
 
-	//get random point within bounds
 	Vec3f randomPoint()
 	{
 		Random random();
@@ -142,6 +134,11 @@ shared class AABB : IBounds
 			min.y + random.Next() * dim.y,
 			min.z + random.Next() * dim.z
 		);
+	}
+
+	bool intersectsCylinder(Vec3f thisPos, Cylinder other, Vec3f otherPos)
+	{
+		return false;
 	}
 
 	void Render(Vec3f worldPos = Vec3f(), SColor col = SColor(100, 100, 255, 100))

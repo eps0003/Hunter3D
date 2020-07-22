@@ -1,5 +1,5 @@
 #include "Plane.as"
-#include "AABB.as"
+#include "IBounds.as"
 
 shared class Frustum
 {

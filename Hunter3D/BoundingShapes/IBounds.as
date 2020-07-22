@@ -1,21 +1,13 @@
+#include "AABB.as"
+#include "Cylinder.as"
+
 shared interface IBounds
 {
-	bool intersectsAt(Vec3f worldPos);
-	bool intersectsNewAt(Vec3f currentPos, Vec3f worldPos);
-
-	// bool intersects(Vec3f pointPos);
-	// bool intersectsAt(Vec3f worldPos, Vec3f pointPos);
-
-	// bool intersects(AABB@ aabb);
-	// bool intersectsAt(Vec3f worldPos, AABB@ aabb);
-
-	// bool intersects(Cylinder@ cylinder);
-	// bool intersectsAt(Vec3f worldPos, Cylinder@ cylinder);
-
-	// bool intersects(Voxel@ voxel);
-	// bool intersectsAt(Vec3f worldPos, Voxel@ voxel);
-
-	bool intersectsMapEdgeAt(Vec3f worldPos);
-
-	Vec3f randomPoint();
+	bool intersectsAABB(Vec3f thisPos, AABB other, Vec3f otherPos);
+	bool intersectsCylinder(Vec3f thisPos, Cylinder other, Vec3f otherPos);
+	bool intersectsSolid(Vec3f worldPos);
+	bool intersectsNewSolid(Vec3f currentPos, Vec3f worldPos);
+	bool intersectsVoxel(Vec3f worldPos, Vec3f voxelWorldPos);
+	bool intersectsPoint(Vec3f worldPos, Vec3f point);
+	bool intersectsMapEdge(Vec3f worldPos);
 }

@@ -17,7 +17,7 @@ shared class Walking : MovementStrategy
 			dir = dir.RotateBy(actor.rotation.y);
 		}
 
-		if (controls.isKeyPressed(KEY_SPACE) && actor.getCollisionBox().intersectsNewAt(actor.position, actor.position + Vec3f(0, -0.001f, 0)))
+		if (controls.isKeyPressed(KEY_SPACE) && actor.getCollisionBox().intersectsNewSolid(actor.position, actor.position + Vec3f(0, -0.001f, 0)))
 		{
 			actor.velocity.y = actor.jumpForce;
 		}

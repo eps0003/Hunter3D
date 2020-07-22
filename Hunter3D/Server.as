@@ -111,8 +111,7 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 				if (object !is null)
 				{
 					AABB@ bounds = object.getCollisionBox();
-					AABB blockBounds(worldPos, worldPos + 1);
-					if (bounds !is null && bounds.intersects(object.position, blockBounds))
+					if (bounds !is null && bounds.intersectsVoxel(object.position, worldPos))
 					{
 						canSetBlock = false;
 						break;

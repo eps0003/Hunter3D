@@ -1,5 +1,5 @@
 #include "Object.as"
-#include "AABB.as"
+#include "IBounds.as"
 #include "Map.as"
 #include "CollisionFlags.as"
 
@@ -181,7 +181,7 @@ shared class PhysicsObject : Object, IHasConfig
 			collisionX = true;
 			Vec3f xPosition(position.x + velocity.x, position.y, position.z);
 
-			if (collideBlocks && collisionBox.intersectsNewAt(position, xPosition))
+			if (collideBlocks && collisionBox.intersectsNewSolid(position, xPosition))
 			{
 				if (velocity.x > 0)
 				{
@@ -192,7 +192,7 @@ shared class PhysicsObject : Object, IHasConfig
 					position.x = Maths::Floor(position.x + collisionBox.min.x) - collisionBox.min.x;
 				}
 			}
-			else if (collideMapEdge && collisionBox.intersectsMapEdgeAt(xPosition))
+			else if (collideMapEdge && collisionBox.intersectsMapEdge(xPosition))
 			{
 				if (velocity.x > 0)
 				{
@@ -213,7 +213,7 @@ shared class PhysicsObject : Object, IHasConfig
 			collisionZ = true;
 			Vec3f zPosition(position.x, position.y, position.z + velocity.z);
 
-			if (collideBlocks && collisionBox.intersectsNewAt(position, zPosition))
+			if (collideBlocks && collisionBox.intersectsNewSolid(position, zPosition))
 			{
 				if (velocity.z > 0)
 				{
@@ -224,7 +224,7 @@ shared class PhysicsObject : Object, IHasConfig
 					position.z = Maths::Floor(position.z + collisionBox.min.z) - collisionBox.min.z;
 				}
 			}
-			else if (collideMapEdge && collisionBox.intersectsMapEdgeAt(zPosition))
+			else if (collideMapEdge && collisionBox.intersectsMapEdge(zPosition))
 			{
 				if (velocity.z > 0)
 				{
@@ -245,7 +245,7 @@ shared class PhysicsObject : Object, IHasConfig
 			collisionY = true;
 			Vec3f yPosition(position.x, position.y + velocity.y, position.z);
 
-			if (collideBlocks && collisionBox.intersectsNewAt(position, yPosition))
+			if (collideBlocks && collisionBox.intersectsNewSolid(position, yPosition))
 			{
 				if (velocity.y > 0)
 				{

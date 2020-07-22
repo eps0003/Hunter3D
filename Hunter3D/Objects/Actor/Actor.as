@@ -212,7 +212,6 @@ shared class Actor : PhysicsObject, IRenderable, IHasTeam, IHasConfig
 				Vec3f worldPos = raycastInfo.hitWorldPos + raycastInfo.normal;
 
 				AABB actorBounds = getCollisionBox();
-				AABB blockBounds(worldPos, worldPos + 1);
 
 				bool canSetBlock = true;
 
@@ -226,8 +225,7 @@ shared class Actor : PhysicsObject, IRenderable, IHasTeam, IHasConfig
 						if (object !is null)
 						{
 							AABB@ bounds = object.getCollisionBox();
-							AABB blockBounds(worldPos, worldPos + 1);
-							if (bounds !is null && bounds.intersects(object.position, blockBounds))
+							if (bounds !is null && bounds.intersectsVoxel(object.position, worldPos))
 							{
 								canSetBlock = false;
 								break;
@@ -268,9 +266,6 @@ shared class Actor : PhysicsObject, IRenderable, IHasTeam, IHasConfig
 				Vec3f worldPos = raycastInfo.hitWorldPos;
 				u8 block = BlockType::Air;
 				u8 existingBlock = map.getBlock(worldPos);
-
-				AABB actorBounds = getCollisionBox();
-				AABB blockBounds(worldPos, worldPos + 1);
 
 				if (map.isValidBlock(worldPos) && map.isBlockDestructable(existingBlock) && existingBlock != block)
 				{
