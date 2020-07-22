@@ -28,10 +28,7 @@ shared class ObjectManager
 		for (uint i = 0; i < objects.size(); i++)
 		{
 			Object@ object = objects[i];
-			if (!object.isStatic())
-			{
-				object.Interpolate();
-			}
+			object.Interpolate();
 		}
 	}
 
