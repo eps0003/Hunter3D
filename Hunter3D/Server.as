@@ -2,6 +2,7 @@
 #include "Map.as"
 #include "ObjectManager.as"
 #include "MapSyncer.as"
+#include "ObjectSyncer.as"
 #include "GamemodeManager.as"
 
 #define SERVER_ONLY
@@ -50,10 +51,7 @@ void onTick(CRules@ this)
 			objects[i].PostUpdate();
 		}
 
-		CBitStream bs;
-		objectManager.SerializeObjects(bs);
-		this.SendCommand(this.getCommandID("s_sync_objects"), bs, true);
-
+		getObjectSyncer().server_Sync();
 		getMapSyncer().server_Sync();
 	}
 }
@@ -150,6 +148,20 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 		if (existingActor !is null)
 		{
 			existingActor = actor;
+		}
+	}
+	else if (cmd == this.getCommandID("c_loaded"))
+	{
+		u16 playerID = params.read_u16();
+		CPlayer@ player = getPlayerByNetworkId(playerID);
+
+		if (player !is null)
+		{
+			//call gamemode event
+			getGamemodeManager().getGamemode().onPlayerLoaded(this, player);
+
+			//sync all objects to player
+			getObjectSyncer().AddNewPlayer(player);
 		}
 	}
 }

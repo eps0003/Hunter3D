@@ -165,6 +165,6 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 
 	if (cmd == this.getCommandID("s_sync_objects"))
 	{
-		getObjectManager().DeserializeObjects(params);
+		getObjectSyncer().client_Deserialize(params);
 	}
 }

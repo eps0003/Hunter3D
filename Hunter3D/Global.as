@@ -22,6 +22,7 @@ void onRestart(CRules@ this)
 	this.set("map", null);
 	this.set("mod_loader", null);
 	this.set("map_syncer", null);
+	this.set("object_syncer", null);
 	this.set("actor_manager", null);
 	this.set("flag_manager", null);
 	this.set("gamemode_manager", null);

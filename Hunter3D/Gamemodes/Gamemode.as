@@ -18,19 +18,7 @@ shared class Gamemode
 	void onNewPlayerJoin(CRules@ this, CPlayer@ player) {}
 	void onPlayerLeave(CRules@ this, CPlayer@ player) {}
 	void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ attacker, u8 customData) {}
-	void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
-	{
-		if (cmd == this.getCommandID("c_loaded"))
-		{
-			u16 playerID = params.read_u16();
-			CPlayer@ player = getPlayerByNetworkId(playerID);
-
-			if (player !is null)
-			{
-				onPlayerLoaded(this, player);
-			}
-		}
-	}
+	void onCommand(CRules@ this, u8 cmd, CBitStream@ params) {}
 	void onPlayerLoaded(CRules@ this, CPlayer@ player) {}
 	void onActorSpawned(CRules@ this, CPlayer@ player, Vec3f worldPos, Actor@ actor) {}
 	void onBlockSetByPlayer(CRules@ this, Map@ map, CPlayer@ player, int index, u8 oldBlock, u8 newblock) {}

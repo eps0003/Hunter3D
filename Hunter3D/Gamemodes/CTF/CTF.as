@@ -29,8 +29,6 @@ shared class CTF : Gamemode
 
 	void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 	{
-		Gamemode::onCommand(this, cmd, params);
-
 		if (cmd == this.getCommandID("c_do_something"))
 		{
 			getObjectManager().AddObject(Flag(getMap3D().getMapDimensions() * Vec3f(0.5f, 0.7f, 0.5f), 0));
