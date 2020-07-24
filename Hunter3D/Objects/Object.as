@@ -68,13 +68,17 @@ shared class Object : Identifiable
 
 	void PostUpdate()
 	{
-		sync = !wasStatic || !isStatic();
+		sync = sync || !wasStatic || !isStatic();
 		wasStatic = isStatic();
 	}
 
 	void onCreate()
 	{
+		oldPosition = position;
+		interPosition = position;
 
+		oldRotation = rotation;
+		interRotation = rotation;
 	}
 
 	void onRemove()
@@ -87,11 +91,6 @@ shared class Object : Identifiable
 		return createTime;
 	}
 
-	void Synced()
-	{
-		sync = false;
-	}
-
 	bool shouldSync()
 	{
 		return sync;
@@ -102,12 +101,17 @@ shared class Object : Identifiable
 		return position == oldPosition && rotation == oldRotation;
 	}
 
-	void Interpolate()
+	void Interpolate(float t)
 	{
-		float t = getInterFrameTime();
+		if (oldPosition != position)
+		{
+			interPosition = oldPosition.lerp(position, t);
+		}
 
-		interPosition = oldPosition.lerp(position, t);
-		interRotation = oldRotation.lerpAngle(rotation, t);
+		if (oldRotation != rotation)
+		{
+			interRotation = oldRotation.lerpAngle(rotation, t);
+		}
 	}
 
 	void Serialize(CBitStream@ bs)
@@ -116,5 +120,7 @@ shared class Object : Identifiable
 
 		position.Serialize(bs);
 		rotation.Serialize(bs);
+
+		sync = false;
 	}
 }

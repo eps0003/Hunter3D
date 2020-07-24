@@ -45,8 +45,13 @@ void onTick(CRules@ this)
 			if (getControls().isKeyJustPressed(KEY_KEY_L))
 			{
 				CBitStream bs;
-				myActor.Serialize(bs);
-				this.SendCommand(this.getCommandID("c_remove_actor"), bs, false);
+				this.SendCommand(this.getCommandID("c_do_something"), bs, false);
+			}
+
+			if (getControls().isKeyJustPressed(KEY_KEY_K))
+			{
+				CBitStream bs;
+				this.SendCommand(this.getCommandID("c_do_something_else"), bs, false);
 			}
 		}
 	}
@@ -77,9 +82,9 @@ void onRender(CRules@ this)
 		Map@ map = getMap3D();
 
 		// GUI::DrawText("block: " + map.getBlockName(myActor.blockType), Vec2f(10, 40), color_black);
-		GUI::DrawIcon(map.texture, myActor.blockType * 4, Vec2f(16, 16), Vec2f(10, 10), 3);
+		GUI::DrawIcon(map.texture, myActor.blockType * 4, Vec2f(16, 16), Vec2f(10, 60), 3);
 
-		// GUI::DrawText("position: " + myActor.position.toString(), Vec2f(10, 40), color_black);
+		GUI::DrawText("position: " + myActor.position.toString(), Vec2f(10, 40), color_black);
 		// GUI::DrawText("rotation: " + myActor.rotation.toString(), Vec2f(10, 60), color_black);
 		// GUI::DrawText("velocity: " + myActor.velocity.toString(), Vec2f(10, 80), color_black);
 		// GUI::DrawText("vellen: " + Vec2f(myActor.interVelocity.x, myActor.interVelocity.z).Length(), Vec2f(10, 100), color_black);
@@ -105,12 +110,14 @@ void Render(int id)
 	Render::SetBackfaceCull(true);
 	Render::ClearZ();
 
+	float t = getInterFrameTime();
+
 	Camera@ camera = getCamera3D();
 	if (camera.hasParent())
 	{
 		ObjectManager@ objectManager = getObjectManager();
 
-		objectManager.Interpolate();
+		objectManager.Interpolate(t);
 
 		camera.Render();
 		getMap3D().Render();
@@ -158,8 +165,6 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 
 	if (cmd == this.getCommandID("s_sync_objects"))
 	{
-		getActorManager().DeserializeActors(params);
-		getFlagManager().DeserializeFlags(params);
-		getObjectManager().DeserializeRemovedObjects(params);
+		getObjectManager().DeserializeObjects(params);
 	}
 }

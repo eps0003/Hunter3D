@@ -18,22 +18,32 @@ shared ObjectManager@ getObjectManager()
 	return objectManager;
 }
 
+enum ObjectType
+{
+	None,
+	Actor,
+	Flag
+}
+
 shared class ObjectManager
 {
 	private Object@[] objects;
 	private uint[] removedObjects;
+	private dictionary idIndexPairs;
 
-	void Interpolate()
+	void Interpolate(float t)
 	{
 		for (uint i = 0; i < objects.size(); i++)
 		{
 			Object@ object = objects[i];
-			object.Interpolate();
+			object.Interpolate(t);
 		}
 	}
 
 	void Render()
 	{
+		float t = getInterFrameTime();
+
 		for (uint i = 0; i < objects.size(); i++)
 		{
 			Object@ object = objects[i];
@@ -104,19 +114,15 @@ shared class ObjectManager
 
 			objects.removeAt(index);
 			print("Removed object: " + object.name + object.id);
-	}
+		}
 	}
 
 	void RemoveObjectByID(uint id)
 	{
-		for (uint i = 0; i < objects.size(); i++)
+		uint index;
+		if (idIndexPairs.get("" + id, index))
 		{
-			Object@ obj = objects[i];
-			if (obj.id == id)
-			{
-				RemoveObject(i);
-				return;
-			}
+			RemoveObject(index);
 		}
 	}
 
@@ -166,9 +172,99 @@ shared class ObjectManager
 		return objects.size();
 	}
 
-	void SerializeRemovedObjects(CBitStream@ bs)
+	void SerializeObjects(CBitStream@ bs)
 	{
-		bs.write_u16(removedObjects.size());
+		bs.write_u32(objects.size());
+
+		for (uint i = 0; i < objects.size(); i++)
+		{
+			Object@ object = objects[i];
+
+			//serialize actor
+			Actor@ actor = cast<Actor>(object);
+			if (actor !is null && actor.shouldSync())
+			{
+				bs.write_bool(true);
+				bs.write_u8(ObjectType::Actor);
+				actor.Serialize(bs);
+				continue;
+			}
+
+			//serialize flag
+			Flag@ flag = cast<Flag>(object);
+			if (flag !is null && flag.shouldSync())
+			{
+				bs.write_bool(true);
+				bs.write_u8(ObjectType::Flag);
+				flag.Serialize(bs);
+				continue;
+			}
+
+			bs.write_bool(false);
+		}
+
+		SerializeRemovedObjects(bs);
+	}
+
+	void DeserializeObjects(CBitStream@ bs)
+	{
+		uint count = bs.read_u32();
+		for (uint i = 0; i < count; i++)
+		{
+			if (!bs.read_bool()) continue;
+
+			switch (bs.read_u8())
+			{
+				case ObjectType::Actor:
+				{
+					Actor actor(bs);
+
+					uint index;
+					if (idIndexPairs.get("" + actor.id, index))
+					{
+						//update actors that arent mine
+						if (!actor.player.isMyPlayer())
+						{
+							cast<Actor>(objects[index]) = actor;
+						}
+					}
+					else
+					{
+						//spawn actor
+						AddObject(actor);
+
+						if (actor.player.isMyPlayer())
+						{
+							getCamera3D().SetParent(actor);
+						}
+					}
+				}
+				break;
+
+				case ObjectType::Flag:
+				{
+					Flag flag(bs);
+
+					uint index;
+					if (idIndexPairs.get("" + flag.id, index))
+					{
+						cast<Flag>(objects[index]) = flag;
+					}
+					else
+					{
+						AddObject(flag);
+					}
+				}
+				break;
+			}
+		}
+
+		DeserializeRemovedObjects(bs);
+	}
+
+	private void SerializeRemovedObjects(CBitStream@ bs)
+	{
+		bs.write_u32(removedObjects.size());
 
 		for (uint i = 0; i < removedObjects.size(); i++)
 		{
@@ -179,14 +275,28 @@ shared class ObjectManager
 		removedObjects.clear();
 	}
 
-	void DeserializeRemovedObjects(CBitStream@ bs)
+	private void DeserializeRemovedObjects(CBitStream@ bs)
 	{
-		u16 count = bs.read_u16();
+		BuildDictionary();
+
+		uint count = bs.read_u32();
 
 		for (uint i = 0; i < count; i++)
 		{
 			uint id = bs.read_u32();
 			RemoveObjectByID(id);
+
+			BuildDictionary();
+		}
+	}
+
+	private void BuildDictionary()
+	{
+		idIndexPairs.deleteAll();
+
+		for (uint i = 0; i < objects.size(); i++)
+		{
+			idIndexPairs.set("" + objects[i].id, i);
 		}
 	}
 

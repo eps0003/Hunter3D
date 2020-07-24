@@ -32,21 +32,26 @@ void onTick(CRules@ this)
 	if (!isClient())
 	{
 		ObjectManager@ objectManager = getObjectManager();
-
 		Object@[] objects = objectManager.getNonActorObjects();
-		for (uint i = 0; i < objects.size(); i++)
-		{
-			Object@ object = objects[i];
+		uint count = objects.size();
 
-			object.PreUpdate();
-			object.Update();
-			object.PostUpdate();
+		for (uint i = 0; i < count; i++)
+		{
+			objects[i].PreUpdate();
+		}
+
+		for (uint i = 0; i < count; i++)
+		{
+			objects[i].Update();
+		}
+
+		for (uint i = 0; i < count; i++)
+		{
+			objects[i].PostUpdate();
 		}
 
 		CBitStream bs;
-		getActorManager().SerializeActors(bs);
-		getFlagManager().SerializeFlags(bs);
-		objectManager.SerializeRemovedObjects(bs);
+		objectManager.SerializeObjects(bs);
 		this.SendCommand(this.getCommandID("s_sync_objects"), bs, true);
 
 		getMapSyncer().server_Sync();

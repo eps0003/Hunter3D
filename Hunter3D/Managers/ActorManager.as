@@ -98,26 +98,6 @@ shared class ActorManager
 		return actors;
 	}
 
-	Actor@[] getActorsToSync()
-	{
-		ObjectManager@ objectManager = getObjectManager();
-		Object@[] objects = objectManager.getObjects();
-		Actor@[] actors;
-
-		for (uint i = 0; i < objects.size(); i++)
-		{
-			Object@ object = objects[i];
-			Actor@ actor = cast<Actor>(object);
-
-			if (actor !is null && actor.shouldSync())
-			{
-				actors.push_back(actor);
-			}
-		}
-
-		return actors;
-	}
-
 	void RemoveActor(Actor@ actor)
 	{
 		ObjectManager@ objectManager = getObjectManager();
@@ -159,14 +139,14 @@ shared class ActorManager
 		ObjectManager@ objectManager = getObjectManager();
 		Object@[] objects = objectManager.getObjects();
 
-		for (uint i = 0; i < objects.size(); i++)
+		for (int i = objects.size() - 1; i >= 0; i--)
 		{
 			Object@ object = objects[i];
 			Actor@ actor = cast<Actor>(object);
 
 			if (actor !is null)
 			{
-				objectManager.RemoveObject(i--);
+				objectManager.RemoveObject(i);
 			}
 		}
 	}
@@ -179,50 +159,6 @@ shared class ActorManager
 	bool playerHasActor(CPlayer@ player)
 	{
 		return getActor(player) !is null;
-	}
-
-	void SerializeActors(CBitStream@ bs)
-	{
-		Actor@[] actors = getActorsToSync();
-
-		bs.write_u16(actors.size());
-
-		for (uint i = 0; i < actors.size(); i++)
-		{
-			Actor@ actor = actors[i];
-			actor.Serialize(bs);
-			actor.Synced();
-		}
-	}
-
-	void DeserializeActors(CBitStream@ bs)
-	{
-		u16 count = bs.read_u16();
-
-		for (uint i = 0; i < count; i++)
-		{
-			Actor actor(bs);
-			Actor@ existingActor = getActor(actor);
-
-			if (existingActor !is null)
-			{
-				//update actors that arent mine
-				if (!actor.player.isMyPlayer())
-				{
-					existingActor = actor;
-				}
-			}
-			else
-			{
-				//spawn actor
-				getObjectManager().AddObject(actor);
-
-				if (actor.player.isMyPlayer())
-				{
-					getCamera3D().SetParent(actor);
-				}
-			}
-		}
 	}
 
 	private void RemoveActor(ObjectManager@ objectManager, Actor@ actor, uint index)

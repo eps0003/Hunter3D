@@ -31,11 +31,14 @@ shared class CTF : Gamemode
 	{
 		Gamemode::onCommand(this, cmd, params);
 
-		if (cmd == this.getCommandID("c_remove_actor"))
+		if (cmd == this.getCommandID("c_do_something"))
 		{
-			Actor actor(params);
-			getRespawnManager().AddToQueue(actor.player, respawnTime);
-			// getObjectManager().AddObject(Flag(getMap3D().getMapDimensions() * Vec3f(0.5f, 1, 0.5f), 0));
+			getObjectManager().AddObject(Flag(getMap3D().getMapDimensions() * Vec3f(0.5f, 0.7f, 0.5f), 0));
+		}
+
+		if (cmd == this.getCommandID("c_do_something_else"))
+		{
+			getFlagManager().ClearFlags();
 		}
 	}
 

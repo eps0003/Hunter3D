@@ -81,8 +81,6 @@ shared class Actor : PhysicsObject, IRenderable, IHasTeam, IHasConfig
 			Serialize(bs);
 			CRules@ rules = getRules();
 			rules.SendCommand(rules.getCommandID("c_sync_actor"), bs, false);
-
-			Synced();
 		}
 	}
 
@@ -138,11 +136,9 @@ shared class Actor : PhysicsObject, IRenderable, IHasTeam, IHasConfig
 		}
 	}
 
-	void Interpolate()
+	void Interpolate(float t)
 	{
-		PhysicsObject::Interpolate();
-
-		float t = getInterFrameTime();
+		PhysicsObject::Interpolate(t);
 
 		interRotation = oldRotation.lerpAngle(rotation, t);
 	}
