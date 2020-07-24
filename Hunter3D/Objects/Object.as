@@ -96,6 +96,11 @@ shared class Object : Identifiable
 		return sync;
 	}
 
+	void Synced()
+	{
+		sync = false;
+	}
+
 	bool isStatic()
 	{
 		return position == oldPosition && rotation == oldRotation;
@@ -120,7 +125,5 @@ shared class Object : Identifiable
 
 		position.Serialize(bs);
 		rotation.Serialize(bs);
-
-		sync = false;
 	}
 }

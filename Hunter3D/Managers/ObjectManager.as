@@ -75,19 +75,7 @@ shared class ObjectManager
 			Object@ obj = objects[i];
 			if (object == obj)
 			{
-				if (!isClient())
-				{
-					getObjectSyncer().AddRemovedObject(obj.id);
-				}
-
-				//call object event
-				object.onRemove();
-
-				//call gamemode event
-				getGamemodeManager().getGamemode().onObjectRemoved(getRules(), object);
-
-				objects.removeAt(i);
-				print("Removed object: " + object.name + object.id);
+				RemoveObject(i);
 				return;
 			}
 		}
@@ -101,8 +89,14 @@ shared class ObjectManager
 
 			if (!isClient())
 			{
-				getObjectSyncer().AddRemovedObject(object.id);
+				getObjectSyncer().AddRemovedObject(index);
 			}
+
+			//call object event
+			object.onRemove();
+
+			//call gamemode event
+			getGamemodeManager().getGamemode().onObjectRemoved(getRules(), object);
 
 			objects.removeAt(index);
 			print("Removed object: " + object.name + object.id);

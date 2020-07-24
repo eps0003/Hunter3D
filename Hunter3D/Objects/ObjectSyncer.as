@@ -23,12 +23,11 @@ enum ObjectType
 shared class ObjectSyncer
 {
 	private uint[] removedObjects;
-	private dictionary idIndexPairs;
 	private CPlayer@[] syncAllToPlayers;
 
-	void AddRemovedObject(uint id)
+	void AddRemovedObject(uint index)
 	{
-		removedObjects.push_back(id);
+		removedObjects.push_back(index);
 	}
 
 	void AddNewPlayer(CPlayer@ player)
@@ -50,14 +49,24 @@ shared class ObjectSyncer
 			rules.SendCommand(rules.getCommandID("s_sync_objects"), bs, player);
 		}
 
+		Object@[] objects = getObjectManager().getObjects();
+
+		for (uint i = 0; i < objects.size(); i++)
+		{
+			Object@ object = objects[i];
+			object.Synced();
+		}
+
+		removedObjects.clear();
 	}
 
 	private void SerializeObjects(CBitStream@ bs, bool syncAll)
 	{
 		Object@[] objects = getObjectManager().getObjects();
 
-		bs.write_u32(objects.size());
+		SerializeRemovedObjects(bs);
 
+		bs.write_u32(objects.size());
 		for (uint i = 0; i < objects.size(); i++)
 		{
 			Object@ object = objects[i];
@@ -84,18 +93,20 @@ shared class ObjectSyncer
 
 			bs.write_bool(false);
 		}
-
-		SerializeRemovedObjects(bs);
 	}
 
 	void client_Deserialize(CBitStream@ bs)
 	{
 		ObjectManager@ objectManager = getObjectManager();
 
+		DeserializeRemovedObjects(bs);
+
 		uint count = bs.read_u32();
 		for (uint i = 0; i < count; i++)
 		{
 			if (!bs.read_bool()) continue;
+
+			Object@[] objects = objectManager.getObjects();
 
 			switch (bs.read_u8())
 			{
@@ -103,13 +114,12 @@ shared class ObjectSyncer
 				{
 					Actor actor(bs);
 
-					uint index;
-					if (idIndexPairs.get("" + actor.id, index))
+					if (i < objects.size())
 					{
 						//update actors that arent mine
 						if (!actor.player.isMyPlayer())
 						{
-							Object@ object = objectManager.getObject(index);
+							Object@ object = objectManager.getObject(i);
 							cast<Actor>(object) = actor;
 						}
 					}
@@ -130,10 +140,9 @@ shared class ObjectSyncer
 				{
 					Flag flag(bs);
 
-					uint index;
-					if (idIndexPairs.get("" + flag.id, index))
+					if (i < objects.size())
 					{
-						Object@ object = objectManager.getObject(index);
+						Object@ object = objectManager.getObject(i);
 						cast<Flag>(object) = flag;
 					}
 					else
@@ -144,8 +153,6 @@ shared class ObjectSyncer
 				break;
 			}
 		}
-
-		DeserializeRemovedObjects(bs);
 	}
 
 	private bool shouldSyncAll(CPlayer@ player)
@@ -167,43 +174,21 @@ shared class ObjectSyncer
 
 		for (uint i = 0; i < removedObjects.size(); i++)
 		{
-			uint id = removedObjects[i];
-			bs.write_u32(id);
+			uint index = removedObjects[i];
+			bs.write_u32(index);
 		}
-
-		removedObjects.clear();
 	}
 
 	private void DeserializeRemovedObjects(CBitStream@ bs)
 	{
 		ObjectManager@ objectManager = getObjectManager();
-		Object@[] objects = objectManager.getObjects();
-
-		BuildDictionary(objects);
 
 		uint count = bs.read_u32();
 
 		for (uint i = 0; i < count; i++)
 		{
-			uint id = bs.read_u32();
-
-			uint index;
-			if (idIndexPairs.get("" + id, index))
-			{
-				objectManager.RemoveObject(index);
-			}
-
-			BuildDictionary(objects);
-		}
-	}
-
-	private void BuildDictionary(Object@[] objects)
-	{
-		idIndexPairs.deleteAll();
-
-		for (uint i = 0; i < objects.size(); i++)
-		{
-			idIndexPairs.set("" + objects[i].id, i);
+			uint index = bs.read_u32();
+			objectManager.RemoveObject(index);
 		}
 	}
 }
