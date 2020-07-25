@@ -42,3 +42,8 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 {
 	getGamemodeManager().getGamemode().onCommand(this, cmd, params);
 }
+
+void onPlayerRequestTeamChange(CRules@ this, CPlayer@ player, u8 newteam)
+{
+	getGamemodeManager().getGamemode().onPlayerRequestTeamChange(this, player, player.getTeamNum(), newteam);
+}

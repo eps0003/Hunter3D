@@ -17,6 +17,11 @@ shared class CTF : Gamemode
 		getRespawnManager().Update();
 	}
 
+	void onNewPlayerJoin(CRules@ this, CPlayer@ player)
+	{
+		player.server_setTeamNum(0);
+	}
+
 	void onPlayerLeave(CRules@ this, CPlayer@ player)
 	{
 		getRespawnManager().RemoveFromQueue(player);
@@ -42,7 +47,37 @@ shared class CTF : Gamemode
 
 	void onPlayerLoaded(CRules@ this, CPlayer@ player)
 	{
-		getRespawnManager().AddToQueue(player, 0);
+		if (player.getTeamNum() != this.getSpectatorTeamNum())
+		{
+			getRespawnManager().AddToQueue(player, 0);
+		}
+	}
+
+	void onPlayerRequestTeamChange(CRules@ this, CPlayer@ player, u8 currentTeam, u8 newTeam)
+	{
+		if (currentTeam == newTeam) return;
+
+		bool spectator = newTeam == this.getSpectatorTeamNum();
+
+		Actor@ actor = getActorManager().getActor(player);
+		if (actor !is null)
+		{
+			actor.SetTeamNum(newTeam);
+
+			if (spectator)
+			{
+				getActorManager().RemoveActor(actor);
+			}
+		}
+		else
+		{
+			player.server_setTeamNum(newTeam);
+		}
+
+		if (!spectator)
+		{
+			getRespawnManager().AddToQueue(player, respawnTime);
+		}
 	}
 
 	void LoadConfig(ConfigFile@ cfg)

@@ -19,12 +19,13 @@ shared class Gamemode
 	void onPlayerLeave(CRules@ this, CPlayer@ player) {}
 	void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ attacker, u8 customData) {}
 	void onCommand(CRules@ this, u8 cmd, CBitStream@ params) {}
+	void onPlayerRequestTeamChange(CRules@ this, CPlayer@ player, u8 currentTeam, u8 newTeam) {}
 	void onPlayerLoaded(CRules@ this, CPlayer@ player) {}
 	void onActorSpawned(CRules@ this, CPlayer@ player, Vec3f worldPos, Actor@ actor) {}
-	void onBlockSetByPlayer(CRules@ this, Map@ map, CPlayer@ player, int index, u8 oldBlock, u8 newblock) {}
-	void onBlockSet(CRules@ this, Map@ map, int index, u8 oldBlock, u8 newblock)
+	void onBlockSetByPlayer(CRules@ this, Map@ map, CPlayer@ player, int index, u8 oldBlock, u8 newBlock) {}
+	void onBlockSet(CRules@ this, Map@ map, int index, u8 oldBlock, u8 newBlock)
 	{
-		if (!map.isBlockSeeThrough(newblock))
+		if (!map.isBlockSeeThrough(newBlock))
 		{
 			//check if block below is grass
 			Vec3f worldPos = map.to3D(index);

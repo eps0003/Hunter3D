@@ -1,6 +1,5 @@
 #include "Identifiable.as"
 #include "IRenderable.as"
-#include "IHasTeam.as"
 #include "IHasConfig.as"
 #include "IHasParent.as"
 
@@ -17,6 +16,8 @@ shared class Object : Identifiable
 	float cameraHeight = 0;
 
 	private uint createTime = 0;
+
+	private u8 team = -1;
 
 	private bool sync = true;
 	private bool wasStatic;
@@ -104,6 +105,16 @@ shared class Object : Identifiable
 	bool isStatic()
 	{
 		return position == oldPosition && rotation == oldRotation;
+	}
+
+	u8 getTeamNum()
+	{
+		return team;
+	}
+
+	void SetTeamNum(u8 team)
+	{
+		this.team = team;
 	}
 
 	void Interpolate(float t)

@@ -23,7 +23,8 @@ shared class Mouse
 
 	float sensitivity;
 
-	private bool wasInControl = false;
+	private bool centerMouse = true;
+	private bool[] previousControl;
 
 	Mouse()
 	{
@@ -32,15 +33,26 @@ shared class Mouse
 
 	void Update()
 	{
+		previousControl.push_back(isInControl());
+		if (previousControl.size() > 2)
+		{
+			previousControl.removeAt(0);
+		}
+
 		oldVelocity = velocity;
 		CalculateVelocity();
-		wasInControl = isInControl();
+		centerMouse = !isInControl();
 	}
 
 	void Render()
 	{
 		Visibility();
 		Interpolate();
+	}
+
+	bool wasInControl()
+	{
+		return previousControl.size() < 2 ? false : previousControl[0];
 	}
 
 	bool isInControl()
@@ -84,7 +96,7 @@ shared class Mouse
 			Vec2f mousePos = controls.getMouseScreenPos();
 			Vec2f center = driver.getScreenCenterPos();
 
-			if (!wasInControl)
+			if (centerMouse)
 			{
 				controls.setMousePosition(center);
 				return;

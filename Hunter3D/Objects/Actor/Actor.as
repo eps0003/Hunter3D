@@ -5,7 +5,7 @@
 #include "MovementStrategy.as"
 #include "Ray.as"
 
-shared class Actor : PhysicsObject, IRenderable, IHasTeam, IHasConfig
+shared class Actor : PhysicsObject, IRenderable, IHasConfig
 {
 	CPlayer@ player;
 	private Model@ model;
@@ -19,7 +19,9 @@ shared class Actor : PhysicsObject, IRenderable, IHasTeam, IHasConfig
 	Actor(CPlayer@ player, Vec3f position)
 	{
 		super(position);
+
 		@this.player = player;
+		SetTeamNum(player.getTeamNum());
 
 		Initialize();
 	}
@@ -105,13 +107,9 @@ shared class Actor : PhysicsObject, IRenderable, IHasTeam, IHasConfig
 		model.Render(this);
 	}
 
-	u8 getTeamNum()
-	{
-		return player.getTeamNum();
-	}
-
 	void SetTeamNum(u8 team)
 	{
+		PhysicsObject::SetTeamNum(team);
 		player.server_setTeamNum(team);
 	}
 
@@ -197,7 +195,7 @@ shared class Actor : PhysicsObject, IRenderable, IHasTeam, IHasConfig
 	{
 		CBlob@ blob = player.getBlob();
 		Mouse@ mouse = getMouse3D();
-		if (blob.isKeyJustPressed(key_action1) && mouse.isInControl())
+		if (blob.isKeyJustPressed(key_action1) && mouse.isInControl() && mouse.wasInControl())
 		{
 			Ray ray(getCamera3D().getPosition(), rotation.dir());
 			RaycastInfo raycastInfo;
@@ -252,7 +250,7 @@ shared class Actor : PhysicsObject, IRenderable, IHasTeam, IHasConfig
 	{
 		CBlob@ blob = player.getBlob();
 		Mouse@ mouse = getMouse3D();
-		if (blob.isKeyJustPressed(key_action2) && mouse.isInControl())
+		if (blob.isKeyJustPressed(key_action2) && mouse.isInControl() && mouse.wasInControl())
 		{
 			Ray ray(getCamera3D().getPosition(), rotation.dir());
 			RaycastInfo raycastInfo;
@@ -285,7 +283,7 @@ shared class Actor : PhysicsObject, IRenderable, IHasTeam, IHasConfig
 	{
 		CControls@ controls = player.getControls();
 		Mouse@ mouse = getMouse3D();
-		if (controls.isKeyJustPressed(KEY_MBUTTON) && mouse.isInControl())
+		if (controls.isKeyJustPressed(KEY_MBUTTON) && mouse.isInControl() && mouse.wasInControl())
 		{
 			Ray ray(getCamera3D().getPosition(), rotation.dir());
 			RaycastInfo raycastInfo;

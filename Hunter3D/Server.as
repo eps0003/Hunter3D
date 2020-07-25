@@ -19,11 +19,7 @@ void onRestart(CRules@ this)
 		CPlayer@ player = getPlayer(i);
 		if (player !is null)
 		{
-			CBlob@ blob = server_CreateBlob("husk");
-			if (blob !is null)
-			{
-				blob.server_SetPlayer(player);
-			}
+			CreateHusk(this, player);
 		}
 	}
 }
@@ -58,11 +54,7 @@ void onTick(CRules@ this)
 
 void onNewPlayerJoin(CRules@ this, CPlayer@ player)
 {
-	CBlob@ blob = server_CreateBlob("husk");
-	if (blob !is null)
-	{
-		blob.server_SetPlayer(player);
-	}
+	CreateHusk(this, player);
 
 	getMapSyncer().AddMapRequest(player);
 }
@@ -78,11 +70,7 @@ void onPlayerLeave(CRules@ this, CPlayer@ player)
 
 void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ attacker, u8 customData)
 {
-	CBlob@ blob = server_CreateBlob("husk");
-	if (blob !is null)
-	{
-		blob.server_SetPlayer(victim);
-	}
+	CreateHusk(this, victim);
 }
 
 void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
@@ -163,5 +151,15 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 			//sync all objects to player
 			getObjectSyncer().AddNewPlayer(player);
 		}
+	}
+}
+
+void CreateHusk(CRules@ this, CPlayer@ player)
+{
+	CBlob@ blob = server_CreateBlob("husk");
+	if (blob !is null)
+	{
+		blob.server_SetPlayer(player);
+		player.server_setTeamNum(this.getSpectatorTeamNum());
 	}
 }
