@@ -130,13 +130,7 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 	}
 	else if (cmd == this.getCommandID("c_sync_actor"))
 	{
-		Actor actor(params);
-		Actor@ existingActor = getActorManager().getActor(actor);
-
-		if (existingActor !is null)
-		{
-			existingActor = actor;
-		}
+		getObjectSyncer().server_DeserializeActor(params);
 	}
 	else if (cmd == this.getCommandID("c_loaded"))
 	{
@@ -160,6 +154,5 @@ void CreateHusk(CRules@ this, CPlayer@ player)
 	if (blob !is null)
 	{
 		blob.server_SetPlayer(player);
-		player.server_setTeamNum(this.getSpectatorTeamNum());
 	}
 }

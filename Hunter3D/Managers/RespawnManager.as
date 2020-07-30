@@ -27,25 +27,23 @@ shared class RespawnManager
 		{
 			CPlayer@ player = queue.getPlayer(i);
 
-			if (player is null)
+			if (player is null || !canAddToQueue(player))
 			{
 				queue.RemoveIndex(i--);
 			}
-			else if (canRespawn(player))
+			else if (player.get_u32("respawn_time") < getGameTime())
 			{
-				Vec3f position = getGamemodeManager().getGamemode().getRespawnPoint(player);
-				Respawn(player, position);
+				AttemptRespawn(player);
 			}
 		}
 	}
 
 	void AddToQueue(CPlayer@ player, uint respawnTime)
 	{
-		if (player !is null)
+		if (player !is null && canAddToQueue(player))
 		{
 			if (!isRespawning(player))
 			{
-				getActorManager().RemoveActor(player);
 				queue.AddPlayer(player);
 			}
 
@@ -59,22 +57,27 @@ shared class RespawnManager
 		for (uint i = 0; i < getPlayerCount(); i++)
 		{
 			CPlayer@ player = getPlayer(i);
-			if (player !is null)
+			if (player !is null && canAddToQueue(player))
 			{
 				AddToQueue(player, respawnTime);
 			}
 		}
 	}
 
-	void Respawn(CPlayer@ player, Vec3f position)
+	private void AttemptRespawn(CPlayer@ player)
 	{
-		if (player !is null)
+		Gamemode@ gamemode = getGamemodeManager().getGamemode();
+
+		Actor@ actor;
+		if (player !is null && gamemode.onPlayerAttemptRespawn(getRules(), player, actor))
 		{
 			RemoveFromQueue(player);
-			Actor@ actor = Actor(player, position);
+			getActorManager().RemoveActor(player);
 			getObjectManager().AddObject(actor);
-			getGamemodeManager().getGamemode().onActorSpawned(getRules(), player, position, actor);
-			print("Respawned " + player.getUsername() + " at " + position.toString());
+			print("Respawned " + player.getUsername() + " at " + actor.position.toString());
+
+			//call gamemode event
+			gamemode.onActorSpawned(getRules(), player, actor);
 		}
 	}
 
@@ -98,12 +101,8 @@ shared class RespawnManager
 		return queue.hasPlayer(player);
 	}
 
-	private bool canRespawn(CPlayer@ player)
+	private bool canAddToQueue(CPlayer@ player)
 	{
-		return (
-			player !is null &&
-			player.get_u32("respawn_time") < getGameTime() &&
-			getGamemodeManager().getGamemode().canRespawn(player)
-		);
+		return player.getTeamNum() != getRules().getSpectatorTeamNum();
 	}
 }

@@ -1,5 +1,4 @@
 #include "Identifiable.as"
-#include "IRenderable.as"
 #include "IHasConfig.as"
 #include "IHasParent.as"
 
@@ -36,6 +35,7 @@ shared class Object : Identifiable
 
 		position = Vec3f(bs);
 		rotation = Vec3f(bs);
+		team = bs.read_u8();
 
 		createTime = getGameTime();
 	}
@@ -47,6 +47,8 @@ shared class Object : Identifiable
 
 		position = object.position;
 		rotation = object.rotation;
+
+		team = object.team;
 
 		sync = true;
 	}
@@ -71,6 +73,11 @@ shared class Object : Identifiable
 	{
 		sync = sync || !wasStatic || !isStatic();
 		wasStatic = isStatic();
+	}
+
+	void Render()
+	{
+
 	}
 
 	void onCreate()
@@ -136,5 +143,6 @@ shared class Object : Identifiable
 
 		position.Serialize(bs);
 		rotation.Serialize(bs);
+		bs.write_u8(team);
 	}
 }

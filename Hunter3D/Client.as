@@ -73,18 +73,15 @@ void onRender(CRules@ this)
 	if (camera.hasParent())
 	{
 		DrawCrosshair(0, 8, 1, color_white);
-		actorManager.RenderHUD();
 	}
+
+	actorManager.RenderHUD();
 
 	Actor@ myActor = actorManager.getActor(getLocalPlayer());
 	if (myActor !is null)
 	{
-		Map@ map = getMap3D();
+		myActor.RenderHUD();
 
-		// GUI::DrawText("block: " + map.getBlockName(myActor.blockType), Vec2f(10, 40), color_black);
-		GUI::DrawIcon(map.texture, myActor.blockType * 4, Vec2f(16, 16), Vec2f(10, 60), 3);
-
-		GUI::DrawText("position: " + myActor.position.toString(), Vec2f(10, 40), color_black);
 		// GUI::DrawText("rotation: " + myActor.rotation.toString(), Vec2f(10, 60), color_black);
 		// GUI::DrawText("velocity: " + myActor.velocity.toString(), Vec2f(10, 80), color_black);
 		// GUI::DrawText("vellen: " + Vec2f(myActor.interVelocity.x, myActor.interVelocity.z).Length(), Vec2f(10, 100), color_black);

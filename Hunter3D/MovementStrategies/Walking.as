@@ -2,7 +2,7 @@ shared class Walking : MovementStrategy
 {
 	void Move(Actor@ actor)
 	{
-		CControls@ controls = actor.player.getControls();
+		CControls@ controls = actor.getPlayer().getControls();
 
 		Vec2f dir(
 			num(controls.isKeyPressed(KEY_KEY_D)) - num(controls.isKeyPressed(KEY_KEY_A)),

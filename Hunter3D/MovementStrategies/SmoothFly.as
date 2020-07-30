@@ -2,8 +2,9 @@ shared class SmoothFly : MovementStrategy
 {
 	void Move(Actor@ actor)
 	{
-		CBlob@ blob = actor.player.getBlob();
-		CControls@ controls = actor.player.getControls();
+		CPlayer@ player = actor.getPlayer();
+		CBlob@ blob = player.getBlob();
+		CControls@ controls = player.getControls();
 
 		Vec2f dir(
 			num(blob.isKeyPressed(key_right)) - num(blob.isKeyPressed(key_left)),

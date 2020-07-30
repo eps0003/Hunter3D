@@ -29,6 +29,8 @@ shared class CTF : Gamemode
 
 	void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ attacker, u8 customData)
 	{
+		Gamemode::onPlayerDie(this, victim, attacker, customData);
+
 		getRespawnManager().AddToQueue(victim, respawnTime);
 	}
 
@@ -47,37 +49,34 @@ shared class CTF : Gamemode
 
 	void onPlayerLoaded(CRules@ this, CPlayer@ player)
 	{
-		if (player.getTeamNum() != this.getSpectatorTeamNum())
+		getRespawnManager().AddToQueue(player, 0);
+	}
+
+	void onPlayerChangedTeam(CRules@ this, CPlayer@ player, u8 oldTeam, u8 newTeam)
+	{
+		ActorManager@ actorManager = getActorManager();
+		if (actorManager.playerHasActor(player))
 		{
-			getRespawnManager().AddToQueue(player, 0);
+			//create spectator object if player isnt already doesnt exist
+			Actor@ actor = actorManager.getActor(player);
+			if (actor !is null && cast<Spectator>(actor) is null)
+			{
+				actorManager.RemoveActor(actor);
+				getObjectManager().AddObject(Spectator(player, actor.position + Vec3f(0, actor.cameraHeight, 0), actor.rotation, actor.velocity));
+			}
+
+			//add player to queue
+			getRespawnManager().AddToQueue(player, respawnTime);
 		}
 	}
 
-	void onPlayerRequestTeamChange(CRules@ this, CPlayer@ player, u8 currentTeam, u8 newTeam)
+	bool onPlayerAttemptRespawn(CRules@ this, CPlayer@ player, Actor@ &out actor)
 	{
-		if (currentTeam == newTeam) return;
+		Vec3f dim = getMap3D().getMapDimensions();
+		Vec3f position(dim.x / 2, dim.y, dim.z / 2);
 
-		bool spectator = newTeam == this.getSpectatorTeamNum();
-
-		Actor@ actor = getActorManager().getActor(player);
-		if (actor !is null)
-		{
-			actor.SetTeamNum(newTeam);
-
-			if (spectator)
-			{
-				getActorManager().RemoveActor(actor);
-			}
-		}
-		else
-		{
-			player.server_setTeamNum(newTeam);
-		}
-
-		if (!spectator)
-		{
-			getRespawnManager().AddToQueue(player, respawnTime);
-		}
+		@actor = Builder(player, position);
+		return true;
 	}
 
 	void LoadConfig(ConfigFile@ cfg)

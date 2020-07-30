@@ -4,17 +4,16 @@
 #include "ActorModel.as"
 #include "MovementStrategy.as"
 #include "Ray.as"
+#include "Builder.as"
+#include "SpectatorObject.as"
 
-shared class Actor : PhysicsObject, IRenderable, IHasConfig
+shared class Actor : PhysicsObject, IHasConfig
 {
-	CPlayer@ player;
-	private Model@ model;
-	private MovementStrategy@ movementStrategy = Walking();
+	private CPlayer@ player;
+	private MovementStrategy@ movementStrategy;
 
 	float acceleration;
 	float jumpForce;
-
-	u8 blockType = BlockType::OakWood;
 
 	Actor(CPlayer@ player, Vec3f position)
 	{
@@ -33,18 +32,12 @@ shared class Actor : PhysicsObject, IRenderable, IHasConfig
 		u16 playerID = bs.read_u16();
 		@player = getPlayerByNetworkId(playerID);
 
-		cameraHeight = 1.5f;
-		@model = ActorModel("KnightSkin.png");
-
 		Initialize();
 	}
 
-	private void Initialize()
+	void Initialize()
 	{
-		LoadConfig(openConfig("Actor.cfg"));
 
-		SetCollisionBox(AABB(Vec3f(0.6f, 1.6f, 0.6f)));
-		SetCollisionFlags(CollisionFlag::All);
 	}
 
 	void opAssign(Actor actor)
@@ -61,15 +54,11 @@ shared class Actor : PhysicsObject, IRenderable, IHasConfig
 	{
 		PhysicsObject::Update();
 
-		if (hasMovementStrategy())
+		if (movementStrategy !is null)
 		{
 			movementStrategy.Move(this);
 			movementStrategy.Rotate(this);
 		}
-
-		PlaceBlock();
-		RemoveBlock();
-		PickBlock();
 	}
 
 	void PostUpdate()
@@ -86,25 +75,21 @@ shared class Actor : PhysicsObject, IRenderable, IHasConfig
 		}
 	}
 
+	void Render()
+	{
+
+	}
+
 	bool isVisible()
 	{
 		Camera@ camera = getCamera3D();
-
-		bool hasModel = model !is null;
 		bool cameraParentNotMe = camera.hasParent() && camera.getParent() != cast<Object>(this);
-
-		return hasModel && cameraParentNotMe;
+		return cameraParentNotMe;
 	}
 
-	void Render()
+	CPlayer@ getPlayer()
 	{
-		AABB@ collisionBox = getCollisionBox();
-		if (collisionBox !is null)
-		{
-			collisionBox.Render(interPosition);
-		}
-
-		model.Render(this);
+		return player;
 	}
 
 	void SetTeamNum(u8 team)
@@ -115,21 +100,22 @@ shared class Actor : PhysicsObject, IRenderable, IHasConfig
 
 	void RenderHUD()
 	{
-
+		GUI::DrawText("position: " + position.toString(), Vec2f(10, 40), color_black);
 	}
 
 	void RenderNameplate()
 	{
-		Camera@ camera = getCamera3D();
-		bool cameraNotAttached = camera.hasParent() && camera.getParent() != cast<Object>(this);
-
-		if (isNameplateVisible() && cameraNotAttached && interPosition.isInFrontOfCamera())
+		if (isNameplateVisible())
 		{
+			Camera@ camera = getCamera3D();
+
 			Vec3f pos = interPosition + Vec3f(0, 2, 0);
 			Vec2f screenPos = pos.projectToScreen();
 			uint distance = (camera.getPosition() - pos).mag();
 
-			GUI::DrawTextCentered(player.getCharacterName(), screenPos - Vec2f(0, 8), color_white);
+			SColor teamColor = getRules().getTeam(getTeamNum()).color;
+
+			GUI::DrawTextCentered(player.getCharacterName(), screenPos - Vec2f(0, 8), teamColor);
 			GUI::DrawTextCentered(distance + " " + String::plural(distance, "block"), screenPos + Vec2f(0, 8), color_white);
 		}
 	}
@@ -147,11 +133,6 @@ shared class Actor : PhysicsObject, IRenderable, IHasConfig
 		bs.write_u16(player.getNetworkID());
 	}
 
-	bool hasMovementStrategy()
-	{
-		return movementStrategy !is null;
-	}
-
 	void SetMovementStrategy(MovementStrategy@ strategy)
 	{
 		@movementStrategy = strategy;
@@ -161,161 +142,23 @@ shared class Actor : PhysicsObject, IRenderable, IHasConfig
 	{
 		PhysicsObject::LoadConfig(cfg);
 
-		acceleration = cfg.read_f32("acceleration");
-		jumpForce = cfg.read_f32("jump_force");
-	}
-
-	private void Move()
-	{
-		CControls@ controls = player.getControls();
-
-		Vec2f dir(
-			num(controls.isKeyPressed(KEY_KEY_D)) - num(controls.isKeyPressed(KEY_KEY_A)),
-			num(controls.isKeyPressed(KEY_KEY_W)) - num(controls.isKeyPressed(KEY_KEY_S))
-		);
-
-		float len = dir.Length();
-
-		if (len > 0)
-		{
-			dir /= len; //normalize
-			dir = dir.RotateBy(rotation.y);
-		}
-
-		if (controls.isKeyJustPressed(KEY_SPACE))
-		{
-			velocity.y = jumpForce;
-		}
-
-		velocity.x += dir.x * acceleration - friction * velocity.x;
-		velocity.z += dir.y * acceleration - friction * velocity.z;
-	}
-
-	private void PlaceBlock()
-	{
-		CBlob@ blob = player.getBlob();
-		Mouse@ mouse = getMouse3D();
-		if (blob.isKeyJustPressed(key_action1) && mouse.isInControl() && mouse.wasInControl())
-		{
-			Ray ray(getCamera3D().getPosition(), rotation.dir());
-			RaycastInfo raycastInfo;
-			if (ray.raycastBlock(5, false, raycastInfo))
-			{
-				Map@ map = getMap3D();
-				u8 block = blockType;
-				Vec3f worldPos = raycastInfo.hitWorldPos + raycastInfo.normal;
-
-				AABB actorBounds = getCollisionBox();
-
-				bool canSetBlock = true;
-
-				if (map.isBlockSolid(block))
-				{
-					//check if object intersects block
-					Object@[] objects = getObjectManager().getObjects();
-					for (uint i = 0; i < objects.size(); i++)
-					{
-						PhysicsObject@ object = cast<PhysicsObject>(objects[i]);
-						if (object !is null)
-						{
-							AABB@ bounds = object.getCollisionBox();
-							if (bounds !is null && bounds.intersectsVoxel(object.position, worldPos))
-							{
-								canSetBlock = false;
-								break;
-							}
-						}
-					}
-				}
-
-				if (map.isValidBlock(worldPos) && map.getBlock(worldPos) != block && canSetBlock)
-				{
-					map.SetBlock(worldPos, block);
-					map.RebuildChunks(worldPos);
-					print("Placed block at " + worldPos.toString());
-
-					CBitStream params;
-					params.write_u16(player.getNetworkID());
-					params.write_u32(map.toIndex(worldPos));
-					params.write_u8(block);
-
-					CRules@ rules = getRules();
-					rules.SendCommand(rules.getCommandID("c_sync_block"), params, false);
-				}
-			}
-		}
-	}
-
-	private void RemoveBlock()
-	{
-		CBlob@ blob = player.getBlob();
-		Mouse@ mouse = getMouse3D();
-		if (blob.isKeyJustPressed(key_action2) && mouse.isInControl() && mouse.wasInControl())
-		{
-			Ray ray(getCamera3D().getPosition(), rotation.dir());
-			RaycastInfo raycastInfo;
-			if (ray.raycastBlock(5, false, raycastInfo))
-			{
-				Map@ map = getMap3D();
-				Vec3f worldPos = raycastInfo.hitWorldPos;
-				u8 block = BlockType::Air;
-				u8 existingBlock = map.getBlock(worldPos);
-
-				if (map.isValidBlock(worldPos) && map.isBlockDestructable(existingBlock) && existingBlock != block)
-				{
-					map.SetBlock(worldPos, block);
-					map.RebuildChunks(worldPos);
-					print("Removed block at " + worldPos.toString());
-
-					CBitStream params;
-					params.write_u16(player.getNetworkID());
-					params.write_u32(map.toIndex(worldPos));
-					params.write_u8(block);
-
-					CRules@ rules = getRules();
-					rules.SendCommand(rules.getCommandID("c_sync_block"), params, false);
-				}
-			}
-		}
-	}
-
-	private void PickBlock()
-	{
-		CControls@ controls = player.getControls();
-		Mouse@ mouse = getMouse3D();
-		if (controls.isKeyJustPressed(KEY_MBUTTON) && mouse.isInControl() && mouse.wasInControl())
-		{
-			Ray ray(getCamera3D().getPosition(), rotation.dir());
-			RaycastInfo raycastInfo;
-			if (ray.raycastBlock(5, false, raycastInfo))
-			{
-				Map@ map = getMap3D();
-				Vec3f worldPos = raycastInfo.hitWorldPos;
-				blockType = map.getBlock(worldPos);
-			}
-		}
-
-		if (controls.isKeyPressed(MOUSE_SCROLL_UP))
-		{
-			blockType--;
-			if (blockType <= 0)
-			{
-				blockType += BlockType::Total - 2;
-			}
-		}
-
-		if (controls.isKeyPressed(MOUSE_SCROLL_DOWN))
-		{
-			blockType++;
-			if (blockType >= BlockType::Total - 2)
-			{
-				blockType = 1;
-			}
-		}
+		acceleration = cfg.read_f32("acceleration", 0.1f);
+		jumpForce = cfg.read_f32("jump_force", 0.3f);
 	}
 
 	private bool isNameplateVisible()
 	{
-		return getTeamNum() == getLocalPlayer().getTeamNum();
+		Camera@ camera = getCamera3D();
+
+		u8 team = getTeamNum();
+		u8 myTeam = getLocalPlayer().getTeamNum();
+		u8 specTeam = getRules().getSpectatorTeamNum();
+
+		bool teammate = team == myTeam || myTeam == specTeam;
+		bool notSpectator = team != specTeam;
+		bool visibleToCam = interPosition.isInFrontOfCamera();
+		bool cameraNotAttached = !camera.hasParent() || camera.getParent() != cast<Object>(this);
+
+		return teammate && notSpectator && visibleToCam && cameraNotAttached;
 	}
 }

@@ -229,6 +229,11 @@ shared class PhysicsObject : Object, IHasConfig
 					collisionX = false;
 					position.x += velocity.x;
 				}
+
+				if (position.x == oldPosition.x)
+				{
+					velocity.x = 0;
+				}
 			}
 
 			//z collision
@@ -264,6 +269,11 @@ shared class PhysicsObject : Object, IHasConfig
 					collisionZ = false;
 					position.z += velocity.z;
 				}
+
+				if (position.z == oldPosition.z)
+				{
+					velocity.z = 0;
+				}
 			}
 
 			//y collision
@@ -288,7 +298,16 @@ shared class PhysicsObject : Object, IHasConfig
 					collisionY = false;
 					position.y += velocity.y;
 				}
+
+				if (position.y == oldPosition.y)
+				{
+					velocity.y = 0;
+				}
 			}
+		}
+		else
+		{
+			position += velocity;
 		}
 	}
 }

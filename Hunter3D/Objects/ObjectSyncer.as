@@ -16,7 +16,8 @@ shared ObjectSyncer@ getObjectSyncer()
 enum ObjectType
 {
 	None,
-	Actor,
+	Builder,
+	Spectator,
 	Flag
 }
 
@@ -71,13 +72,21 @@ shared class ObjectSyncer
 		{
 			Object@ object = objects[i];
 
-			//serialize actor
-			Actor@ actor = cast<Actor>(object);
-			if (actor !is null && (syncAll || actor.shouldSync()))
+			//serialize builder
+			Builder@ builder = cast<Builder>(object);
+			if (builder !is null && (syncAll || builder.shouldSync()))
 			{
 				bs.write_bool(true);
-				bs.write_u8(ObjectType::Actor);
-				actor.Serialize(bs);
+				builder.Serialize(bs);
+				continue;
+			}
+
+			//serialize spectator
+			Spectator@ spectator = cast<Spectator>(object);
+			if (spectator !is null && (syncAll || spectator.shouldSync()))
+			{
+				bs.write_bool(true);
+				spectator.Serialize(bs);
 				continue;
 			}
 
@@ -86,7 +95,6 @@ shared class ObjectSyncer
 			if (flag !is null && (syncAll || flag.shouldSync()))
 			{
 				bs.write_bool(true);
-				bs.write_u8(ObjectType::Flag);
 				flag.Serialize(bs);
 				continue;
 			}
@@ -110,27 +118,53 @@ shared class ObjectSyncer
 
 			switch (bs.read_u8())
 			{
-				case ObjectType::Actor:
+				case ObjectType::Builder:
 				{
-					Actor actor(bs);
+					Builder builder(bs);
 
 					if (i < objects.size())
 					{
-						//update actors that arent mine
-						if (!actor.player.isMyPlayer())
+						//update builders that arent mine
+						if (!builder.getPlayer().isMyPlayer())
 						{
 							Object@ object = objectManager.getObject(i);
-							cast<Actor>(object) = actor;
+							cast<Builder>(object) = builder;
 						}
 					}
 					else
 					{
-						//spawn actor
-						objectManager.AddObject(actor);
+						//spawn builder
+						objectManager.AddObject(builder);
 
-						if (actor.player.isMyPlayer())
+						if (builder.getPlayer().isMyPlayer())
 						{
-							getCamera3D().SetParent(actor);
+							getCamera3D().SetParent(builder);
+						}
+					}
+				}
+				break;
+
+				case ObjectType::Spectator:
+				{
+					Spectator spectator(bs);
+
+					if (i < objects.size())
+					{
+						//update spectators that arent mine
+						if (!spectator.getPlayer().isMyPlayer())
+						{
+							Object@ object = objectManager.getObject(i);
+							cast<Spectator>(object) = spectator;
+						}
+					}
+					else
+					{
+						//spawn spectator
+						objectManager.AddObject(spectator);
+
+						if (spectator.getPlayer().isMyPlayer())
+						{
+							getCamera3D().SetParent(spectator);
 						}
 					}
 				}
@@ -152,6 +186,40 @@ shared class ObjectSyncer
 				}
 				break;
 			}
+		}
+	}
+
+	void server_DeserializeActor(CBitStream@ bs)
+	{
+		ObjectManager@ objectManager = getObjectManager();
+
+		switch (bs.read_u8())
+		{
+			case ObjectType::Builder:
+			{
+				Builder builder(bs);
+
+				Builder@ existingBuilder = cast<Builder>(objectManager.getObjectByID(builder.id));
+
+				if (existingBuilder !is null)
+				{
+					existingBuilder = builder;
+				}
+			}
+			break;
+
+			case ObjectType::Spectator:
+			{
+				Spectator spectator(bs);
+
+				Spectator@ existingSpectator = cast<Spectator>(objectManager.getObjectByID(spectator.id));
+
+				if (existingSpectator !is null)
+				{
+					existingSpectator = spectator;
+				}
+			}
+			break;
 		}
 	}
 

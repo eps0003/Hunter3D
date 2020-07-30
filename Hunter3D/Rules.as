@@ -47,3 +47,8 @@ void onPlayerRequestTeamChange(CRules@ this, CPlayer@ player, u8 newteam)
 {
 	getGamemodeManager().getGamemode().onPlayerRequestTeamChange(this, player, player.getTeamNum(), newteam);
 }
+
+void onPlayerChangedTeam(CRules@ this, CPlayer@ player, u8 oldteam, u8 newteam)
+{
+	getGamemodeManager().getGamemode().onPlayerChangedTeam(this, player, oldteam, newteam);
+}

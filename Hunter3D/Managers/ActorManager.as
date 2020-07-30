@@ -26,7 +26,6 @@ shared class ActorManager
 		{
 			Actor@ actor = actors[i];
 			actor.RenderNameplate();
-			actor.RenderHUD();
 		}
 	}
 
@@ -53,7 +52,7 @@ shared class ActorManager
 		for (uint i = 0; i < actors.size(); i++)
 		{
 			Actor@ actor = actors[i];
-			if (actor.player.getUsername() == username)
+			if (actor.getPlayer().getUsername() == username)
 			{
 				return actor;
 			}
@@ -69,7 +68,7 @@ shared class ActorManager
 		for (uint i = 0; i < actors.size(); i++)
 		{
 			Actor@ actor = actors[i];
-			if (actor.player is player)
+			if (actor.getPlayer() is player)
 			{
 				return actor;
 			}
@@ -126,7 +125,7 @@ shared class ActorManager
 			Object@ object = objects[i];
 			Actor@ actor = cast<Actor>(object);
 
-			if (actor !is null && actor.player is player)
+			if (actor !is null && actor.getPlayer() is player)
 			{
 				RemoveActor(objectManager, actor, i);
 				return;
@@ -165,7 +164,7 @@ shared class ActorManager
 	{
 		objectManager.RemoveObject(index);
 
-		if (actor.player.isMyPlayer())
+		if (actor.getPlayer().isMyPlayer())
 		{
 			getCamera3D().SetParent(null);
 		}
